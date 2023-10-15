@@ -5,6 +5,8 @@ import Modal, {ModalType} from "../Modal/Modal";
 import moment from 'moment';
 import ReactPaginate from 'react-paginate';
 import _ from 'lodash';
+import SortAsc from '../../assets/SortAsc/SortAsc';
+import SortDesc from '../../assets/SortDesc/SortDesc';
 
 
 export interface TransactionInter {
@@ -178,11 +180,13 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
   };
 
   const search = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // event.preventDefault()
     const { value } = event.target;
-    console.log('👉 Search req: ', value);
     if (value){
-      const searchResult = tableData.filter((item) => new RegExp(value).test(item.name));
+      const searchResult = tableData.filter((item) => {
+        const {id, categoryTransactionId, ...obj } = item;
+
+        return _.values(obj).some((val) => new RegExp(value, 'i').test(String(val)))
+      });
       setSortedData(searchResult)
     } else {
       setSortedData(tableData);
@@ -198,46 +202,14 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
         <StyledTable>
           <thead>
           <tr>
-            <th onClick={() => handleSort('name')} style={{width: '30%'}}>Title</th>
-            <th onClick={() => handleSort('category')}>Category</th>
-            <th onClick={() => handleSort('date')}>Date</th>
-            <th onClick={() => handleSort('value')}>Amount</th>
+            <th onClick={() => handleSort('name')} style={{width: '30%'}}>Title {sortOrder === 'asc' ? <SortAsc/> : <SortDesc/>}</th>
+            <th onClick={() => handleSort('category')}>Category {sortOrder === 'asc' ? <SortAsc/> : <SortDesc/>}</th>
+            <th onClick={() => handleSort('date')}>Date {sortOrder !== 'asc' ? <SortAsc/> : <SortDesc/>}</th>
+            <th onClick={() => handleSort('value')}>Amount {sortOrder !== 'asc' ? <SortAsc/> : <SortDesc/>}</th>
           </tr>
           </thead>
-          {/*<tbody>*/}
           <PaginatedItems itemsPerPage={itemsPerPage} />
-          {/*{tableData && tableData.map((row) => (*/}
-          {/*  <tr key={row.id} onClick={() => openDetailsModal(row)}>*/}
-          {/*    <td>{row.name}</td>*/}
-          {/*    /!*<td>{transCatData && transCatData.filter((cat) => cat.id === row.categoryTransactionId)[0].name}</td>*!/*/}
-          {/*    <td>{row.category}</td>*/}
-          {/*    /!*<td>{moment(row.date).format('DD.MM.YYYY')}</td>*!/*/}
-          {/*    <td>{row.date}</td>*/}
-          {/*    <td>{row.value} zł</td>*/}
-          {/*  </tr>*/}
-          {/*))}*/}
-          {/*</tbody>*/}
         </StyledTable>
-        {/*<ReactPaginate*/}
-        {/*    nextLabel="Next"*/}
-        {/*    onPageChange={handlePageClick}*/}
-        {/*    pageRangeDisplayed={3}*/}
-        {/*    marginPagesDisplayed={2}*/}
-        {/*    pageCount={pageCount}*/}
-        {/*    previousLabel="Previous"*/}
-        {/*    pageClassName="page-item"*/}
-        {/*    pageLinkClassName="page-link"*/}
-        {/*    previousClassName="page-item"*/}
-        {/*    previousLinkClassName="page-link"*/}
-        {/*    nextClassName="page-item"*/}
-        {/*    nextLinkClassName="page-link"*/}
-        {/*    breakLabel="..."*/}
-        {/*    breakClassName="page-item"*/}
-        {/*    breakLinkClassName="page-link"*/}
-        {/*    containerClassName="pagination"*/}
-        {/*    activeClassName="active"*/}
-        {/*    renderOnZeroPageCount={null}*/}
-        {/*  />*/}
         <Modal
           active={modalIsActive}
           setActive={setModalActive}

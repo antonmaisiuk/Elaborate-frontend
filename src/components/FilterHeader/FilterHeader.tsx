@@ -1,4 +1,4 @@
-import React, {Dispatch, FC, HTMLAttributes, SetStateAction} from 'react';
+import React, {Dispatch, FC, HTMLAttributes, SetStateAction, useState} from 'react';
 import {
   StyledFilterButton,
   StyledFilterButtons,
@@ -23,28 +23,6 @@ const FilterHeader: FC<FilterHeaderInterface & HTMLAttributes<HTMLDivElement>> =
   searchFunc,
    }) => {
 
-  const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const response = await fetch(`api/`,
-      {
-        method: 'Post',
-        headers: {'Content-Type': 'application/json'},
-        credentials: 'include',
-      })
-
-    if (response.ok) {
-    } else {
-      const errorMsg = JSON.parse(await response.text());
-      console.log(errorMsg.message);
-    }
-  };
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('👉 Search value: ', event.target.value);
-     // setSearchText(event.target.value);
-  };
-
-
   return (
     <StyledFilterHeader>
       <StyledFilterUl>
@@ -58,9 +36,8 @@ const FilterHeader: FC<FilterHeaderInterface & HTMLAttributes<HTMLDivElement>> =
             name="SearchText"
             placeholder='Search here'
             onChange={searchFunc}
-            // value={formData.Email}
           />
-          <StyledFilterButton type="submit"><SearchIcon/></StyledFilterButton>
+          <SearchIcon/>
         </StyledFilterForm>
         <StyledNewButton onClick={() => {
           setModalType(ModalType.addTransaction)

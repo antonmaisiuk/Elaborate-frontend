@@ -46,6 +46,11 @@ export const StyledTable = styled(Table)`
   }
   th, td{
     padding: 16px 10px;
+    
+    svg{
+      width: 18px;
+      height: 18px;
+    }
   }
   tr{
     cursor: pointer;

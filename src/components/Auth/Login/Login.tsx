@@ -11,8 +11,6 @@ import {
 } from "../styled";
 import {CredentialResponse} from "@react-oauth/google";
 import {useNavigate} from "react-router-dom";
-import moment from 'moment';
-// import { handleLogin } from '../../../middleware/handlers';
 
 const Login = () => {
   const [errorMsg, setErrorMsg] = useState('');
@@ -32,31 +30,35 @@ const Login = () => {
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const response = await fetch(`https://localhost:7247/api/Authentication/login`,
-      {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
 
-        body: JSON.stringify(formData)
-      })
+    try {
+      const response = await fetch(`https://localhost:7247/api/Authentication/login`,
+        {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
 
-    if (response.ok) {
-      const resData = await response.text();
-      const isTwoFactorEnabled = /sent/.test(JSON.parse(resData).message);
-      if (isTwoFactorEnabled) {
-        setIs2FA(true)
+          body: JSON.stringify(formData)
+        }
+        );
+
+      if (response.ok) {
+        const resData = await response.text();
+        const isTwoFactorEnabled = /sent/.test(JSON.parse(resData).message);
+        if (isTwoFactorEnabled) {
+          setIs2FA(true)
+        } else {
+          const { token, expiration } = JSON.parse(resData);
+          setSuccessMsg('Successfully logged')
+          document.cookie = `token=${token}; expires=${new Date(expiration).toUTCString()};`;
+
+          navigate('/overview');
+          window.location.reload();
+        }
       } else {
-        const { token, expiration } = JSON.parse(resData);
-        setSuccessMsg('Successfully logged')
-        document.cookie = `token=${token}; expires=${new Date(expiration).toUTCString()};`;
-
-        navigate('/overview');
-        window.location.reload();
+        setErrorMsg(await response.text());
       }
-    } else {
-      const errorMsg = JSON.parse(await response.text());
-      setErrorMsg(errorMsg.message);
-      console.log(errorMsg.message);
+    } catch (e) {
+      setErrorMsg(`Unexpected error. Please try again with correct credentials.`);
     }
   };
 

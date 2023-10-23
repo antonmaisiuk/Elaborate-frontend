@@ -11,6 +11,7 @@ import Overview from "./components/Overview/Overview";
 import EmailConfirm from "./components/Auth/EmailConfirm/EmailConfirm";
 import Transactions from "./components/Transactions/Transactions";
 import PrivateRoute from './components/Auth/PrivateRoute/PrivateRoute';
+import Stocks from "./components/Investments/Stocks/Stocks";
 
 
 
@@ -36,10 +37,11 @@ const App = () => {
           </GoogleOAuthProvider>
           }/>
         <Route path="/forgot" element={<ForgotPassword />}/>
-        {/*<PrivateRoute path="/transactions" element={<Transactions/>} exact/>*/}
+        {/*<PrivateRoute path="/transactions" element={<Stocks/>} exact/>*/}
         <Route element={<PrivateRoute/>}>
           <Route path="/overview" element={<Overview/>}/>
           <Route path="/transactions" element={<Transactions/>}/>
+          <Route path="/invest/stocks" element={<Stocks/>}/>
           <Route path="/confirm" element={<EmailConfirm/>}/>
         </Route>
         {/*<Route path="/home" element={<Home userName={name} setUserName={setName} />}/>*/}

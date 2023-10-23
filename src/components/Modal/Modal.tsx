@@ -22,6 +22,7 @@ import {useNavigate} from "react-router-dom";
 // import _ from 'lodash';
 import {TransactionInter, TransCategoryInter} from "../Table/Table";
 import moment from 'moment';
+import _ from "lodash";
 
 export enum ModalType {
   addTransaction,
@@ -112,6 +113,7 @@ const Modal: FC<ModalBaseInterface & HTMLAttributes<HTMLDivElement>> = ({
         formattedDate = new Date(`${year}-${month}-${day}`).toISOString();
       }
 
+      console.log('👉 formattedDate: ', );
       return formattedDate;
     }
     return date;
@@ -175,32 +177,38 @@ const Modal: FC<ModalBaseInterface & HTMLAttributes<HTMLDivElement>> = ({
     if (formData.categoryTransactionId === '') formData.categoryTransactionId = modalTransCatData[0].id;
     console.log('👉 New transaction data: ', formData);
 
-    // formData.value = Number(formData.value);
-    const response = await fetch('https://localhost:7247/api/user/transaction',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(formData)
-      })
+    try {
+      // formData.value = Number(formData.value);
+      const response = await fetch('https://localhost:7247/api/user/transaction',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify(formData)
+        })
 
-    if (response.ok) {
-      setActive(false);
-      resetFormData();
-      trans.push(formData);
-      console.log('👉 Transactions: ', trans);
-      setTrans(trans);
-      setErrorMsg('');
-    } else {    //
-      const errorMsg = JSON.parse(await response.text());
-      printErrorMsg(errorMsg);
-      console.log('👉 Keys: ', errorMsg.errors[Object.keys(errorMsg.errors)[0]].join(','));
+      if (response.ok) {
+        setActive(false);
+        formData.date = moment(formData.date).format('DD.MM.YYYY');
+        const updatedTrans = [...trans, formData];
+        console.log('👉 Stocks: ', updatedTrans);
+        resetFormData();
+        setTrans(updatedTrans);
+        setErrorMsg('');
+      } else {    //
+        const errorMsg = JSON.parse(await response.text());
+        printErrorMsg(errorMsg);
+        console.log('👉 Keys: ', errorMsg.errors[Object.keys(errorMsg.errors)[0]].join(','));
 
-      // setErrorMsg(errorMsg.errors[Object.keys(errorMsg.errors)[0]][0]);
-      setErrorMsg(Object.keys(errorMsg.errors).map((err) => errorMsg.errors[err]).join('\n'));
+        // setErrorMsg(errorMsg.errors[Object.keys(errorMsg.errors)[0]][0]);
+        setErrorMsg(Object.keys(errorMsg.errors).map((err) => errorMsg.errors[err]).join('\n'));
+      }
+    } catch (e) {
+
     }
+
   };
   const handleDeleteTransactions = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -220,6 +228,8 @@ const Modal: FC<ModalBaseInterface & HTMLAttributes<HTMLDivElement>> = ({
       setActive(false);
       setErrorMsg('');
       resetFormData();
+      const updatedTrans = _.filter(trans, (item) => item.id !== modalTransData?.id);
+      setTrans(updatedTrans);
     } else {
       const errorMsg = JSON.parse(await response.text());
       setErrorMsg(Object.keys(errorMsg.errors).map((err) => errorMsg.errors[err]).join('\n'));
@@ -250,6 +260,13 @@ const Modal: FC<ModalBaseInterface & HTMLAttributes<HTMLDivElement>> = ({
       setActive(false);
       setErrorMsg('');
       resetFormData();
+
+      // @ts-ignore
+
+      modalTransData.date = moment(modalTransData?.date).format('DD.MM.YYYY');
+      const updatedTrans = [...trans, modalTransData];
+      // @ts-ignore
+      setTrans(updatedTrans);
     } else {
       const errorMsg = JSON.parse(await response.text());
       setErrorMsg(Object.keys(errorMsg.errors).map((err) => errorMsg.errors[err]).join('\n'));

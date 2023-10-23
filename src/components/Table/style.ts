@@ -5,10 +5,11 @@ import ReactPaginate from 'react-paginate';
 export const StyledTableWrapper = styled.div`
   display: flex;
   padding: 0 28px 56px 28px;
+  height: 100%;
   flex-direction: column;
   align-items: center;
   align-self: stretch;
-  //overflow-y: scroll;
+  overflow-y: scroll;
   
 
   border-radius: 16px;
@@ -34,7 +35,8 @@ export const StyledTable = styled(Table)`
   font-size: 16px;
   font-style: normal;
   line-height: 24px; /* 150% */
-  
+  margin: 0;
+
   //overflow-y: scroll;
   
   thead th{
@@ -58,6 +60,14 @@ export const StyledTable = styled(Table)`
   tr td:first-child, tr td:last-child{
     color: #191919;
     font-weight: 600;
+  }
+  
+  div{
+    width: 100%;
+    margin-bottom: auto;
+    ul{
+      margin: 0;
+    }
   }
   
   

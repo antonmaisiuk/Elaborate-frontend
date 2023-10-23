@@ -55,6 +55,12 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | null>(null);
   const [sortColumn, setSortColumn] = useState<string | null>(null);
 
+  useEffect(() => {
+    setSortedData(trans);
+    // handleSort('name');
+  }, [trans]);
+
+
 
   function openDetailsModal(row: TransactionInter) {
     setModalType(ModalType.transactionDetails);
@@ -208,6 +214,16 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
             <th onClick={() => handleSort('value')}>Amount {sortOrder !== 'asc' ? <SortAsc/> : <SortDesc/>}</th>
           </tr>
           </thead>
+          {/*{sortedData && sortedData.map((row: TransactionInter) => (*/}
+          {/*  <tr key={row.id} onClick={() => openDetailsModal(row)}>*/}
+          {/*    <td>{row.name}</td>*/}
+          {/*    /!*<td>{transCatData && transCatData.filter((cat) => cat.id === row.categoryTransactionId)[0].name}</td>*!/*/}
+          {/*    <td>{row.category}</td>*/}
+          {/*    /!*<td>{moment(row.date).format('DD.MM.YYYY')}</td>*!/*/}
+          {/*    <td>{row.date}</td>*/}
+          {/*    <td>{row.value} zł</td>*/}
+          {/*  </tr>*/}
+          {/*))}*/}
           <PaginatedItems itemsPerPage={itemsPerPage} />
         </StyledTable>
         <Modal

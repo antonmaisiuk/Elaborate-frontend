@@ -103,7 +103,7 @@ const Stocks = () => {
       <Content>
         <Header/>
         <StyledTitle>Recent Stocks</StyledTitle>
-        { stocks.length && <Table trans={stocks} setTrans={setStocks} tableData={stocks} transCatData={categories}/>}
+        { stocks.length && <Table trans={stocks} tableData={stocks} transCatData={categories}/>}
       </Content>
     </Layout>
   );

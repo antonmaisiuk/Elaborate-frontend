@@ -7,6 +7,8 @@ import ReactPaginate from 'react-paginate';
 import _ from 'lodash';
 import SortAsc from '../../assets/SortAsc/SortAsc';
 import SortDesc from '../../assets/SortDesc/SortDesc';
+import {useDispatch} from "react-redux";
+import {AppDispatch, store} from "../../redux/store";
 
 
 export interface TransactionInter {
@@ -28,7 +30,7 @@ export interface TransCategoryInter {
 export interface TableInterface {
   tableData: TransactionInter[],
   trans: TransactionInter[],
-  setTrans: Dispatch<SetStateAction<TransactionInter[]>>
+  // setTrans: Dispatch<SetStateAction<TransactionInter[]>>
   transCatData: TransCategoryInter[] | undefined,
 }
 
@@ -36,8 +38,9 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
                                                                       tableData,
                                                                       transCatData,
                                                                       trans,
-                                                                      setTrans,
+                                                                      // setTrans,
                                                                     }) => {
+  const dispatch = useDispatch<AppDispatch>();
 
   const itemsPerPage = 10;
   const [modalType, setModalType] = useState<ModalType>(ModalType.addTransaction);
@@ -50,6 +53,7 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
     date: new Date().toISOString(),
     value: 0,
   });
+  // const [modalData, setModalData] = useState<string>('');
   const [modalIsActive, setModalActive] = useState(false);
   const [sortedData, setSortedData] = useState<TransactionInter[]>([...tableData]);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | null>(null);
@@ -57,7 +61,6 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
 
   useEffect(() => {
     setSortedData(trans);
-    // handleSort('name');
   }, [trans]);
 
 
@@ -75,19 +78,11 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
         {currentItems && currentItems.map((row: TransactionInter) => (
           <tr key={row.id} onClick={() => openDetailsModal(row)}>
             <td>{row.name}</td>
-            {/*<td>{transCatData && transCatData.filter((cat) => cat.id === row.categoryTransactionId)[0].name}</td>*/}
             <td>{row.category}</td>
-            {/*<td>{moment(row.date).format('DD.MM.YYYY')}</td>*/}
             <td>{row.date}</td>
             <td>{row.value} zł</td>
           </tr>
         ))}
-        {/*{currentItems &&*/}
-        {/*  currentItems.map((item) => (*/}
-        {/*    <div>*/}
-        {/*      <h3>Item #{item}</h3>*/}
-        {/*    </div>*/}
-        {/*  ))}*/}
       </>
     );
   }
@@ -214,16 +209,6 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
             <th onClick={() => handleSort('value')}>Amount {sortOrder !== 'asc' ? <SortAsc/> : <SortDesc/>}</th>
           </tr>
           </thead>
-          {/*{sortedData && sortedData.map((row: TransactionInter) => (*/}
-          {/*  <tr key={row.id} onClick={() => openDetailsModal(row)}>*/}
-          {/*    <td>{row.name}</td>*/}
-          {/*    /!*<td>{transCatData && transCatData.filter((cat) => cat.id === row.categoryTransactionId)[0].name}</td>*!/*/}
-          {/*    <td>{row.category}</td>*/}
-          {/*    /!*<td>{moment(row.date).format('DD.MM.YYYY')}</td>*!/*/}
-          {/*    <td>{row.date}</td>*/}
-          {/*    <td>{row.value} zł</td>*/}
-          {/*  </tr>*/}
-          {/*))}*/}
           <PaginatedItems itemsPerPage={itemsPerPage} />
         </StyledTable>
         <Modal
@@ -233,7 +218,6 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
           setModalType={setModalType}
           modalTransData={modalData}
           trans={trans}
-          setTrans={setTrans}
           modalTransCatData={transCatData}/>
       </StyledTableWrapper>
     </>

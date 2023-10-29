@@ -64,13 +64,13 @@ export interface ModalBaseInterface {
 
 // type ModalInterface = ModalTransInterface | ModalInvestInterface;
 
-const getActualToken = () => {
-  const token = document.cookie.match('token');
-
-  if (token && token.input) return token.input.split('=')[1];
-
-  return '';
-}
+// const getActualToken = () => {
+//   const token = document.cookie.match('token');
+//
+//   if (token && token.input) return token.input.split('=')[1];
+//
+//   return '';
+// }
 
 const Modal: FC<ModalBaseInterface & HTMLAttributes<HTMLDivElement>> = ({
   type,
@@ -95,9 +95,6 @@ const Modal: FC<ModalBaseInterface & HTMLAttributes<HTMLDivElement>> = ({
     value: 0,
   });
   const [errorMsg, setErrorMsg] = useState('');
-  // @ts-ignore
-  const [token, setToken] = useState(getActualToken());
-  const navigate = useNavigate();
 
   const formatDate = (date: string) => {
     if (date && !/T/.test(date)){
@@ -190,7 +187,6 @@ const Modal: FC<ModalBaseInterface & HTMLAttributes<HTMLDivElement>> = ({
     setErrorMsg('');
   };
 
-
   function renderNewTransactionForm() {
     return (
       <StyledForm onSubmit={async (e: React.FormEvent<HTMLFormElement>) => {
@@ -262,6 +258,7 @@ const Modal: FC<ModalBaseInterface & HTMLAttributes<HTMLDivElement>> = ({
       </StyledForm>
     )
   }
+
   function renderTransactionDetails() {
     console.log('👉 ID: ', selectedTransaction.id);
     return (
@@ -391,10 +388,6 @@ const Modal: FC<ModalBaseInterface & HTMLAttributes<HTMLDivElement>> = ({
   }
 
   useEffect(() => {
-    if (!token){
-      console.log('👉 Token expired');
-      navigate('/login')
-    }
     // @ts-ignore
     const close = (e) => {
       if (active && e.key === 'Escape'){

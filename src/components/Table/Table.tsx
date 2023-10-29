@@ -1,15 +1,13 @@
-import React, {ChangeEvent, Dispatch, FC, FormEvent, HTMLAttributes, SetStateAction, useEffect, useState} from 'react';
-import {StyledTable, StyledTablePagination, StyledTableWrapper} from "./style";
+import React, {FC, HTMLAttributes, useEffect, useState} from 'react';
+import {StyledTable, StyledTableWrapper} from "./style";
 import FilterHeader from "../FilterHeader/FilterHeader";
 import Modal, {ModalType} from "../Modal/Modal";
-import moment from 'moment';
 import ReactPaginate from 'react-paginate';
 import _ from 'lodash';
 import SortAsc from '../../assets/SortAsc/SortAsc';
 import SortDesc from '../../assets/SortDesc/SortDesc';
 import {useDispatch} from "react-redux";
-import {AppDispatch, store} from "../../redux/store";
-
+import {AppDispatch} from "../../redux/store";
 
 export interface TransactionInter {
   id: string,
@@ -30,7 +28,6 @@ export interface TransCategoryInter {
 export interface TableInterface {
   tableData: TransactionInter[],
   trans: TransactionInter[],
-  // setTrans: Dispatch<SetStateAction<TransactionInter[]>>
   transCatData: TransCategoryInter[] | undefined,
 }
 
@@ -40,8 +37,6 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
                                                                       trans,
                                                                       // setTrans,
                                                                     }) => {
-  const dispatch = useDispatch<AppDispatch>();
-
   const itemsPerPage = 10;
   const [modalType, setModalType] = useState<ModalType>(ModalType.addTransaction);
   const [modalData, setModalData] = useState<TransactionInter>({
@@ -53,7 +48,6 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
     date: new Date().toISOString(),
     value: 0,
   });
-  // const [modalData, setModalData] = useState<string>('');
   const [modalIsActive, setModalActive] = useState(false);
   const [sortedData, setSortedData] = useState<TransactionInter[]>([...tableData]);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | null>(null);
@@ -102,7 +96,6 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
     }]);
 
     useEffect(() => {
-      // Fetch items from another resources.
       const endOffset = itemOffset + itemsPerPage;
       setCurrentItems(sortedData.slice(itemOffset, endOffset));
       setPageCount(Math.ceil(sortedData.length / itemsPerPage));
@@ -116,12 +109,7 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
     return (
       <>
         <tbody>
-
-        {currentItems ?
           <Items currentItems={currentItems} />
-          : <span>'No'</span>
-        }
-
         </tbody>
         <div>
           <ReactPaginate
@@ -142,7 +130,9 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
             breakLinkClassName="page-link"
             containerClassName="pagination"
             activeClassName="active"
-            renderOnZeroPageCount={null}
+            renderOnZeroPageCount={ () =>
+            <p>No transactions...</p>
+            }
           />
         </div>
       </>
@@ -192,7 +182,6 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
     } else {
       setSortedData(tableData);
     }
-    // console.log('👉 searchResult:', searchResult);
   }
 
 

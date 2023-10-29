@@ -22,7 +22,8 @@ export const StyledTableWrapper = styled.div`
       color: black;
     }
     .page-item.active .page-link{
-      position: relative;
+      //position: relative;
+      z-index: 0;
       background-color: #25AB52;
       border-color: #25AB52;
       color: white;

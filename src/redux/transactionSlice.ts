@@ -1,17 +1,10 @@
-// transactionSlice.ts
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {AppDispatch} from "./store";
 import axios from "axios";
-import {getActualToken} from "../components/Transactions/Transactions";
+import {getActualToken} from "../App";
 import {TransactionInter, TransCategoryInter} from "../components/Table/Table";
 import moment from "moment/moment";
 import _ from "lodash";
 
-interface Transaction {
-  id: number;
-  description: string;
-  amount: number;
-}
 
 interface TransactionState {
   transactions: TransactionInter[];
@@ -109,13 +102,13 @@ const transactionSlice = createSlice({
         state.loading = 'succeeded';
         state.transCategories = action.payload;
 
-        // if (state.transactions.length){
+        if (state.transactions.length){
           state.transactions.forEach((trans) => {
             trans.category = state.transCategories.filter((cat) => {
               return cat.id === trans.categoryTransactionId
             })[0].name || 'No category'
           });
-        // } else state.error = 'Error on handling transactions';
+        } else state.error = 'Error on handling transactions';
 
         state.error = null;
       })

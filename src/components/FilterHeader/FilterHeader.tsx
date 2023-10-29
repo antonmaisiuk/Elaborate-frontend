@@ -26,8 +26,8 @@ const FilterHeader: FC<FilterHeaderInterface & HTMLAttributes<HTMLDivElement>> =
   return (
     <StyledFilterHeader>
       <StyledFilterUl>
-        <li>Sort</li>
-        <li>Filter</li>
+        {/*<li>Sort</li>*/}
+        {/*<li>Filter</li>*/}
       </StyledFilterUl>
       <StyledFilterButtons>
         <StyledFilterForm onSubmit={(e: { preventDefault: () => void; }) => e.preventDefault()}>

@@ -25,7 +25,7 @@ const Transactions = () => {
       <Content>
         <Header/>
         <StyledTitle>Recent Transaction</StyledTitle>
-        {<Table trans={transactions} tableData={transactions} transCatData={transCategories}/>}
+        <Table tableData={transactions} tableCategories={transCategories}/>
       </Content>
     </Layout>
   );

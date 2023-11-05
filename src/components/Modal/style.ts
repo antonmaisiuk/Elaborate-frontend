@@ -1,8 +1,6 @@
 import styled from 'styled-components';
-import {Container, Nav, Navbar, NavDropdown, Table} from "react-bootstrap";
-import {ModalBaseInterface} from "./Modal";
 
-export const StyledModalContainer = styled.div<ModalBaseInterface>`
+export const StyledModalContainer = styled.div<{ isActive: boolean }>`
   position: absolute;
   top: 0;
   left: 0;
@@ -17,7 +15,7 @@ export const StyledModalContainer = styled.div<ModalBaseInterface>`
   pointer-events: none;
   transition: 0.5s;
 
-  ${props => props.active && `
+  ${props => props.isActive && `
     opacity: 1;
     pointer-events: all;
   `}

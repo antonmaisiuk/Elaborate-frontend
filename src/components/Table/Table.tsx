@@ -6,70 +6,71 @@ import ReactPaginate from 'react-paginate';
 import _ from 'lodash';
 import SortAsc from '../../assets/SortAsc/SortAsc';
 import SortDesc from '../../assets/SortDesc/SortDesc';
-import {useDispatch} from "react-redux";
-import {AppDispatch} from "../../redux/store";
+import {useDispatch, useSelector} from "react-redux";
+import {AppDispatch, RootState} from "../../redux/store";
+import {IBasicInvestment, IBasicInvestmentCat} from "../Investments/Overview/InvestOverview";
+import {setModalCatData, setModalData, setModalType, toggleActive} from "../../redux/modalSlice";
+import {IItem} from "../../redux/itemSlice";
 
-export interface TransactionInter {
+export interface ITransaction {
   id: string,
   name: string,
   category: string,
-  categoryTransactionId: string,
+  categoryId: string,
   comment: string,
   date: string,
   value: number,
 }
 
-export interface TransCategoryInter {
+// export interface ITransactionCat {
+export interface ITransactionCat {
   id: string,
   name?: string,
   index?: string
 }
 
+export type dataMainType = ITransaction | IBasicInvestment;
+export type catMainType = ITransactionCat | IBasicInvestmentCat;
+
 export interface TableInterface {
-  tableData: TransactionInter[],
-  trans: TransactionInter[],
-  transCatData: TransCategoryInter[] | undefined,
+  tableData: dataMainType[],
+  tableCategories: catMainType[],
+  items?: IItem[]
 }
 
 const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
-                                                                      tableData,
-                                                                      transCatData,
-                                                                      trans,
-                                                                      // setTrans,
-                                                                    }) => {
+  tableData,
+  tableCategories,
+  items,
+  }) => {
+  const dispatch = useDispatch<AppDispatch>();
   const itemsPerPage = 10;
-  const [modalType, setModalType] = useState<ModalType>(ModalType.addTransaction);
-  const [modalData, setModalData] = useState<TransactionInter>({
-    id: '',
-    name: '',
-    category: '',
-    categoryTransactionId: '',
-    comment: '',
-    date: new Date().toISOString(),
-    value: 0,
-  });
-  const [modalIsActive, setModalActive] = useState(false);
-  const [sortedData, setSortedData] = useState<TransactionInter[]>([...tableData]);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | null>(null);
+  // const [modalType, setModalType] = useState<ModalType>(ModalType.addTransaction);
+  // const [modalData, setModalData] = useState<dataMainType>({});
+  // const [modalIsActive, setModalActive] = useState(false);
+
+  const [sortedData, setSortedData] = useState<dataMainType[]>([...tableData]);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [sortColumn, setSortColumn] = useState<string | null>(null);
 
   useEffect(() => {
-    setSortedData(trans);
-  }, [trans]);
+    setSortedData(tableData);
+  }, [tableData]);
 
 
 
-  function openDetailsModal(row: TransactionInter) {
-    setModalType(ModalType.transactionDetails);
-    setModalData(row);
-    setModalActive(true);
+  function openDetailsModal(row: dataMainType) {
+    dispatch(toggleActive(true));
+    dispatch(setModalType(ModalType.transactionDetails));
+    dispatch(setModalData(row));
+    dispatch(setModalCatData(tableCategories));
   }
 
   // @ts-ignore
   function Items({currentItems}) {
     return (
       <>
-        {currentItems && currentItems.map((row: TransactionInter) => (
+        {currentItems && currentItems.map((row: ITransaction) => (
           <tr key={row.id} onClick={() => openDetailsModal(row)}>
             <td>{row.name}</td>
             <td>{row.category}</td>
@@ -85,11 +86,11 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
   function PaginatedItems({itemsPerPage}) {
     const [pageCount, setPageCount] = useState<number>(0);
     const [itemOffset, setItemOffset] = useState(0);
-    const [currentItems, setCurrentItems] = useState<TransactionInter[]>([{
+    const [currentItems, setCurrentItems] = useState<dataMainType[]>([{
       id: '',
       name: '',
       category: '',
-      categoryTransactionId: '',
+      categoryId: '',
       comment: '',
       date: new Date().toISOString(),
       value: 0,
@@ -174,7 +175,7 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
     const { value } = event.target;
     if (value){
       const searchResult = tableData.filter((item) => {
-        const {id, categoryTransactionId, ...obj } = item;
+        const {id, categoryId, ...obj } = item;
 
         return _.values(obj).some((val) => new RegExp(value, 'i').test(String(val)))
       });
@@ -187,7 +188,7 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
 
   return (
     <>
-      <FilterHeader setActive={setModalActive} setModalType={setModalType} searchFunc={search}/>
+      <FilterHeader tableCategories={tableCategories} searchFunc={search}/>
       <StyledTableWrapper>
         <StyledTable>
           <thead>
@@ -200,14 +201,8 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
           </thead>
           <PaginatedItems itemsPerPage={itemsPerPage} />
         </StyledTable>
-        <Modal
-          active={modalIsActive}
-          setActive={setModalActive}
-          type={modalType}
-          setModalType={setModalType}
-          modalTransData={modalData}
-          trans={trans}
-          modalTransCatData={transCatData}/>
+
+        <Modal/>
       </StyledTableWrapper>
     </>
   );

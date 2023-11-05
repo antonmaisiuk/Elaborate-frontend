@@ -7,16 +7,19 @@ import {StyledTitle} from "./style";
 import Table from "../../Table/Table";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../../../redux/store";
-import {fetchTransactionsAsync, fetchTransCatsAsync} from "../../../redux/transactionSlice";
+import {fetchBasicInvestsAsync, fetchInvestCatsAsync} from "../../../redux/basicInvestSlice";
+import {fetchItemsAsync} from "../../../redux/itemSlice";
 
 
 const Stocks = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const transactions = useSelector((state: RootState) => state.transactions.transactions);
-  const transCategories = useSelector((state: RootState) => state.transactions.transCategories);
+  const stocks = useSelector((state: RootState) => state.basicInvestments.basicInvests);
+  const items = useSelector((state: RootState) => state.item.items);
+  const investCategories = useSelector((state: RootState) => state.basicInvestments.basicInvestsCategories);
 
   useEffect(() => {
-    // dispatch(fetchTransactionsAsync()).then(() => dispatch(fetchTransCatsAsync()));
+    dispatch(fetchInvestCatsAsync()).then(() => dispatch(fetchBasicInvestsAsync()));
+    dispatch(fetchItemsAsync());
   }, []);
 
   return (
@@ -25,7 +28,7 @@ const Stocks = () => {
       <Content>
         <Header/>
         <StyledTitle>Recent Stocks</StyledTitle>
-        {<Table trans={transactions} tableData={transactions} transCatData={transCategories}/>}
+        <Table tableData={stocks} tableCategories={investCategories}/>
       </Content>
     </Layout>
   );

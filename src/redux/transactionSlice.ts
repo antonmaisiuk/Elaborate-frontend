@@ -1,15 +1,15 @@
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import axios from "axios";
 import {getActualToken} from "../App";
-import {TransactionInter, TransCategoryInter} from "../components/Table/Table";
+import {ITransaction, ITransactionCat} from "../components/Table/Table";
 import moment from "moment/moment";
 import _ from "lodash";
 
 
 interface TransactionState {
-  transactions: TransactionInter[];
-  transCategories: TransCategoryInter[];
-  selectedTransaction: TransactionInter | null;
+  transactions: ITransaction[];
+  transCategories: ITransactionCat[];
+  selectedTransaction: ITransaction | null;
   loading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
   error: string | null; // Ошибка, если что-то пошло не так
 }
@@ -28,7 +28,7 @@ const transactionSlice = createSlice({
   name: 'transactions',
   initialState,
   reducers: {
-    // addTransaction: (state, action: PayloadAction<TransactionInter>) => {
+    // addTransaction: (state, action: PayloadAction<ITransaction>) => {
     //   state.transactions.push(action.payload);
     // },
     // selectTransaction: (state, action: PayloadAction<string>) => {
@@ -36,7 +36,7 @@ const transactionSlice = createSlice({
     //     (transaction) => transaction.id === action.payload
     //   ) || null;
     // },
-    // updateTransaction: (state, action: PayloadAction<TransactionInter>) => {
+    // updateTransaction: (state, action: PayloadAction<ITransaction>) => {
     //   const index = state.transactions.findIndex(
     //     (transaction) => transaction.id === action.payload.id
     //   );
@@ -59,12 +59,15 @@ const transactionSlice = createSlice({
       })
       .addCase(fetchTransactionsAsync.fulfilled, (state, action) => {
         state.loading = 'succeeded';
-        state.transactions = action.payload;
+        state.transactions = _.map(action.payload, (trans) => ({
+          ...trans,
+          categoryId: trans.categoryTransactionId
+        }));
         state.error = null;
       })
       .addCase(addTransactionAsync.fulfilled, (state, action) => {
         state.loading = 'succeeded';
-        action.payload.category = state.transCategories.filter((cat) => cat.id === action.payload.categoryTransactionId)[0].name || 'No category';
+        action.payload.category = state.transCategories.filter((cat) => cat.id === action.payload.categoryId)[0].name || 'No category';
         state.transactions.push(action.payload);
         state.error = null;
       })
@@ -77,14 +80,13 @@ const transactionSlice = createSlice({
           state.transactions[index] = {
             ...action.payload,
             date: moment(action.payload.date).format('DD.MM.YYYY'),
-            category: state.transCategories.filter((cat) => cat.id === action.payload.categoryTransactionId)[0].name || 'No category',
+            category: state.transCategories.filter((cat) => cat.id === action.payload.categoryId)[0].name || 'No category',
           };
         }
         state.error = null;
       })
       .addCase(deleteTransactionAsync.fulfilled, (state, action) => {
         state.loading = 'succeeded';
-        console.log('👉 Delete id: ', action.payload);
         state.transactions = state.transactions.filter(
           (transaction) => transaction.id !== action.payload
         );
@@ -101,11 +103,12 @@ const transactionSlice = createSlice({
       .addCase(fetchTransCatsAsync.fulfilled, (state, action) => {
         state.loading = 'succeeded';
         state.transCategories = action.payload;
+        console.log('👉 Categories is ready: ', state.transCategories);
 
         if (state.transactions.length){
           state.transactions.forEach((trans) => {
             trans.category = state.transCategories.filter((cat) => {
-              return cat.id === trans.categoryTransactionId
+              return cat.id === trans.categoryId
             })[0].name || 'No category'
           });
         } else state.error = 'Error on handling transactions';
@@ -141,7 +144,7 @@ export const fetchTransactionsAsync = createAsyncThunk(
           },
         }
       );
-      return _.forEach(response.data, (trans: TransactionInter) => trans.date = moment(trans.date).format('DD.MM.YYYY'));
+      return _.forEach(response.data, (trans: ITransaction) => trans.date = moment(trans.date).format('DD.MM.YYYY'));
     } catch (error) {
       throw error;
     }
@@ -149,7 +152,7 @@ export const fetchTransactionsAsync = createAsyncThunk(
 
 export const addTransactionAsync = createAsyncThunk(
   'transactions/addTransaction',
-  async (transaction: TransactionInter) => {
+  async (transaction: ITransaction) => {
     const response = await axios.post(
       `${apiPath}/api/user/transaction`,
       JSON.stringify(transaction),
@@ -160,13 +163,14 @@ export const addTransactionAsync = createAsyncThunk(
         },
       });
     response.data.date = moment(transaction.date).format('DD.MM.YYYY');
+    delete response.data.userId;
     return response.data;
   }
 );
 
 export const updateTransactionAsync = createAsyncThunk(
   'transactions/updateTransaction',
-  async (transaction: TransactionInter) => {
+  async (transaction: ITransaction) => {
     console.log('👉 Updated transaction: ', transaction);
     const response = await axios.put(
       `${apiPath}/api/user/transaction/${transaction.id}`,

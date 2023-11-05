@@ -14,6 +14,7 @@ import PrivateRoute from './components/Auth/PrivateRoute/PrivateRoute';
 import Stocks from "./components/Investments/Stocks/Stocks";
 import {Provider} from "react-redux";
 import {store} from './redux/store';
+import StatisticsPage from './components/StatisticsPage/StatisticsPage'
 
 export const getActualToken = () => {
   let token = null;
@@ -48,6 +49,7 @@ const App = () => {
               <Route path="/transactions" element={<Transactions/>}/>
               <Route path="/invest/stocks" element={<Stocks/>}/>
               <Route path="/confirm" element={<EmailConfirm/>}/>
+              <Route path="/statistics" element={<StatisticsPage/>}/>
             </Route>
             <Route path="/" element={
               <GoogleOAuthProvider clientId="106155053534-6d2124m98sto75hhemhjo2fa0339l08n.apps.googleusercontent.com">

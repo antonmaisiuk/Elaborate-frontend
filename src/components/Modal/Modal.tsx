@@ -19,14 +19,16 @@ import {addTransactionAsync, deleteTransactionAsync, updateTransactionAsync} fro
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../../redux/store";
 import {setModalType, toggleActive} from "../../redux/modalSlice";
-import {addBasicInvestsAsync} from "../../redux/basicInvestSlice";
+import {addBasicInvestsAsync, deleteBasicInvestAsync, updateBasicInvestAsync} from "../../redux/basicInvestSlice";
 import {IBasicInvestment} from "../Investments/Overview/InvestOverview";
 
 export enum ModalType {
   addTransaction,
   addBasicInvest,
   editTransaction,
-  transactionDetails
+  editBasicInvest,
+  transactionDetails,
+  basicInvestDetails
 }
 
 const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
@@ -37,17 +39,19 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const modalData = useSelector((state: RootState) => state.modal.modalData);
   const modalCatData = useSelector((state: RootState) => state.modal.modalCatData);
 
-  const items = useSelector((state: RootState) => state.item.items);
+  const items = useSelector((state: RootState) => state.basicInvestments.items);
 
-  const updatedTrans = {...modalData};
+  const updatedItem = {...modalData};
   const [newItem, setNewItem] = useState<dataMainType>({
     id: '',
     name: '',
     category: '',
     categoryId: '',
+    itemId: '',
     comment: '',
     date: new Date().toISOString(),
     value: 0,
+    amount: 0,
   });
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -77,29 +81,29 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
   };
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const {value} = event.target;
+    const {value, name} = event.target;
+    console.log('👉 name: ', name, ' value: ', value);
     setNewItem((prevData) => ({
       ...prevData,
-      categoryId: value,
+      [name]: value,
     }));
-    console.log('👉 New item: ', newItem);
   };
 
   const handleInputEditEvent = (event: React.ChangeEvent<HTMLInputElement>) => {
     const {name, value} = event.target;
 
-    if (name === 'date' && updatedTrans) {
-      updatedTrans[name] = new Date(value).toISOString();
+    if (name === 'date' && updatedItem) {
+      updatedItem[name] = new Date(value).toISOString();
     } else {
       // @ts-ignore
-      updatedTrans[name] = value;
+      updatedItem[name] = value;
     }
   };
 
   const handleSelectEditEvent = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const {name, value} = event.target;
     // @ts-ignore
-    updatedTrans.categoryId = value;
+    updatedItem[name] = value;
   };
 
   const resetForm = () => setNewItem({
@@ -123,8 +127,10 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
   };
   const handleNewBasicInvest = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log('👉 newItem: ', newItem);
 
     if (newItem.categoryId === '') newItem.categoryId = modalCatData[0].id;
+    if ((newItem as IBasicInvestment).itemId === '') (newItem as IBasicInvestment).itemId = items[0].id;
     dispatch(addBasicInvestsAsync(newItem as IBasicInvestment));
 
     dispatch(toggleActive(false));
@@ -139,13 +145,34 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
     setErrorMsg('');
   }
 
+  const handleDeleteBasicInvest = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    dispatch(deleteBasicInvestAsync(modalData.id))
+
+    dispatch(toggleActive(false));
+    setErrorMsg('');
+  }
+
   const handleEditTransaction = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // @ts-ignore
     dispatch(updateTransactionAsync({
-      ...updatedTrans,
-      date: formatDate(updatedTrans.date),
+      ...updatedItem,
+      date: formatDate(updatedItem.date),
+    }))
+
+    dispatch(toggleActive(false));
+    setErrorMsg('');
+  };
+
+  const handleEditBasicInvest = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // @ts-ignore
+    dispatch(updateBasicInvestAsync({
+      ...updatedItem,
+      date: formatDate(updatedItem.date),
     }))
 
     dispatch(toggleActive(false));
@@ -238,7 +265,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
             onChange={handleSelectChange}
             required
           >
-            {/*<option disabled>Investment type</option>*/}
+            <option disabled>Select investment type</option>
             {modalCatData.map((cat) => (
               <option value={cat.id}>{cat.name}</option>
             ))}
@@ -253,7 +280,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
             onChange={handleSelectChange}
             required
           >
-            <option disabled>Index</option>
+            <option disabled>Select investment type if empty</option>
             {
               items.filter((item) => item.categoryInvestmentId === newItem.categoryId).map((item) => (
               <option value={item.id}>{item.name}</option>
@@ -261,15 +288,6 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
             }
           </StyledFormSelect>
         </StyledFormGroup>
-        {/*<StyledFormGroup controlId="date">*/}
-        {/*  <StyledFormLabel>Date</StyledFormLabel>*/}
-        {/*  <StyledFormControl*/}
-        {/*    type="date"*/}
-        {/*    name="date"*/}
-        {/*    defaultValue={new Date().toISOString().split('T')[0]}*/}
-        {/*    onChange={handleInputChange}*/}
-        {/*  />*/}
-        {/*</StyledFormGroup>*/}
         <StyledFormGroup controlId="comment">
           <StyledFormLabel>Comment</StyledFormLabel>
           <StyledFormControl
@@ -280,13 +298,13 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
             onChange={handleInputChange}
           />
         </StyledFormGroup>
-        <StyledFormGroup controlId="value">
+        <StyledFormGroup controlId="amount">
           <StyledFormLabel>Amount</StyledFormLabel>
           <StyledFormControl
             type="number"
-            name="value"
+            name="amount"
             placeholder='12.2'
-            value={newItem.value}
+            value={"amount" in newItem ? newItem.amount : ''}
             onChange={handleInputChange}
             step={0.01}
             required
@@ -300,6 +318,59 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
     )
   }
 
+  function renderBasicInvestDetails() {
+    return (
+      <StyledDetailsWrapper>
+
+        <StyledFormGroup controlId="category">
+          <StyledFormLabel>Investment Type</StyledFormLabel>
+          <StyledItem>
+            {modalData.category}
+          </StyledItem>
+        </StyledFormGroup>
+        <StyledFormGroup controlId="item">
+          <StyledFormLabel>Index</StyledFormLabel>
+          <StyledItem>
+            {(modalData as IBasicInvestment).item}
+          </StyledItem>
+        </StyledFormGroup>
+        <StyledFormGroup controlId="date">
+          <StyledFormLabel>Date</StyledFormLabel>
+          <StyledItem>
+            {modalData.date}
+          </StyledItem>
+        </StyledFormGroup>
+        <StyledFormGroup controlId="comment">
+          <StyledFormLabel>Comment</StyledFormLabel>
+          <StyledItem>
+            {modalData.comment}
+          </StyledItem>
+        </StyledFormGroup>
+        <StyledFormGroup controlId="amount">
+          <StyledFormLabel>Amount</StyledFormLabel>
+          <StyledItem>
+            {(modalData as IBasicInvestment).amount}
+          </StyledItem>
+        </StyledFormGroup>
+        <StyledFormGroup controlId="value">
+          <StyledFormLabel>Total</StyledFormLabel>
+          <StyledItem>
+            {modalData.value}
+          </StyledItem>
+        </StyledFormGroup>
+        <StyledButtonGroup>
+          {errorMsg && <StyledError> {errorMsg} </StyledError>}
+          <StyledButton variant="warning" onClick={() => dispatch(setModalType(ModalType.editBasicInvest))}>
+            Edit
+          </StyledButton>
+          <StyledButton variant="danger" onClick={async (e) => await handleDeleteBasicInvest(e)}>
+            Delete
+          </StyledButton>
+        </StyledButtonGroup>
+
+      </StyledDetailsWrapper>
+    );
+  }
   function renderTransactionDetails() {
     return (
       <StyledDetailsWrapper>
@@ -431,6 +502,77 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
       </StyledForm>
     )
   }
+  function renderBasicInvestEdit() {
+
+    return (
+      <StyledForm onSubmit={async (e: React.FormEvent<HTMLFormElement>) => {
+        await handleEditBasicInvest(e)
+      }}>
+        <StyledFormGroup controlId="categoryId">
+          <StyledFormLabel>Investment Type</StyledFormLabel>
+          <StyledFormSelect
+            type="text"
+            name="categoryId"
+            placeholder='Investment Type'
+            defaultValue={(modalData as IBasicInvestment).categoryId}
+            onChange={handleSelectEditEvent}
+            required
+          >
+            {modalCatData.map((cat) => (
+              <option value={cat.id}>{cat.name}</option>
+            ))}
+          </StyledFormSelect>
+        </StyledFormGroup>
+        <StyledFormGroup controlId="itemId">
+          <StyledFormLabel>Index</StyledFormLabel>
+          <StyledFormSelect
+            type="text"
+            name="itemId"
+            placeholder='Index'
+            defaultValue={(modalData as IBasicInvestment).itemId}
+            onChange={handleSelectEditEvent}
+            required
+          >
+            {items.filter((item) => item.categoryInvestmentId === updatedItem.categoryId).map((item) => (
+              <option value={item.id}>{item.name}</option>
+            ))}
+          </StyledFormSelect>
+        </StyledFormGroup>
+        <StyledFormGroup controlId="comment">
+          <StyledFormLabel>Comment</StyledFormLabel>
+          <StyledFormControl
+            type="text"
+            name="comment"
+            placeholder='More info'
+            defaultValue={modalData.comment}
+            onChange={handleInputEditEvent}
+
+          />
+        </StyledFormGroup>
+        <StyledFormGroup controlId="amount">
+          <StyledFormLabel>Amount</StyledFormLabel>
+          <StyledFormControl
+            type="number"
+            name="amount"
+            placeholder='12.2'
+            defaultValue={(modalData as IBasicInvestment).amount}
+            onChange={handleInputEditEvent}
+            step={0.01}
+            required
+          />
+        </StyledFormGroup>
+        {errorMsg && <StyledError> {errorMsg} </StyledError>}
+        <StyledButtonGroup>
+          <StyledButton variant='success' type='submit'>
+            Save
+          </StyledButton>
+          <StyledButton variant='danger' onClick={() => setModalType(ModalType.basicInvestDetails)}>
+            Cancel
+          </StyledButton>
+        </StyledButtonGroup>
+      </StyledForm>
+    )
+  }
 
   useEffect(() => {
     // @ts-ignore
@@ -452,14 +594,20 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
       case ModalType.addTransaction:
         return renderNewTransactionForm();
 
+      case ModalType.addBasicInvest:
+        return renderNewBasicInvestForm();
+
       case ModalType.editTransaction:
         return renderTransactionEdit();
+
+      case ModalType.editBasicInvest:
+        return renderBasicInvestEdit();
 
       case ModalType.transactionDetails:
         return renderTransactionDetails();
 
-      case ModalType.addBasicInvest:
-        return renderNewBasicInvestForm();
+      case ModalType.basicInvestDetails:
+        return renderBasicInvestDetails();
       default:
         return null;
     }

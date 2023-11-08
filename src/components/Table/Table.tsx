@@ -6,11 +6,10 @@ import ReactPaginate from 'react-paginate';
 import _ from 'lodash';
 import SortAsc from '../../assets/SortAsc/SortAsc';
 import SortDesc from '../../assets/SortDesc/SortDesc';
-import {useDispatch, useSelector} from "react-redux";
-import {AppDispatch, RootState} from "../../redux/store";
-import {IBasicInvestment, IBasicInvestmentCat} from "../Investments/Overview/InvestOverview";
+import {useDispatch} from "react-redux";
+import {AppDispatch} from "../../redux/store";
+import {IBasicInvestment, IBasicInvestmentCat, IItem} from "../Investments/Overview/InvestOverview";
 import {setModalCatData, setModalData, setModalType, toggleActive} from "../../redux/modalSlice";
-import {IItem} from "../../redux/itemSlice";
 
 export interface ITransaction {
   id: string,
@@ -29,25 +28,29 @@ export interface ITransactionCat {
   index?: string
 }
 
+export enum TableType {
+  transactions,
+  investments,
+}
+
 export type dataMainType = ITransaction | IBasicInvestment;
 export type catMainType = ITransactionCat | IBasicInvestmentCat;
 
 export interface TableInterface {
+  tableType: TableType,
   tableData: dataMainType[],
   tableCategories: catMainType[],
   items?: IItem[]
 }
 
 const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
+  tableType,
   tableData,
   tableCategories,
   items,
   }) => {
   const dispatch = useDispatch<AppDispatch>();
   const itemsPerPage = 10;
-  // const [modalType, setModalType] = useState<ModalType>(ModalType.addTransaction);
-  // const [modalData, setModalData] = useState<dataMainType>({});
-  // const [modalIsActive, setModalActive] = useState(false);
 
   const [sortedData, setSortedData] = useState<dataMainType[]>([...tableData]);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -55,13 +58,15 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
 
   useEffect(() => {
     setSortedData(tableData);
+    // console.log('👉 Keys: ', _.keys(tableData[0]));
+    // getHeadersByTableType()
   }, [tableData]);
 
 
 
   function openDetailsModal(row: dataMainType) {
     dispatch(toggleActive(true));
-    dispatch(setModalType(ModalType.transactionDetails));
+    dispatch(setModalType(tableType === TableType.transactions ? ModalType.transactionDetails : ModalType.basicInvestDetails));
     dispatch(setModalData(row));
     dispatch(setModalCatData(tableCategories));
   }
@@ -72,10 +77,7 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
       <>
         {currentItems && currentItems.map((row: ITransaction) => (
           <tr key={row.id} onClick={() => openDetailsModal(row)}>
-            <td>{row.name}</td>
-            <td>{row.category}</td>
-            <td>{row.date}</td>
-            <td>{row.value} zł</td>
+            { getRowByTableType(row)}
           </tr>
         ))}
       </>
@@ -91,6 +93,7 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
       name: '',
       category: '',
       categoryId: '',
+      itemId: '',
       comment: '',
       date: new Date().toISOString(),
       value: 0,
@@ -185,6 +188,57 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
     }
   }
 
+  const getHeadersByTableType = () => {
+    switch (tableType) {
+      case TableType.transactions:
+        return (
+          <>
+            <th onClick={() => handleSort('name')} style={{width: '20%'}}>Title {sortOrder === 'asc' ? <SortAsc/> : <SortDesc/>}</th>
+            <th onClick={() => handleSort('category')}>Category {sortOrder === 'asc' ? <SortAsc/> : <SortDesc/>}</th>
+            <th onClick={() => handleSort('date')}>Date {sortOrder !== 'asc' ? <SortAsc/> : <SortDesc/>}</th>
+            <th onClick={() => handleSort('value')}>Amount {sortOrder !== 'asc' ? <SortAsc/> : <SortDesc/>}</th>
+          </>
+        )
+
+      case TableType.investments:
+        return (
+          <>
+            <th onClick={() => handleSort('itemId')}>Index {sortOrder === 'asc' ? <SortAsc/> : <SortDesc/>}</th>
+            <th onClick={() => handleSort('comment')}>Comment {sortOrder !== 'asc' ? <SortAsc/> : <SortDesc/>}</th>
+            <th onClick={() => handleSort('amount')}>Amount {sortOrder !== 'asc' ? <SortAsc/> : <SortDesc/>}</th>
+            <th onClick={() => handleSort('value')}>Total {sortOrder === 'asc' ? <SortAsc/> : <SortDesc/>}</th>
+          </>
+        )
+      default:
+        return null;
+    }
+  }
+  const getRowByTableType = (row: dataMainType) => {
+    switch (tableType) {
+      case TableType.transactions:
+        return (
+          <>
+            <td>{(row as ITransaction).name}</td>
+            <td>{row.category}</td>
+            <td>{row.date}</td>
+            <td>{row.value} zł</td>
+          </>
+        )
+
+      case TableType.investments:
+        return (
+          <>
+            {/*<td>{row.category}</td>*/}
+            <td>{(row as IBasicInvestment).item}</td>
+            <td>{row.comment}</td>
+            <td>{(row as IBasicInvestment).amount} psc</td>
+            <td>{row.value} $</td>
+          </>
+        )
+      default:
+        return null;
+    }
+  }
 
   return (
     <>
@@ -192,12 +246,7 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
       <StyledTableWrapper>
         <StyledTable>
           <thead>
-          <tr>
-            <th onClick={() => handleSort('name')} style={{width: '30%'}}>Title {sortOrder === 'asc' ? <SortAsc/> : <SortDesc/>}</th>
-            <th onClick={() => handleSort('category')}>Category {sortOrder === 'asc' ? <SortAsc/> : <SortDesc/>}</th>
-            <th onClick={() => handleSort('date')}>Date {sortOrder !== 'asc' ? <SortAsc/> : <SortDesc/>}</th>
-            <th onClick={() => handleSort('value')}>Amount {sortOrder !== 'asc' ? <SortAsc/> : <SortDesc/>}</th>
-          </tr>
+          <tr>{getHeadersByTableType()}</tr>
           </thead>
           <PaginatedItems itemsPerPage={itemsPerPage} />
         </StyledTable>

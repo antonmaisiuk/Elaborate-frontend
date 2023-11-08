@@ -1,15 +1,14 @@
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {AppDispatch} from "./store";
 import axios from "axios";
 import {getActualToken} from "../App";
-import {ITransactionCat} from "../components/Table/Table";
 import moment from "moment/moment";
 import _ from "lodash";
-import {IBasicInvestment, IBasicInvestmentCat} from "../components/Investments/Overview/InvestOverview";
+import {IBasicInvestment, IBasicInvestmentCat, IItem} from "../components/Investments/Overview/InvestOverview";
 
 interface BasicInvestState {
   basicInvests: IBasicInvestment[];
   basicInvestsCategories: IBasicInvestmentCat[];
+  items: IItem[],
   loading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
   error: string | null; // Ошибка, если что-то пошло не так
 }
@@ -17,6 +16,7 @@ interface BasicInvestState {
 const initialState: BasicInvestState = {
   basicInvests: [],
   basicInvestsCategories: [],
+  items: [],
   loading: "idle",
   error: null,
 };
@@ -26,51 +26,66 @@ const apiPath = 'https://localhost:7247';
 const basicInvestSlice = createSlice({
   name: 'basicInvestments',
   initialState,
-  reducers: {},
+  reducers: {
+    setBasicInvests: (state, action: PayloadAction<IBasicInvestment[]>) => {
+      state.basicInvests = action.payload;
+    },
+
+  },
   extraReducers: (builder) => {
     builder
-      // ---------- Basic Investments ----------
+      // ========== Basic Investments ==========
       .addCase(fetchBasicInvestsAsync.pending, (state) => {
         state.loading = 'pending';
       })
       .addCase(fetchBasicInvestsAsync.fulfilled, (state, action) => {
         state.loading = 'succeeded';
-        state.basicInvests = action.payload;
+
+        state.basicInvests = _.map(action.payload, (invest) => ({
+            id: invest.id,
+            item: state.items.filter((item) => item.id === invest.itemId)[0].name || 'No index',
+            itemId: invest.itemId,
+            category: '',
+            categoryId: invest.categoryId,
+            comment: invest.comment,
+            date: moment(invest.dateOfCreated).format('DD.MM.YYYY'),
+            amount: invest.amount,
+            value: 0,
+          }
+        ));
         state.error = null;
       })
       .addCase(addBasicInvestsAsync.fulfilled, (state, action) => {
         state.loading = 'succeeded';
         action.payload.category = state.basicInvestsCategories.filter((cat) => cat.id === action.payload.categoryId)[0].name || 'No category';
-        state.basicInvests.push(action.payload);
+        state.basicInvests = action.payload;
         state.error = null;
       })
-      // .addCase(updateTransactionAsync.fulfilled, (state, action) => {
-      //   state.loading = 'succeeded';
-      //   const index = state.basicInvestments.findIndex(
-      //     (transaction) => transaction.id === action.payload.id
-      //   );
-      //   if (index !== -1) {
-      //     state.basicInvestments[index] = {
-      //       ...action.payload,
-      //       date: moment(action.payload.date).format('DD.MM.YYYY'),
-      //       category: state.transCategories.filter((cat) => cat.id === action.payload.categoryId)[0].name || 'No category',
-      //     };
-      //   }
-      //   state.error = null;
-      // })
-      // .addCase(deleteTransactionAsync.fulfilled, (state, action) => {
-      //   state.loading = 'succeeded';
-      //   console.log('👉 Delete id: ', action.payload);
-      //   state.basicInvestments = state.basicInvestments.filter(
-      //     (transaction) => transaction.id !== action.payload
-      //   );
-      //   state.error = null;
-      // })
-      // .addCase(fetchTransactionsAsync.rejected, (state, action) => {
-      //   state.loading = 'failed';
-      //   state.error = action.error.message || 'An error occurred.';
-      // })
-      // // ---------- Transaction Categories ----------
+      .addCase(updateBasicInvestAsync.fulfilled, (state, action) => {
+        state.loading = 'succeeded';
+        const index = state.basicInvests.findIndex(
+          (invest) => invest.id === action.payload.id
+        );
+        if (index !== -1) {
+          state.basicInvests[index] = {
+            ...action.payload,
+            date: moment(action.payload.date).format('DD.MM.YYYY'),
+            category: state.basicInvestsCategories.filter((cat) => cat.id === action.payload.categoryId)[0].name || 'No category',
+          };
+        }
+        state.error = null;
+      })
+      .addCase(deleteBasicInvestAsync.fulfilled, (state, action) => {
+        state.loading = 'succeeded';
+        state.basicInvests = state.basicInvests.filter(
+          (invest) => invest.id !== action.payload
+        );
+        state.error = null;
+      })
+      // ==============================
+
+      // ========== Invest Categories ==========
+
       .addCase(fetchInvestCatsAsync.pending, (state) => {
         state.loading = 'pending';
       })
@@ -78,24 +93,39 @@ const basicInvestSlice = createSlice({
         state.loading = 'succeeded';
         state.basicInvestsCategories = action.payload;
 
-        if (state.basicInvestsCategories.length){
+        if (state.basicInvests.length) {
           state.basicInvests.forEach((invest) => {
-            invest.category = state.basicInvestsCategories.filter((cat) => {
-              return cat.id === invest.categoryId
-            })[0].name || 'No category'
+            invest.category = state.basicInvestsCategories.filter((cat) => cat.id === invest.categoryId)[0].name || 'No category';
           });
-        } else state.error = 'Error on handling basicInvestments';
-
+        } else {
+          state.error = 'Error on handling basicInvestments';
+        }
         state.error = null;
       })
       .addCase(fetchInvestCatsAsync.rejected, (state, action) => {
         state.loading = 'failed';
         state.error = action.error.message || 'An error occurred.';
-      });
+      })
+      // ==============================
+
+
+      // ========== Items ==========
+      .addCase(fetchItemsAsync.pending, (state) => {
+        state.loading = 'pending';
+      })
+      .addCase(fetchItemsAsync.rejected, (state, action) => {
+        state.loading = 'failed';
+        state.error = action.error.message || 'An error occurred.';
+      })
+      .addCase(fetchItemsAsync.fulfilled, (state, action) => {
+        state.loading = 'succeeded';
+        state.items = action.payload;
+      })
   },
 });
 
 export const {
+  setBasicInvests
 } = basicInvestSlice.actions;
 
 export default basicInvestSlice.reducer;
@@ -113,7 +143,8 @@ export const fetchBasicInvestsAsync = createAsyncThunk(
           },
         }
       );
-      return _.forEach(response.data, (invest: IBasicInvestment) => invest.date = moment(invest.date).format('DD.MM.YYYY'));
+      // return _.forEach(response.data, (invest: IBasicInvestment) => invest.date = moment(invest.date).format('DD.MM.YYYY'));
+      return response.data;
     } catch (error) {
       throw error;
     }
@@ -124,7 +155,13 @@ export const addBasicInvestsAsync = createAsyncThunk(
   async (invest: IBasicInvestment) => {
     const response = await axios.post(
       `${apiPath}/api/user/basicinvestment`,
-      JSON.stringify(invest),
+      JSON.stringify({
+        dateOfCreated: invest.date,
+        comment: invest.comment,
+        categoryId: invest.categoryId,
+        itemId: invest.itemId,
+        amount: invest.amount,
+      }),
       {
         headers: {
           accept: 'application/json',
@@ -137,13 +174,18 @@ export const addBasicInvestsAsync = createAsyncThunk(
   }
 );
 
-export const updateTransactionAsync = createAsyncThunk(
-  'basicInvestments/updateTransaction',
-  async (transaction: IBasicInvestment) => {
-    console.log('👉 Updated transaction: ', transaction);
-    const response = await axios.put(
-      `${apiPath}/api/user/transaction/${transaction.id}`,
-      JSON.stringify(transaction),
+export const updateBasicInvestAsync = createAsyncThunk(
+  'basicInvestments/updateBasicInvest',
+  async (invest: IBasicInvestment) => {
+    console.log('👉 Updated transaction: ', invest);
+    await axios.put(
+      `${apiPath}/api/user/basicinvestment/${invest.id}`,
+      JSON.stringify({
+        comment: invest.comment,
+        categoryId: invest.categoryId,
+        itemId: invest.itemId,
+        amount: invest.amount
+      }),
       {
         headers: {
           accept: 'application/json',
@@ -152,15 +194,15 @@ export const updateTransactionAsync = createAsyncThunk(
         },
       }
     );
-    return transaction;
+    return invest;
   }
 );
 
-export const deleteTransactionAsync = createAsyncThunk(
-  'basicInvestments/deleteTransaction',
-  async (transactionId: string) => {
+export const deleteBasicInvestAsync = createAsyncThunk(
+  'basicInvestments/deleteBasicInvest',
+  async (investId: string) => {
     await axios.delete(
-      `${apiPath}/api/user/transaction/${transactionId}`,
+      `${apiPath}/api/user/basicinvestment/${investId}`,
       {
         headers: {
           accept: 'application/json',
@@ -169,7 +211,7 @@ export const deleteTransactionAsync = createAsyncThunk(
         },
       }
     );
-    return transactionId;
+    return investId;
   }
 );
 
@@ -187,6 +229,26 @@ export const fetchInvestCatsAsync = createAsyncThunk(
           },
         }
       );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  });
+
+export const fetchItemsAsync = createAsyncThunk(
+  'items/fetchItems',
+  async () => {
+    try {
+      const response = await axios.get(
+        `${apiPath}/api/item`,
+        {
+          headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${getActualToken()}`
+          },
+        }
+      );
+
       return response.data;
     } catch (error) {
       throw error;

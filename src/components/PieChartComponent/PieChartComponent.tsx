@@ -1,10 +1,10 @@
 // PieChartComponent.tsx
 import React from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
-import { TransactionInter } from '../Table/Table'; // Assuming you have this exported from another file
+import { ITransaction } from '../Table/Table'; // Assuming you have this exported from another file
 
 interface PieChartComponentProps {
-	transactions: TransactionInter[];
+	transactions: ITransaction[];
 }
 
 const COLORS = [
@@ -33,7 +33,7 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({
 }) => {
 	// Prepare the data for recharts
 	const data = transactions.reduce(
-		(acc: { name: string; value: number }[], transaction: TransactionInter) => {
+		(acc: { name: string; value: number }[], transaction: ITransaction) => {
 			const existingCategory = acc.find(
 				(item) => item.name === transaction.category
 			);

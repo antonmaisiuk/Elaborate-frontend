@@ -10,7 +10,7 @@ import {
 	Legend,
 	ResponsiveContainer,
 } from 'recharts';
-import { TransactionInter } from '../Table/Table'; // Assuming you have this exported from another file
+import { ITransaction } from '../Table/Table'; // Assuming you have this exported from another file
 
 interface ChartData {
 	date: string;
@@ -18,7 +18,7 @@ interface ChartData {
 }
 
 interface TransactionTimeChartProps {
-	transactions: TransactionInter[];
+	transactions: ITransaction[];
 	period: 'month' | 'year' | 'all';
 }
 
@@ -27,22 +27,22 @@ const TransactionTimeChart: React.FC<TransactionTimeChartProps> = ({
     transactions,
   }) => {
     const summarizeTransactions = (
-      transactions: TransactionInter[]
+      transactions: ITransaction[]
     ): ChartData[] => {
       // Aggregate transactions by date
       const summary = new Map<string, number>();
-  
+
       transactions.forEach((transaction) => {
         if (!transaction.date) return; // Skip if date is undefined or null
-  
+
         // Convert "DD.MM.YYYY" to "YYYY-MM-DD" for proper date parsing
         const parts = transaction.date.split('.');
         const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-  
+
         const value = summary.get(formattedDate) || 0;
         summary.set(formattedDate, value + transaction.value);
       });
-  
+
       // Convert the map to an array and sort by the converted date
       const dataArray = Array.from(summary, ([date, totalValue]) => ({
         date,
@@ -51,7 +51,7 @@ const TransactionTimeChart: React.FC<TransactionTimeChartProps> = ({
         // Convert to Date object and get time in milliseconds for comparison
         return new Date(a.date).getTime() - new Date(b.date).getTime();
       });
-  
+
       return dataArray;
     };
 

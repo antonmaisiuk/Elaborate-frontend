@@ -8,7 +8,7 @@ import {
 } from '../../redux/transactionSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux/store';
-import { TransactionInter } from '../Table/Table';
+import { ITransaction } from '../Table/Table';
 
 const StatisticsPage: React.FC = () => {
 	const dispatch = useDispatch<AppDispatch>();
@@ -31,7 +31,7 @@ const StatisticsPage: React.FC = () => {
 
 // Filter transactions based on the selected period
 const filterTransactionsByPeriod = (
-	transactions: TransactionInter[],
+	transactions: ITransaction[],
 	period: 'month' | 'year' | 'all'
   ) => {
 	const now = new Date();
@@ -39,7 +39,7 @@ const filterTransactionsByPeriod = (
 	  // Convert "DD.MM.YYYY" to a Date object
 	  const parts = transaction.date.split('.');
 	  const transactionDate = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
-  
+
 	  switch (period) {
 		case 'month':
 		  return (

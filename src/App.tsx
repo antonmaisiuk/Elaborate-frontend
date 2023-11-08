@@ -1,20 +1,20 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 // import styled from 'styled-components';
 import Registration from './components/Auth/Registration/Registration';
 import Login from './components/Auth/Login/Login';
-import styled from 'styled-components';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {BrowserRouter as Router, Route, Routes, useNavigate} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import {GoogleOAuthProvider} from "@react-oauth/google";
 import ForgotPassword from "./components/Auth/ForgotPassword/ForgotPassword";
 import Overview from "./components/Overview/Overview";
 import EmailConfirm from "./components/Auth/EmailConfirm/EmailConfirm";
 import Transactions from "./components/Transactions/Transactions";
 import PrivateRoute from './components/Auth/PrivateRoute/PrivateRoute';
-import Stocks from "./components/Investments/Stocks/Stocks";
+import BasicInvestments from "./components/Investments/BasicInvestments/BasicInvestments";
 import {Provider} from "react-redux";
 import {store} from './redux/store';
 import StatisticsPage from './components/StatisticsPage/StatisticsPage'
+import {BasicInvestmentType} from "./components/Investments/Overview/InvestOverview";
 
 export const getActualToken = () => {
   let token = null;
@@ -47,7 +47,9 @@ const App = () => {
             <Route element={<PrivateRoute/>}>
               <Route path="/overview" element={<Overview/>}/>
               <Route path="/transactions" element={<Transactions/>}/>
-              <Route path="/invest/stocks" element={<Stocks/>}/>
+              <Route path="/invest/stocks" element={<BasicInvestments basicInvestType={BasicInvestmentType.stocks}/>}/>
+              <Route path="/invest/metals" element={<BasicInvestments basicInvestType={BasicInvestmentType.metals}/>}/>
+              <Route path="/invest/crypto" element={<BasicInvestments basicInvestType={BasicInvestmentType.crypto}/>}/>
               <Route path="/confirm" element={<EmailConfirm/>}/>
               <Route path="/statistics" element={<StatisticsPage/>}/>
             </Route>

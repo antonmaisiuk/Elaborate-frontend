@@ -135,7 +135,7 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
             containerClassName="pagination"
             activeClassName="active"
             renderOnZeroPageCount={ () =>
-            <p>No transactions...</p>
+            <p>No {tableType === TableType.transactions ? 'transactions' : 'investments'}...</p>
             }
           />
         </div>

@@ -495,7 +495,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
           <StyledButton variant='success' type='submit'>
             Save
           </StyledButton>
-          <StyledButton variant='danger' onClick={() => setModalType(ModalType.transactionDetails)}>
+          <StyledButton variant='danger' onClick={() => dispatch(setModalType(ModalType.transactionDetails))}>
             Cancel
           </StyledButton>
         </StyledButtonGroup>
@@ -566,7 +566,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
           <StyledButton variant='success' type='submit'>
             Save
           </StyledButton>
-          <StyledButton variant='danger' onClick={() => setModalType(ModalType.basicInvestDetails)}>
+          <StyledButton variant='danger' onClick={() => dispatch(setModalType(ModalType.basicInvestDetails))}>
             Cancel
           </StyledButton>
         </StyledButtonGroup>
@@ -595,6 +595,9 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         return renderNewTransactionForm();
 
       case ModalType.addBasicInvest:
+        // newItem.categoryId = modalCatData.length ? modalCatData[0].id : '';
+        // (newItem as IBasicInvestment).itemId = items.filter((item) => item.categoryInvestmentId === newItem.categoryId)[0].id;
+        // console.log('👉 newItem: ', newItem);
         return renderNewBasicInvestForm();
 
       case ModalType.editTransaction:

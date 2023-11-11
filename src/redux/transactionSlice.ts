@@ -22,7 +22,7 @@ const initialState: TransactionState = {
   error: null,
 };
 
-const apiPath = 'https://localhost:7247';
+const backendApi = 'https://localhost:7247';
 
 const transactionSlice = createSlice({
   name: 'transactions',
@@ -65,6 +65,11 @@ const transactionSlice = createSlice({
         }));
         state.error = null;
       })
+      .addCase(fetchTransactionsAsync.rejected, (state, action) => {
+        state.loading = 'failed';
+        state.error = action.error.message || 'An error occurred.';
+      })
+
       .addCase(addTransactionAsync.fulfilled, (state, action) => {
         state.loading = 'succeeded';
         action.payload.category = state.transCategories.filter((cat) => cat.id === action.payload.categoryId)[0].name || 'No category';
@@ -92,10 +97,6 @@ const transactionSlice = createSlice({
         );
         state.error = null;
       })
-      .addCase(fetchTransactionsAsync.rejected, (state, action) => {
-        state.loading = 'failed';
-        state.error = action.error.message || 'An error occurred.';
-      })
       // ---------- Transaction Categories ----------
       .addCase(fetchTransCatsAsync.pending, (state) => {
         state.loading = 'pending';
@@ -103,7 +104,6 @@ const transactionSlice = createSlice({
       .addCase(fetchTransCatsAsync.fulfilled, (state, action) => {
         state.loading = 'succeeded';
         state.transCategories = action.payload;
-        console.log('👉 Categories is ready: ', state.transCategories);
 
         if (state.transactions.length){
           state.transactions.forEach((trans) => {
@@ -136,7 +136,7 @@ export const fetchTransactionsAsync = createAsyncThunk(
   async () => {
     try {
       const response = await axios.get(
-        `${apiPath}/api/user/transaction`,
+        `${backendApi}/api/user/transaction`,
         {
           headers: {
             accept: 'application/json',
@@ -154,7 +154,7 @@ export const addTransactionAsync = createAsyncThunk(
   'transactions/addTransaction',
   async (transaction: ITransaction) => {
     const response = await axios.post(
-      `${apiPath}/api/user/transaction`,
+      `${backendApi}/api/user/transaction`,
       JSON.stringify(transaction),
       {
         headers: {
@@ -173,8 +173,14 @@ export const updateTransactionAsync = createAsyncThunk(
   async (transaction: ITransaction) => {
     console.log('👉 Updated transaction: ', transaction);
     const response = await axios.put(
-      `${apiPath}/api/user/transaction/${transaction.id}`,
-      JSON.stringify(transaction),
+      `${backendApi}/api/user/transaction/${transaction.id}`,
+      JSON.stringify({
+        name: transaction.name,
+        comment: transaction.comment,
+        date: transaction.date,
+        value: transaction.value,
+        categoryTransactionId: transaction.categoryId
+      }),
       {
         headers: {
           'Content-Type': 'application/json',
@@ -190,7 +196,7 @@ export const deleteTransactionAsync = createAsyncThunk(
   'transactions/deleteTransaction',
   async (transactionId: string) => {
     await axios.delete(
-      `${apiPath}/api/user/transaction/${transactionId}`,
+      `${backendApi}/api/user/transaction/${transactionId}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -207,7 +213,7 @@ export const fetchTransCatsAsync = createAsyncThunk(
   async () => {
     try {
       const response = await axios.get(
-        `${apiPath}/api/transaction-category`,
+        `${backendApi}/api/transaction-category`,
         {
           headers: {
             accept: 'application/json',

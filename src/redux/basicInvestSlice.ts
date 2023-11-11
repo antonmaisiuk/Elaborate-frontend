@@ -4,6 +4,7 @@ import {getActualToken} from "../App";
 import moment from "moment/moment";
 import _ from "lodash";
 import {IBasicInvestment, IBasicInvestmentCat, IItem} from "../components/Investments/Overview/InvestOverview";
+import {RootState} from "./store";
 
 interface BasicInvestState {
   basicInvests: IBasicInvestment[];
@@ -17,21 +18,25 @@ const initialState: BasicInvestState = {
   basicInvests: [],
   basicInvestsCategories: [],
   items: [],
-  loading: "idle",
+  loading: 'idle',
   error: null,
 };
+// https://rapidapi.com/lbraciszewski/api/coinpaprika1 - crypto
+// https://rapidapi.com/amansharma2910/api/realstonks - stocks
+const backendApi = 'https://localhost:7247';
 
-const apiPath = 'https://localhost:7247';
+const key = 'dce75a2233mshd18a7fa0853e340p159359jsn3d6895c9690f';
+const metalKey = '407ce20e80bde2fd714142bc8b5047bb';
+
+const stocksApi = 'https://realstonks.p.rapidapi.com/';
+const cryptoApi = 'https://coinpaprika1.p.rapidapi.com/coins/';
+const metalsApi = `https://api.currencybeacon.com/v1/latest?api_key=${metalKey}&base=`;
+
 
 const basicInvestSlice = createSlice({
   name: 'basicInvestments',
   initialState,
-  reducers: {
-    setBasicInvests: (state, action: PayloadAction<IBasicInvestment[]>) => {
-      state.basicInvests = action.payload;
-    },
-
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       // ========== Basic Investments ==========
@@ -43,22 +48,24 @@ const basicInvestSlice = createSlice({
 
         state.basicInvests = _.map(action.payload, (invest) => ({
             id: invest.id,
-            item: state.items.filter((item) => item.id === invest.itemId)[0].name || 'No index',
+            item: state.items ? state.items.filter((item) => item.id === invest.itemId)[0].name : 'No index',
             itemId: invest.itemId,
             category: '',
             categoryId: invest.categoryId,
             comment: invest.comment,
             date: moment(invest.dateOfCreated).format('DD.MM.YYYY'),
             amount: invest.amount,
-            value: 0,
-          }
+            value: invest.value,
+          } as IBasicInvestment
         ));
+
         state.error = null;
       })
+
       .addCase(addBasicInvestsAsync.fulfilled, (state, action) => {
         state.loading = 'succeeded';
-        action.payload.category = state.basicInvestsCategories.filter((cat) => cat.id === action.payload.categoryId)[0].name || 'No category';
-        state.basicInvests = action.payload;
+
+        state.basicInvests.push(action.payload);
         state.error = null;
       })
       .addCase(updateBasicInvestAsync.fulfilled, (state, action) => {
@@ -66,10 +73,12 @@ const basicInvestSlice = createSlice({
         const index = state.basicInvests.findIndex(
           (invest) => invest.id === action.payload.id
         );
+        console.log('👉 Updated item: ', action.payload);
         if (index !== -1) {
           state.basicInvests[index] = {
             ...action.payload,
             date: moment(action.payload.date).format('DD.MM.YYYY'),
+            item: state.items ? state.items.filter((item) => item.id === action.payload.itemId)[0].name : 'No index',
             category: state.basicInvestsCategories.filter((cat) => cat.id === action.payload.categoryId)[0].name || 'No category',
           };
         }
@@ -124,18 +133,17 @@ const basicInvestSlice = createSlice({
   },
 });
 
-export const {
-  setBasicInvests
-} = basicInvestSlice.actions;
+export const {} = basicInvestSlice.actions;
 
 export default basicInvestSlice.reducer;
 
 export const fetchBasicInvestsAsync = createAsyncThunk(
   'basicInvestments/fetchBasicInvests',
-  async () => {
+  async (_,thunkAPI: any) => {
     try {
+      const state = thunkAPI.getState();
       const response = await axios.get(
-        `${apiPath}/api/user/basicinvestment`,
+        `${backendApi}/api/user/basicinvestment`,
         {
           headers: {
             accept: 'application/json',
@@ -143,8 +151,12 @@ export const fetchBasicInvestsAsync = createAsyncThunk(
           },
         }
       );
-      // return _.forEach(response.data, (invest: IBasicInvestment) => invest.date = moment(invest.date).format('DD.MM.YYYY'));
-      return response.data;
+
+      return Promise.all(response.data.map(async (invest: IBasicInvestment) =>({
+        ...invest,
+        value: invest.amount * await getPrice(state.basicInvestments.items.filter((item: IItem) => item.id === invest.itemId)[0].index, invest.categoryId),
+      })));
+      // return response.data;
     } catch (error) {
       throw error;
     }
@@ -152,9 +164,15 @@ export const fetchBasicInvestsAsync = createAsyncThunk(
 
 export const addBasicInvestsAsync = createAsyncThunk(
   'basicInvestments/addBasicInvests',
-  async (invest: IBasicInvestment) => {
+  async (invest: IBasicInvestment, thunkAPI: any) => {
+    const state = thunkAPI.getState();
+    const invests = state.basicInvestments.basicInvests as IBasicInvestment[];
+    const items = state.basicInvestments.items;
+    const categories = state.basicInvestments.basicInvestsCategories as IBasicInvestmentCat[];
+
+    console.log('👉 new invest: ', invest);
     const response = await axios.post(
-      `${apiPath}/api/user/basicinvestment`,
+      `${backendApi}/api/user/basicinvestment`,
       JSON.stringify({
         dateOfCreated: invest.date,
         comment: invest.comment,
@@ -169,17 +187,38 @@ export const addBasicInvestsAsync = createAsyncThunk(
           Authorization: `Bearer ${getActualToken()}`
         },
       });
-    response.data.date = moment(invest.date).format('DD.MM.YYYY');
-    return response.data;
+
+    const newInvest = response.data as IBasicInvestment;
+    const existedItem = invests.filter((invest) => invest.itemId === newInvest.itemId);
+
+    if (existedItem.length){
+      const newAmount = existedItem[0].amount + newInvest.amount;
+
+      return {
+        ...newInvest,
+        date: moment(newInvest.date).format('DD.MM.YYYY'),
+        comment: newInvest.comment,
+        amount: newAmount,
+        value: newAmount * await getPrice(items.filter((item: IItem) => item.id === newInvest.itemId)[0].index, newInvest.categoryId)
+      }
+    } else {
+      console.log('👉 categories: ', categories);
+      return {
+        ...newInvest,
+        date: moment(newInvest.date).format('DD.MM.YYYY'),
+        category: categories.filter((cat) => cat.id === newInvest.categoryId)[0].name || 'No category'
+      }
+    }
   }
 );
 
 export const updateBasicInvestAsync = createAsyncThunk(
   'basicInvestments/updateBasicInvest',
-  async (invest: IBasicInvestment) => {
-    console.log('👉 Updated transaction: ', invest);
+  async (invest: IBasicInvestment, thunkAPI: any) => {
+    const state = thunkAPI.getState();
+
     await axios.put(
-      `${apiPath}/api/user/basicinvestment/${invest.id}`,
+      `${backendApi}/api/user/basicinvestment/${invest.id}`,
       JSON.stringify({
         comment: invest.comment,
         categoryId: invest.categoryId,
@@ -194,7 +233,11 @@ export const updateBasicInvestAsync = createAsyncThunk(
         },
       }
     );
-    return invest;
+    return {
+      ...invest,
+      value: invest.amount * await getPrice(state.basicInvestments.items.filter((item: IItem) => item.id === invest.itemId)[0].index, invest.categoryId),
+
+    };
   }
 );
 
@@ -202,7 +245,7 @@ export const deleteBasicInvestAsync = createAsyncThunk(
   'basicInvestments/deleteBasicInvest',
   async (investId: string) => {
     await axios.delete(
-      `${apiPath}/api/user/basicinvestment/${investId}`,
+      `${backendApi}/api/user/basicinvestment/${investId}`,
       {
         headers: {
           accept: 'application/json',
@@ -220,7 +263,7 @@ export const fetchInvestCatsAsync = createAsyncThunk(
   async () => {
     try {
       const response = await axios.get(
-        `${apiPath}/api/category-investment`,
+        `${backendApi}/api/category-investment`,
         {
           headers: {
             accept: 'application/json',
@@ -240,7 +283,7 @@ export const fetchItemsAsync = createAsyncThunk(
   async () => {
     try {
       const response = await axios.get(
-        `${apiPath}/api/item`,
+        `${backendApi}/api/item`,
         {
           headers: {
             accept: 'application/json',
@@ -254,3 +297,58 @@ export const fetchItemsAsync = createAsyncThunk(
       throw error;
     }
   });
+
+export const getPrice = async (index: string, categoryId: string) => {
+    try {
+      let response;
+      switch (categoryId) {
+        case '2530f9f3-5dc5-4d7c-9233-3df8705bd4e2': // metals
+          response = await axios.get(
+            `${metalsApi}${index}&symbols=USD`,
+            {
+              headers: {
+                accept: 'application/json',
+              },
+            }
+          );
+          const { rates: { USD: metalsPrice }} = response.data;
+
+          return _.round(metalsPrice, 2) || 0;
+        case '029e8ff3-8aca-4b2e-a938-7a1e97fb9c8d': // crypto
+          response = await axios.get(
+            `${cryptoApi}${index}/ohlcv/latest`,
+            {
+              headers: {
+                accept: 'application/json',
+                'X-RapidAPI-Key': key,
+                'X-RapidAPI-Host': 'coinpaprika1.p.rapidapi.com'
+              },
+            }
+          );
+          const { open: cryptoPrice } = response.data[0];
+
+          return _.round(cryptoPrice, 2) || 0;
+        case '59631964-1cf5-41b3-9e33-303d39033590': // stocks
+          response = await axios.get(
+            `${stocksApi}${index}`,
+            {
+              headers: {
+                accept: 'application/json',
+                'X-RapidAPI-Key': key,
+                'X-RapidAPI-Host': 'realstonks.p.rapidapi.com'
+              },
+            }
+          );
+
+          const {price: stockPrice} = response.data;
+
+          return _.round(stockPrice, 2) || 0;
+        default:
+          return 0;
+      }
+
+    } catch (error) {
+      console.log('👉 Error: ', error);
+      throw error;
+    }
+  };

@@ -1,5 +1,4 @@
 import React from 'react';
-// import styled from 'styled-components';
 import Registration from './components/Auth/Registration/Registration';
 import Login from './components/Auth/Login/Login';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -51,7 +50,7 @@ const App = () => {
               <Route path="/invest/metals" element={<BasicInvestments basicInvestType={BasicInvestmentType.metals}/>}/>
               <Route path="/invest/crypto" element={<BasicInvestments basicInvestType={BasicInvestmentType.crypto}/>}/>
               <Route path="/confirm" element={<EmailConfirm/>}/>
-              <Route path="/statistics" element={<StatisticsPage/>}/>
+              <Route path="/stats" element={<StatisticsPage/>}/>
             </Route>
             <Route path="/" element={
               <GoogleOAuthProvider clientId="106155053534-6d2124m98sto75hhemhjo2fa0339l08n.apps.googleusercontent.com">

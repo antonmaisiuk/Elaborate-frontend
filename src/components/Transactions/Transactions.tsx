@@ -14,9 +14,12 @@ const Transactions = () => {
   const dispatch = useDispatch<AppDispatch>();
   const transactions = useSelector((state: RootState) => state.transactions.transactions);
   const transCategories = useSelector((state: RootState) => state.transactions.transCategories);
+  const loadingStatus = useSelector((state: RootState) => state.transactions.loading);
 
   useEffect(() => {
-    dispatch(fetchTransactionsAsync()).then(() => dispatch(fetchTransCatsAsync()));
+    if (loadingStatus !== 'succeeded'){
+      dispatch(fetchTransactionsAsync()).then(() => dispatch(fetchTransCatsAsync()));
+    }
   }, []);
 
   return (

@@ -65,10 +65,10 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
 
 
   function openDetailsModal(row: dataMainType) {
-    dispatch(toggleActive(true));
     dispatch(setModalType(tableType === TableType.transactions ? ModalType.transactionDetails : ModalType.basicInvestDetails));
     dispatch(setModalData(row));
     dispatch(setModalCatData(tableCategories));
+    dispatch(toggleActive(true));
   }
 
   // @ts-ignore
@@ -115,7 +115,7 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
         <tbody>
           <Items currentItems={currentItems} />
         </tbody>
-        <div>
+        {/*<div>*/}
           <ReactPaginate
             nextLabel="Next"
             onPageChange={handlePageClick}
@@ -135,10 +135,10 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
             containerClassName="pagination"
             activeClassName="active"
             renderOnZeroPageCount={ () =>
-            <p>No {tableType === TableType.transactions ? 'transactions' : 'investments'}...</p>
+            <p>Sorry, but you don't have {tableType === TableType.transactions ? 'transactions' : 'investments'}...</p>
             }
           />
-        </div>
+        {/*</div>*/}
       </>
     );
   }
@@ -231,7 +231,7 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
             {/*<td>{row.category}</td>*/}
             <td>{(row as IBasicInvestment).item}</td>
             <td>{row.comment}</td>
-            <td>{(row as IBasicInvestment).amount} psc</td>
+            <td>{(row as IBasicInvestment).amount} pcs</td>
             <td>{row.value} $</td>
           </>
         )

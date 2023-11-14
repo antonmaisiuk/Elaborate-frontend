@@ -12,8 +12,9 @@ import PrivateRoute from './components/Auth/PrivateRoute/PrivateRoute';
 import BasicInvestments from "./components/Investments/BasicInvestments/BasicInvestments";
 import {Provider} from "react-redux";
 import {store} from './redux/store';
-import StatisticsPage from './components/StatisticsPage/StatisticsPage'
+import Statistics from './components/Statistics/Statistics'
 import {BasicInvestmentType} from "./components/Investments/Overview/InvestOverview";
+import SetNewPassword from "./components/Auth/SetNewPassword/SetNewPassword";
 
 export const getActualToken = () => {
   let token = null;
@@ -43,6 +44,7 @@ const App = () => {
               </GoogleOAuthProvider>
             }/>
             <Route path="/forgot" element={<ForgotPassword />}/>
+            <Route path="/api/Authentication/reset-password" element={<SetNewPassword />}/>
             <Route element={<PrivateRoute/>}>
               <Route path="/overview" element={<Overview/>}/>
               <Route path="/transactions" element={<Transactions/>}/>
@@ -50,7 +52,7 @@ const App = () => {
               <Route path="/invest/metals" element={<BasicInvestments basicInvestType={BasicInvestmentType.metals}/>}/>
               <Route path="/invest/crypto" element={<BasicInvestments basicInvestType={BasicInvestmentType.crypto}/>}/>
               <Route path="/confirm" element={<EmailConfirm/>}/>
-              <Route path="/stats" element={<StatisticsPage/>}/>
+              <Route path="/stats" element={<Statistics/>}/>
             </Route>
             <Route path="/" element={
               <GoogleOAuthProvider clientId="106155053534-6d2124m98sto75hhemhjo2fa0339l08n.apps.googleusercontent.com">

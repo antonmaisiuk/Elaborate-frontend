@@ -10,10 +10,12 @@ import {
 } from "../styled";
 import {CredentialResponse, GoogleLogin} from "@react-oauth/google";
 import {useNavigate} from "react-router-dom";
+import {ColorRing} from "react-loader-spinner";
 
 const Registration = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [spinnerActive, setSpinnerActive] = useState(false);
   const [formData, setFormData] = useState({
     Username: '',
     Email: '',
@@ -37,7 +39,11 @@ const Registration = () => {
   };
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
+
+    setErrorMsg('');
+    setSuccessMsg('');
+    setSpinnerActive(true);
 
     const response = await fetch(`https://localhost:7247/api/Authentication`,
       {
@@ -49,13 +55,13 @@ const Registration = () => {
       })
 
     if (response.ok) {
+      setSpinnerActive(false);
       setSuccessMsg('Registration completed successfully');
-      setTimeout(() => navigate('/login'), 5e3)
+      setTimeout(() => navigate('/login'), 15e2)
 
-    } else {    //
-      // uncomment when backend will be work
+    } else {
       const errorMsg = JSON.parse(await response.text());
-      console.log('👉 Error: ', errorMsg);
+      setSpinnerActive(false);
       setErrorMsg(errorMsg.title || errorMsg.message);
     }
   };
@@ -76,7 +82,6 @@ const Registration = () => {
               type="text"
               name="Username"
               placeholder='Anton Maisiuk'
-              // value={formData.Username}
               onChange={handleInputChange}
               required
             />
@@ -88,7 +93,6 @@ const Registration = () => {
               type="Email"
               name="Email"
               placeholder='antonmaisiuk@gmail.com'
-              // value={formData.Email}
               onChange={handleInputChange}
               required
             />
@@ -100,7 +104,6 @@ const Registration = () => {
               type="tel"
               name="PhoneNumber"
               placeholder='48793735286'
-              // value={formData.PhoneNumber}
               onChange={handleInputChange}
             />
           </StyledFormGroup>
@@ -111,7 +114,6 @@ const Registration = () => {
               type="Password"
               name="Password"
               placeholder='********'
-              // value={formData.Password}
               onChange={handleInputChange}
               required
             />
@@ -120,7 +122,18 @@ const Registration = () => {
           {errorMsg && <StyledError> {errorMsg} </StyledError>}
           {successMsg && <StyledSuccess> {successMsg} </StyledSuccess>}
           <StyledButton variant="success" type="submit">
-            Sign up
+            {spinnerActive ?
+                <ColorRing
+                    visible={spinnerActive}
+                    height="40"
+                    width="40"
+                    ariaLabel="spinner"
+                    wrapperStyle={{}}
+                    wrapperClass="blocks-wrapper"
+                    colors={['#F4F5F7', '#F4F5F7', '#F4F5F7', '#F4F5F7', '#F4F5F7']}
+                />
+              : 'Sign up'
+            }
           </StyledButton>
         </StyledForm>
         <StyledOption>

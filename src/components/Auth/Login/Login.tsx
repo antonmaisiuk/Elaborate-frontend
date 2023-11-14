@@ -11,11 +11,13 @@ import {
 } from "../styled";
 import {CredentialResponse} from "@react-oauth/google";
 import {useNavigate} from "react-router-dom";
+import {ColorRing} from "react-loader-spinner";
 
 const Login = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [is2FA, setIs2FA] = useState(false);
+  const [spinnerActive, setSpinnerActive] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -29,7 +31,10 @@ const Login = () => {
   };
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
+    setErrorMsg('');
+    setSuccessMsg('');
+    setSpinnerActive(true);
 
     try {
       const response = await fetch(`https://localhost:7247/api/Authentication/login`,
@@ -48,17 +53,19 @@ const Login = () => {
           setIs2FA(true)
         } else {
           const { token, expiration } = JSON.parse(resData);
+          setSpinnerActive(false);
           setSuccessMsg('Successfully logged')
           document.cookie = `token=${token}; expires=${new Date(expiration).toUTCString()};`;
 
-          navigate('/overview');
-          window.location.reload();
+          setTimeout(() => navigate('/overview'), 15e2)
         }
       } else {
         setErrorMsg(await response.text());
+        setSpinnerActive(false);
       }
     } catch (e) {
       setErrorMsg(`Unexpected error. Please try again with correct credentials.`);
+      setSpinnerActive(false);
     }
   };
 
@@ -93,6 +100,23 @@ const Login = () => {
       console.log(errorMsg.message);
     }
   };
+
+  const getButtonContent = () =>{
+    if (is2FA && !spinnerActive) return 'Confirm';
+    if (!is2FA && !spinnerActive) return 'Login';
+
+    return (
+      <ColorRing
+        visible={spinnerActive}
+        height="40"
+        width="40"
+        ariaLabel="spinner"
+        wrapperStyle={{}}
+        wrapperClass="blocks-wrapper"
+        colors={['#F4F5F7', '#F4F5F7', '#F4F5F7', '#F4F5F7', '#F4F5F7']}
+      />
+    )
+  }
 
   return (
       <AuthContainer>
@@ -140,11 +164,12 @@ const Login = () => {
                 </StyledFormGroup>
               </>
             }
+
             {errorMsg && <StyledError> {errorMsg} </StyledError>}
             {successMsg && <StyledSuccess> {successMsg} </StyledSuccess>}
 
             <StyledButton variant="success" type="submit">
-              {is2FA ? 'Confirm' : 'Login'}
+              {getButtonContent()}
             </StyledButton>
           </StyledForm>
           <StyledOption>

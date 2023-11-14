@@ -7,13 +7,14 @@ import {
   StyledForm,
   StyledFormControl,
   StyledFormGroup,
-  StyledFormLabel, StyledGoogleButton, StyledGoogleIcon, StyledLink, StyledOption
+  StyledFormLabel, StyledGoogleButton, StyledGoogleIcon, StyledLink, StyledOption, StyledSuccess
 } from "../styled";
 import {CredentialResponse} from "@react-oauth/google";
 import {useNavigate} from "react-router-dom";
 
 const ForgotPassword = () => {
   const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
   const [formData, setFormData] = useState({
     Email: '',
   });
@@ -39,15 +40,20 @@ const ForgotPassword = () => {
         method: 'Post',
         headers: {'Content-Type': 'application/json'},
       })
+    const obj = JSON.parse(await response.text());
+
 
     if (response.ok) {
-      navigate('/login')
+      setErrorMsg('');
+      setSuccessMsg(obj.message);
+
+      setTimeout(() => navigate('/login'), 5e3)
+      // navigate('/login');
       // setRedirect(true);
       // window.location.reload();
     } else {
-      const errorMsg = JSON.parse(await response.text());
-      setErrorMsg(errorMsg.message);
-      console.log(errorMsg.message);
+      setSuccessMsg('');
+      setErrorMsg(obj.message);
     }
   };
 
@@ -77,6 +83,8 @@ const ForgotPassword = () => {
           </StyledFormGroup>
 
           {errorMsg && <StyledError> {errorMsg} </StyledError>}
+          {successMsg && <StyledSuccess> {successMsg} </StyledSuccess>}
+
           <StyledButton variant="success" type="submit">
             Password Reset
           </StyledButton>

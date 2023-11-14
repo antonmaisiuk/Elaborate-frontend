@@ -55,7 +55,7 @@ const basicInvestSlice = createSlice({
             comment: invest.comment,
             date: moment(invest.dateOfCreated).format('DD.MM.YYYY'),
             amount: invest.amount,
-            value: invest.value,
+            value: _.round(invest.value, 2),
           } as IBasicInvestment
         ));
 
@@ -199,7 +199,7 @@ export const addBasicInvestsAsync = createAsyncThunk(
         date: moment(newInvest.date).format('DD.MM.YYYY'),
         comment: newInvest.comment,
         amount: newAmount,
-        value: newAmount * await getPrice(items.filter((item: IItem) => item.id === newInvest.itemId)[0].index, newInvest.categoryId)
+        value: _.round(newAmount * await getPrice(items.filter((item: IItem) => item.id === newInvest.itemId)[0].index, newInvest.categoryId), 2)
       }
     } else {
       console.log('👉 categories: ', categories);
@@ -235,7 +235,7 @@ export const updateBasicInvestAsync = createAsyncThunk(
     );
     return {
       ...invest,
-      value: invest.amount * await getPrice(state.basicInvestments.items.filter((item: IItem) => item.id === invest.itemId)[0].index, invest.categoryId),
+      value: _.round(invest.amount * await getPrice(state.basicInvestments.items.filter((item: IItem) => item.id === invest.itemId)[0].index, invest.categoryId), 2),
 
     };
   }

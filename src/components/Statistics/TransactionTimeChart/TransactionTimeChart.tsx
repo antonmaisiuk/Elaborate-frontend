@@ -10,7 +10,7 @@ import {
 	Legend,
 	ResponsiveContainer,
 } from 'recharts';
-import { ITransaction } from '../Table/Table'; // Assuming you have this exported from another file
+import { ITransaction } from '../../Table/Table'; // Assuming you have this exported from another file
 
 interface ChartData {
 	date: string;

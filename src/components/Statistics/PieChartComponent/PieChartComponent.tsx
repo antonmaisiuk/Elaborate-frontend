@@ -1,7 +1,7 @@
 // PieChartComponent.tsx
 import React from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
-import { ITransaction } from '../Table/Table'; // Assuming you have this exported from another file
+import { ITransaction } from '../../Table/Table'; // Assuming you have this exported from another file
 
 interface PieChartComponentProps {
 	transactions: ITransaction[];

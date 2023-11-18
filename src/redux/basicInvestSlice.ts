@@ -25,7 +25,12 @@ const initialState: BasicInvestState = {
 // https://rapidapi.com/amansharma2910/api/realstonks - stocks
 const backendApi = 'https://localhost:7247';
 
-const key = 'dce75a2233mshd18a7fa0853e340p159359jsn3d6895c9690f';
+// const key = 'dce75a2233mshd18a7fa0853e340p159359jsn3d6895c9690f';
+const keys = [
+  'ae21ca62c7msh7d8082876c34b78p13e6a0jsn0dbb35b3d3a8',
+  'dce75a2233mshd18a7fa0853e340p159359jsn3d6895c9690f',
+  'b7f693bd5bmsh15d4fb4def8fb20p1cd336jsn6a66c0245a0c'
+];
 const metalKey = '407ce20e80bde2fd714142bc8b5047bb';
 
 const stocksApi = 'https://realstonks.p.rapidapi.com/';
@@ -44,7 +49,7 @@ const basicInvestSlice = createSlice({
         state.loading = 'pending';
       })
       .addCase(fetchBasicInvestsAsync.fulfilled, (state, action) => {
-        state.loading = 'succeeded';
+        // state.loading = 'succeeded';
 
         state.basicInvests = _.map(action.payload, (invest) => ({
             id: invest.id,
@@ -63,13 +68,22 @@ const basicInvestSlice = createSlice({
       })
 
       .addCase(addBasicInvestsAsync.fulfilled, (state, action) => {
-        state.loading = 'succeeded';
+        // state.loading = 'succeeded';
+        const newInvest = action.payload;
 
-        state.basicInvests.push(action.payload);
+        const index = state.basicInvests.findIndex(
+          (invest) => invest.itemId === newInvest.itemId
+        );
+        if (index !== -1){
+          state.basicInvests[index] = {...newInvest};
+        } else {
+          state.basicInvests.push(newInvest);
+        }
+
         state.error = null;
       })
       .addCase(updateBasicInvestAsync.fulfilled, (state, action) => {
-        state.loading = 'succeeded';
+        // state.loading = 'succeeded';
         const index = state.basicInvests.findIndex(
           (invest) => invest.id === action.payload.id
         );
@@ -85,7 +99,7 @@ const basicInvestSlice = createSlice({
         state.error = null;
       })
       .addCase(deleteBasicInvestAsync.fulfilled, (state, action) => {
-        state.loading = 'succeeded';
+        // state.loading = 'succeeded';
         state.basicInvests = state.basicInvests.filter(
           (invest) => invest.id !== action.payload
         );
@@ -96,7 +110,7 @@ const basicInvestSlice = createSlice({
       // ========== Invest Categories ==========
 
       .addCase(fetchInvestCatsAsync.pending, (state) => {
-        state.loading = 'pending';
+        // state.loading = 'pending';
       })
       .addCase(fetchInvestCatsAsync.fulfilled, (state, action) => {
         state.loading = 'succeeded';
@@ -104,7 +118,7 @@ const basicInvestSlice = createSlice({
 
         if (state.basicInvests.length) {
           state.basicInvests.forEach((invest) => {
-            invest.category = state.basicInvestsCategories.filter((cat) => cat.id === invest.categoryId)[0].name || 'No category';
+            invest.category = state.basicInvestsCategories.filter((cat) => cat.id === invest.categoryId)[0]?.name || 'No category';
           });
         } else {
           state.error = 'Error on handling basicInvestments';
@@ -120,14 +134,14 @@ const basicInvestSlice = createSlice({
 
       // ========== Items ==========
       .addCase(fetchItemsAsync.pending, (state) => {
-        state.loading = 'pending';
+        // state.loading = 'pending';
       })
       .addCase(fetchItemsAsync.rejected, (state, action) => {
         state.loading = 'failed';
         state.error = action.error.message || 'An error occurred.';
       })
       .addCase(fetchItemsAsync.fulfilled, (state, action) => {
-        state.loading = 'succeeded';
+        // state.loading = 'succeeded';
         state.items = action.payload;
       })
   },
@@ -167,7 +181,7 @@ export const addBasicInvestsAsync = createAsyncThunk(
   async (invest: IBasicInvestment, thunkAPI: any) => {
     const state = thunkAPI.getState();
     const invests = state.basicInvestments.basicInvests as IBasicInvestment[];
-    const items = state.basicInvestments.items;
+    const items = state.basicInvestments.items as IItem[];
     const categories = state.basicInvestments.basicInvestsCategories as IBasicInvestmentCat[];
 
     console.log('👉 new invest: ', invest);
@@ -189,26 +203,29 @@ export const addBasicInvestsAsync = createAsyncThunk(
       });
 
     const newInvest = response.data as IBasicInvestment;
-    const existedItem = invests.filter((invest) => invest.itemId === newInvest.itemId);
-
-    if (existedItem.length){
-      const newAmount = existedItem[0].amount + newInvest.amount;
-
+    console.log('👉 newInvest: ', newInvest);
+    // const existedItem = invests.filter((invest) => invest.itemId === newInvest.itemId);
+    // console.log('👉 existedItem? ', existedItem);
+    // if (existedItem.length){
+    //   const newAmount = existedItem[0].amount + newInvest.amount;
+    //
+    //   return {
+    //     ...newInvest,
+    //     date: moment(newInvest.date).format('DD.MM.YYYY'),
+    //     comment: newInvest.comment,
+    //     amount: newInvest.amount,
+    //     value: _.round(newAmount * await getPrice(items.filter((item: IItem) => item.id === newInvest.itemId)[0].index, newInvest.categoryId), 2)
+    //   };
+    // } else {
+    //   console.log('👉 categories: ', categories);
       return {
         ...newInvest,
         date: moment(newInvest.date).format('DD.MM.YYYY'),
-        comment: newInvest.comment,
-        amount: newAmount,
-        value: _.round(newAmount * await getPrice(items.filter((item: IItem) => item.id === newInvest.itemId)[0].index, newInvest.categoryId), 2)
-      }
-    } else {
-      console.log('👉 categories: ', categories);
-      return {
-        ...newInvest,
-        date: moment(newInvest.date).format('DD.MM.YYYY'),
-        category: categories.filter((cat) => cat.id === newInvest.categoryId)[0].name || 'No category'
-      }
-    }
+        category: categories.filter((cat) => cat.id === newInvest.categoryId)[0]?.name || 'No category',
+        item: items.filter((item) => item.id === newInvest.itemId)[0]?.name || 'No index',
+        value: _.round(newInvest.amount * await getPrice(items.filter((item: IItem) => item.id === newInvest.itemId)[0].index, newInvest.categoryId), 2)
+      };
+    // }
   }
 );
 
@@ -315,12 +332,13 @@ export const getPrice = async (index: string, categoryId: string) => {
 
           return _.round(metalsPrice, 2) || 0;
         case '029e8ff3-8aca-4b2e-a938-7a1e97fb9c8d': // crypto
+          console.log('👉 Random key: ', _.shuffle(keys));
           response = await axios.get(
             `${cryptoApi}${index}/ohlcv/latest`,
             {
               headers: {
                 accept: 'application/json',
-                'X-RapidAPI-Key': key,
+                'X-RapidAPI-Key': _.shuffle(keys)[0],
                 'X-RapidAPI-Host': 'coinpaprika1.p.rapidapi.com'
               },
             }
@@ -334,7 +352,7 @@ export const getPrice = async (index: string, categoryId: string) => {
             {
               headers: {
                 accept: 'application/json',
-                'X-RapidAPI-Key': key,
+                'X-RapidAPI-Key': _.shuffle(keys)[0],
                 'X-RapidAPI-Host': 'realstonks.p.rapidapi.com'
               },
             }

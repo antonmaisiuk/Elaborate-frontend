@@ -1,31 +1,28 @@
 // PieChartComponent.tsx
 import React from 'react';
-import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
-import { ITransaction } from '../../Table/Table'; // Assuming you have this exported from another file
+import {PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer} from 'recharts';
+import {dataMainType, ITransaction} from '../../Table/Table'; // Assuming you have this exported from another file
 
 interface PieChartComponentProps {
-	transactions: ITransaction[];
+	transactions: dataMainType[];
 }
 
 const COLORS = [
-	'#0088FE', // Vivid blue
-	'#00C49F', // Light green
-	'#FFBB28', // Orange
-	'#FF8042', // Orange-red
-	'#FF6384', // Pinkish
-	'#36A2EB', // Lighter blue
-	'#FFCE56', // Yellow
-	'#4BC0C0', // Teal
-	'#C9CB3C', // Olive green
-	'#E040FB', // Bright purple
-	'#7CDDDD', // Pale turquoise
-	'#9966FF', // Amethyst
-	'#FF6666', // Soft red
-	'#39A275', // Medium green
-	'#FF9F40', // Bright orange
-	'#4D4D4D', // Grey
-	'#99E6E6', // Light cyan
-	'#CCCC52', // Brass
+	"#6ab1f0",
+	"#7ed17e",
+	"#f29191",
+	"#f5c36f",
+	"#c792e8",
+	"#95a5a6",
+	"#82e2d4",
+	"#f3a683",
+	"#e57e25",
+	"#82d8a7",
+	"#e74c3c",
+	"#bdc3c7",
+	"#ecf0f1",
+	"#5d8aa8",
+	"#4d9c5d"
 ];
 
 const PieChartComponent: React.FC<PieChartComponentProps> = ({
@@ -33,7 +30,7 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({
 }) => {
 	// Prepare the data for recharts
 	const data = transactions.reduce(
-		(acc: { name: string; value: number }[], transaction: ITransaction) => {
+		(acc: { name: string; value: number }[], transaction: dataMainType) => {
 			const existingCategory = acc.find(
 				(item) => item.name === transaction.category
 			);
@@ -48,25 +45,43 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({
 	);
 
 	return (
-		<PieChart width={800} height={400}>
-			<Pie
-				data={data}
-				cx={400}
-				cy={200}
-				labelLine={false}
-				outerRadius={160}
-				fill='#8884d8'
-				dataKey='value'
-				label={({ name, percent }: { name: string; percent: number }) =>
-					`${name} ${(percent * 100).toFixed(0)}%`
-				}
-			>
-				{data.map((entry, index) => (
-					<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-				))}
-			</Pie>
-			<Tooltip />
-		</PieChart>
+		<ResponsiveContainer width="100%" height={250}>
+			<PieChart width={100} height={200}>
+				<Pie
+					dataKey="value"
+					data={data}
+					outerRadius={100}
+					fill="#8884d8"
+					label={({ name, percent }: { name: string; percent: number }) =>
+						`${name} ${(percent * 100).toFixed(0)}%`
+					}
+					>
+					{data.map((entry, index) => (
+						<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+					))}
+				</Pie>
+				<Tooltip />
+			</PieChart>
+		</ResponsiveContainer>
+		// <PieChart width={400} height={200}>
+		// 	<Pie
+		// 		data={data}
+		// 		cx={200}
+		// 		cy={100}
+		// 		labelLine={false}
+		// 		outerRadius={50}
+		// 		fill='#8884d8'
+		// 		dataKey='value'
+		// 		label={({ name, percent }: { name: string; percent: number }) =>
+		// 			`${name} ${(percent * 100).toFixed(0)}%`
+		// 		}
+		// 	>
+		// 		{data.map((entry, index) => (
+		// 			<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+		// 		))}
+		// 	</Pie>
+		// 	<Tooltip />
+		// </PieChart>
 	);
 };
 

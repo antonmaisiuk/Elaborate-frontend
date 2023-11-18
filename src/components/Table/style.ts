@@ -1,13 +1,14 @@
 import styled from 'styled-components';
 import {Container, Nav, Navbar, NavDropdown, Table} from "react-bootstrap";
 import ReactPaginate from 'react-paginate';
+import {ColorRing} from "react-loader-spinner";
 
 export const StyledTableWrapper = styled.div`
   display: flex;
   padding: 0 28px 56px 28px;
   height: 100%;
   flex-direction: column;
-  align-items: center;
+  align-items: start;
   align-self: stretch;
   overflow-y: scroll;
   
@@ -73,13 +74,11 @@ export const StyledTable = styled(Table)`
   
   
 `;
-export const StyledTablePagination = styled.div`
-  color: red;
+export const StyledLoading = styled.div`
   display: flex;
   justify-content: center;
+  align-items: center;
   
-  
-
-  
-  
+  width: 100%;
+  height: 100%;
 `;

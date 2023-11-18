@@ -8,9 +8,10 @@ import {
 	CartesianGrid,
 	Tooltip,
 	Legend,
-	ResponsiveContainer,
+	ResponsiveContainer, AreaChart, Area,
 } from 'recharts';
-import { ITransaction } from '../../Table/Table'; // Assuming you have this exported from another file
+import {dataMainType, ITransaction} from '../../Table/Table';
+import {StatPeriod} from "../../../redux/statSlice"; // Assuming you have this exported from another file
 
 interface ChartData {
 	date: string;
@@ -18,8 +19,8 @@ interface ChartData {
 }
 
 interface TransactionTimeChartProps {
-	transactions: ITransaction[];
-	period: 'month' | 'year' | 'all';
+	transactions: dataMainType[];
+	period: StatPeriod;
 }
 
 // Inside the TransactionTimeChart component
@@ -27,7 +28,7 @@ const TransactionTimeChart: React.FC<TransactionTimeChartProps> = ({
     transactions,
   }) => {
     const summarizeTransactions = (
-      transactions: ITransaction[]
+      transactions: dataMainType[]
     ): ChartData[] => {
       // Aggregate transactions by date
       const summary = new Map<string, number>();
@@ -59,13 +60,15 @@ const TransactionTimeChart: React.FC<TransactionTimeChartProps> = ({
 	const chartData = summarizeTransactions(transactions);
 
 	return (
-		<ResponsiveContainer width='100%' height={400}>
-			<LineChart
+		<ResponsiveContainer width='100%' height={250}>
+			<AreaChart
+				width={500}
+				height={400}
 				data={chartData}
 				margin={{
 					top: 5,
 					right: 30,
-					left: 20,
+					left: 0,
 					bottom: 5,
 				}}
 			>
@@ -74,13 +77,14 @@ const TransactionTimeChart: React.FC<TransactionTimeChartProps> = ({
 				<YAxis />
 				<Tooltip />
 				<Legend />
-				<Line
+				<Area
 					type='monotone'
 					dataKey='totalValue'
-					stroke='#8884d8'
+					stroke='#25AB52'
+					fill="#25AB52"
 					activeDot={{ r: 8 }}
 				/>
-			</LineChart>
+			</AreaChart>
 		</ResponsiveContainer>
 	);
 };

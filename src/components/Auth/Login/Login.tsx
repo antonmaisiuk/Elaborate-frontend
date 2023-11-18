@@ -57,7 +57,10 @@ const Login = () => {
           setSuccessMsg('Successfully logged')
           document.cookie = `token=${token}; expires=${new Date(expiration).toUTCString()};`;
 
-          setTimeout(() => navigate('/overview'), 15e2)
+          setTimeout(() => {
+            navigate('/overview');
+            window.location.reload();
+          }, 15e2)
         }
       } else {
         setErrorMsg(await response.text());

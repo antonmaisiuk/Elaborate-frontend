@@ -72,7 +72,7 @@ const transactionSlice = createSlice({
 
       .addCase(addTransactionAsync.fulfilled, (state, action) => {
         state.loading = 'succeeded';
-        action.payload.category = state.transCategories.filter((cat) => cat.id === action.payload.categoryId)[0].name || 'No category';
+        action.payload.category = state.transCategories.filter((cat) => cat.id === action.payload.categoryTransactionId)[0].name || 'No category';
         state.transactions.push(action.payload);
         state.error = null;
       })
@@ -155,7 +155,13 @@ export const addTransactionAsync = createAsyncThunk(
   async (transaction: ITransaction) => {
     const response = await axios.post(
       `${backendApi}/api/user/transaction`,
-      JSON.stringify(transaction),
+      JSON.stringify({
+        name: transaction.name,
+        comment: transaction.comment,
+        date: transaction.date,
+        value: transaction.value,
+        categoryTransactionId: transaction.categoryId,
+      }),
       {
         headers: {
           'Content-Type': 'application/json',

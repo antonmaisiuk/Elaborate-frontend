@@ -1,15 +1,16 @@
 import React, {FC, HTMLAttributes, useEffect, useState} from 'react';
-import {StyledTable, StyledTableWrapper} from "./style";
+import {StyledLoading, StyledTable, StyledTableWrapper} from "./style";
 import FilterHeader from "../FilterHeader/FilterHeader";
 import Modal, {ModalType} from "../Modal/Modal";
 import ReactPaginate from 'react-paginate';
 import _ from 'lodash';
 import SortAsc from '../../assets/SortAsc/SortAsc';
 import SortDesc from '../../assets/SortDesc/SortDesc';
-import {useDispatch} from "react-redux";
-import {AppDispatch} from "../../redux/store";
+import {useDispatch, useSelector} from "react-redux";
+import {AppDispatch, RootState} from "../../redux/store";
 import {IBasicInvestment, IBasicInvestmentCat, IItem} from "../Investments/Overview/InvestOverview";
 import {setModalCatData, setModalData, setModalType, toggleActive} from "../../redux/modalSlice";
+import {ColorRing} from "react-loader-spinner";
 
 export interface ITransaction {
   id: string,
@@ -50,16 +51,21 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
   items,
   }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const basicInvestLoading = useSelector((state: RootState) => state.basicInvestments.loading);
+  const transLoading = useSelector((state: RootState) => state.transactions.loading);
+
   const itemsPerPage = 10;
 
+  const [isLoaded, setIsLoaded] = useState(false);
   const [sortedData, setSortedData] = useState<dataMainType[]>([...tableData]);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [sortColumn, setSortColumn] = useState<string | null>(null);
 
   useEffect(() => {
     setSortedData(tableData);
-    // console.log('👉 Keys: ', _.keys(tableData[0]));
-    // getHeadersByTableType()
+
+    if (tableType === TableType.transactions && transLoading === 'succeeded') setIsLoaded(true)
+    if (tableType === TableType.investments && basicInvestLoading === 'succeeded') setIsLoaded(true)
   }, [tableData]);
 
 
@@ -242,16 +248,36 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
 
   return (
     <>
-      <FilterHeader tableCategories={tableCategories} searchFunc={search}/>
+      <FilterHeader tableCategories={tableCategories} searchFunc={search} tableType={tableType}/>
       <StyledTableWrapper>
-        <StyledTable>
-          <thead>
-          <tr>{getHeadersByTableType()}</tr>
-          </thead>
-          <PaginatedItems itemsPerPage={itemsPerPage} />
-        </StyledTable>
+        {/*{isLoaded ?*/}
+        {/*  <>*/}
+            <StyledTable>
+              <thead>
+              <tr>{getHeadersByTableType()}</tr>
+              </thead>
+              <PaginatedItems itemsPerPage={itemsPerPage}/>
+            </StyledTable>
 
-        <Modal/>
+            <Modal/>
+        {/*  </>*/}
+        {/*  :*/}
+        {/*  <>*/}
+        {/*    <StyledLoading>*/}
+        {/*      <ColorRing*/}
+        {/*        visible={true}*/}
+        {/*        height="80"*/}
+        {/*        width="80"*/}
+        {/*        ariaLabel="spinner"*/}
+        {/*        wrapperStyle={{}}*/}
+        {/*        wrapperClass="blocks-wrapper"*/}
+        {/*        colors={['#25AB52', '#25AB52', '#25AB52', '#25AB52', '#25AB52']}*/}
+        {/*      />*/}
+        {/*    </StyledLoading>*/}
+        {/*  </>*/}
+        {/*}*/}
+
+
       </StyledTableWrapper>
     </>
   );

@@ -20,7 +20,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../../redux/store";
 import {setModalType, toggleActive} from "../../redux/modalSlice";
 import {addBasicInvestsAsync, deleteBasicInvestAsync, updateBasicInvestAsync} from "../../redux/basicInvestSlice";
-import {IBasicInvestment} from "../Investments/Overview/InvestOverview";
+import {IBasicInvestment, IItem} from "../Investments/Overview/InvestOverview";
 
 export enum ModalType {
   addTransaction,
@@ -40,6 +40,10 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const modalCatData = useSelector((state: RootState) => state.modal.modalCatData);
 
   const items = useSelector((state: RootState) => state.basicInvestments.items);
+  const loading = useSelector((state: RootState) => state.basicInvestments.loading);
+
+  const [currentItems, setCurrentItems] = useState<IItem[]>(items);
+  // const currentItems = items.filter((item) => item.categoryInvestmentId === newItem.categoryId);
 
   const updatedItem = {...modalData};
   const [newItem, setNewItem] = useState<dataMainType>({
@@ -54,6 +58,8 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
     amount: 0,
   });
   const [errorMsg, setErrorMsg] = useState('');
+
+
 
   const formatDate = (date: string) => {
     if (date && !/T/.test(date)) {
@@ -87,6 +93,10 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
       ...prevData,
       [name]: value,
     }));
+
+    if (name === 'categoryId') {
+
+    }
   };
 
   const handleInputEditEvent = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -116,6 +126,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
     value: 0,
   });
 
+
   const handleNewTransaction = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -130,7 +141,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
     console.log('👉 newItem: ', newItem);
 
     if (newItem.categoryId === '') newItem.categoryId = modalCatData[0].id;
-    if ((newItem as IBasicInvestment).itemId === '') (newItem as IBasicInvestment).itemId = items[0].id;
+    if ((newItem as IBasicInvestment).itemId === '') (newItem as IBasicInvestment).itemId = currentItems[0].id;
     dispatch(addBasicInvestsAsync(newItem as IBasicInvestment));
 
     dispatch(toggleActive(false));
@@ -282,7 +293,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
           >
             <option disabled>Select investment type if empty</option>
             {
-              items.filter((item) => item.categoryInvestmentId === newItem.categoryId).map((item) => (
+              currentItems.map((item) => (
               <option value={item.id}>{item.name}</option>
             ))
             }
@@ -589,15 +600,17 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
     return () => window.removeEventListener('keydown', close)
   });
 
+  useEffect(() => {
+    setCurrentItems(items.filter((item) => item.categoryInvestmentId === newItem.categoryId));
+    // (newItem as IBasicInvestment).itemId = currentItems[0].id;
+  }, [newItem.categoryId]);
+
   const renderByType = () => {
     switch (modalType) {
       case ModalType.addTransaction:
         return renderNewTransactionForm();
 
       case ModalType.addBasicInvest:
-        // newItem.categoryId = modalCatData.length ? modalCatData[0].id : '';
-        // (newItem as IBasicInvestment).itemId = items.filter((item) => item.categoryInvestmentId === newItem.categoryId)[0].id;
-        // console.log('👉 newItem: ', newItem);
         return renderNewBasicInvestForm();
 
       case ModalType.editTransaction:

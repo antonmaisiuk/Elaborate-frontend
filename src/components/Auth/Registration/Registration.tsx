@@ -57,7 +57,10 @@ const Registration = () => {
     if (response.ok) {
       setSpinnerActive(false);
       setSuccessMsg('Registration completed successfully');
-      setTimeout(() => navigate('/login'), 15e2)
+      setTimeout(() => {
+        navigate('/login')
+        window.location.reload();
+      }, 15e2)
 
     } else {
       const errorMsg = JSON.parse(await response.text());

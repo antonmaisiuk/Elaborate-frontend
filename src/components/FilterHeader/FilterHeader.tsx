@@ -13,16 +13,18 @@ import {ModalType} from "../Modal/Modal";
 import {setModalCatData, setModalType, toggleActive} from "../../redux/modalSlice";
 import {useDispatch} from "react-redux";
 import {AppDispatch} from "../../redux/store";
-import {catMainType} from "../Table/Table";
+import {catMainType, TableType} from "../Table/Table";
 
 
 interface FilterHeaderInterface {
   tableCategories: catMainType[],
+  tableType: TableType,
   searchFunc: (event: React.ChangeEvent<HTMLInputElement>) => void,
 }
 const FilterHeader: FC<FilterHeaderInterface & HTMLAttributes<HTMLDivElement>> = ({
   tableCategories,
   searchFunc,
+  tableType,
    }) => {
 
   const dispatch = useDispatch<AppDispatch>();
@@ -44,7 +46,7 @@ const FilterHeader: FC<FilterHeaderInterface & HTMLAttributes<HTMLDivElement>> =
           <SearchIcon/>
         </StyledFilterForm>
         <StyledNewButton onClick={() => {
-          dispatch(setModalType(ModalType.addBasicInvest));
+          dispatch(setModalType(tableType === TableType.transactions ? ModalType.addTransaction : ModalType.addBasicInvest));
           dispatch(toggleActive(true));
           dispatch(setModalCatData(tableCategories));
         }}>New</StyledNewButton>

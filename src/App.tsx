@@ -15,7 +15,7 @@ import {store} from './redux/store';
 import Statistics from './components/Statistics/Statistics'
 import {BasicInvestmentType} from "./components/Investments/Overview/InvestOverview";
 import SetNewPassword from "./components/Auth/SetNewPassword/SetNewPassword";
-import PasswordReset from './components/PasswordReset/PasswordReset';
+
 
 export const getActualToken = () => {
   let token = null;

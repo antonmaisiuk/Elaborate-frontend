@@ -17,6 +17,7 @@ import {BasicInvestmentType} from "./components/Investments/Overview/InvestOverv
 import SetNewPassword from "./components/Auth/SetNewPassword/SetNewPassword";
 import Settings from "./components/Settings/Settings";
 
+
 export const getActualToken = () => {
   let token = null;
   document.cookie.split(';').forEach((cookie) => {

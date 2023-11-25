@@ -151,8 +151,7 @@ const Login = () => {
                   // value={formData.Email}
                   onChange={handleInputChange}
                   required/>
-                </StyledFormGroup>
-                <StyledFormGroup controlId="password">
+                </StyledFormGroup><StyledFormGroup controlId="password">
                   <StyledFormLabel>
                     Password
                     <StyledFogotPassword onClick={() => navigate('/forgot')}>Forgot Password?</StyledFogotPassword>

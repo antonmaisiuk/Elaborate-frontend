@@ -16,9 +16,15 @@ import {Nav, Navbar, NavDropdown} from "react-bootstrap";
 import {useNavigate} from "react-router-dom";
 import LogoutIcon from '../../assets/LogoutIcon/LogoutIcon';
 import VerticalMoreIcon from '../../assets/VerticalMoreIcon/VerticalMoreIcon';
+import {useDispatch, useSelector} from "react-redux";
+import {AppDispatch, RootState} from "../../redux/store";
 
 const Navigation : FC<HTMLAttributes<HTMLDivElement>> = ({children}) => {
   const navigate = useNavigate();
+
+  const dispatch = useDispatch<AppDispatch>();
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
+
 
   const logout = () => {
     document.cookie = "token= ; expires = Thu, 01 Jan 1970 00:00:00 GMT";
@@ -64,10 +70,10 @@ const Navigation : FC<HTMLAttributes<HTMLDivElement>> = ({children}) => {
       <StyledNavFooter>
         <StyledUserInfo>
           <StyledUserPhoto>
-
+            <img src={userInfo.avatar} alt="avatar"/>
           </StyledUserPhoto>
           <StyledUsername>
-            <h4>Anton Maisiuk</h4>
+            <h4>{userInfo.username}</h4>
             <p>View profile</p>
 
           </StyledUsername>

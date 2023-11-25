@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import {Button, Form} from "react-bootstrap";
+import {Button, Form, InputGroup} from "react-bootstrap";
 import GoogleIcon from "../../assets/GoogleIcon/GoogleIcon";
 import {GoogleLogin} from "@react-oauth/google";
 
@@ -93,9 +93,27 @@ export const StyledFormControl = styled(Form.Control)`
   padding: 12px 16px;
   align-items: flex-start;
   gap: 24px;
-  border-radius: 8px;
+  border-radius: 8px 0 0 8px;
   border: 1px solid #D0D5DD;
   color: #1c1f22;
+`
+export const StyledPassInputWrapper = styled.div`
+  display: flex;
+  height: 48px;
+  
+`
+export const StyledInputGroup = styled(InputGroup.Text)`
+  border-radius: 0 8px 8px 0;
+  border-left: none;
+  background-color: #fff;
+  
+  cursor: pointer;
+  
+  width: 40px;
+  padding: 7px;
+  svg{
+    width: 100%;
+  }
 `
 
 export const StyledFormSelect = styled(Form.Select)`
@@ -171,6 +189,26 @@ export const StyledSuccess = styled.div`
   color: #25AB52;
   margin: 10px 0;
   font-weight: 600;
+`;
+
+export const StyledTooltip = styled.span`
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  text-align: center;
+  line-height: 18px;
+  background-color: #ccc;
+  color: #fff;
+  //margin-top: 2px;
+  //margin-left: 5px;
+  border-radius: 50%;
+  cursor: pointer;
+  
+  :hover{
+    background-color: #444;
+  }
+
+  white-space: pre-line;
 `;
 
 

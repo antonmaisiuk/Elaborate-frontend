@@ -18,19 +18,3 @@ export const StyledSelectorsBlock = styled.div`
   justify-content: flex-start;
   gap: 24px;
 `;
-
-export const StyledSelector = styled(Form.Select)`
-  display: flex;
-  //width: 100%;
-  height: 48px;
-  padding: 12px 16px;
-  align-items: flex-start;
-  border-radius: 8px;
-  cursor: pointer;
-  border: 1px solid #D0D5DD;
-  color: #1c1f22;
-  background-color: #fff;
-  ::placeholder{
-    color: #6c757d;
-  }
-`;

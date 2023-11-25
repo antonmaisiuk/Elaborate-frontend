@@ -9,12 +9,12 @@ import Layout from "../Layout/Layout";
 import Navigation from "../Navigation/Navigation";
 import Content from "../Content/Content";
 import Header from "../Header/Header";
-import {StyledSelector, StyledSelectorsBlock, StyledTitle} from "../Transactions/style";
+import {StyledSelectorsBlock, StyledTitle} from "../Transactions/style";
 import {setPeriod, setType, StatPeriod, StatType} from "../../redux/statSlice";
 import _ from "lodash";
 import {fetchBasicInvestsAsync, fetchInvestCatsAsync, fetchItemsAsync} from "../../redux/basicInvestSlice";
 import moment from "moment";
-import {StyledChart, StyledCharts, StyledChartTitle} from "./styled";
+import {StyledChart, StyledCharts, StyledChartTitle, StyledSelector} from "./styled";
 import {ResponsiveContainer} from "recharts";
 
 const Statistics: React.FC = () => {
@@ -28,10 +28,12 @@ const Statistics: React.FC = () => {
 	const basicInvestments = useSelector((state: RootState) => state.basicInvestments.basicInvests);
 	// const [period, setPeriod] = useState<string>(statPeriods[0].name);
 	// const [type, setType] = useState<string>(statTypes[0].name);
-	const [filteredItems, setFilteredItems] = useState<dataMainType[]>(transactions);
+	const [filteredItems, setFilteredItems] = useState<dataMainType[]>(actualType === StatType.transactions ? transactions : basicInvestments);
 
 
 	useEffect(() => {
+		console.log('👉 transLoadingStatus: ', transLoadingStatus);
+		console.log('👉 basicLoadingStatus: ', basicLoadingStatus);
 		if (transLoadingStatus !== 'succeeded') {
 			dispatch(fetchTransactionsAsync()).then(() =>
 				dispatch(fetchTransCatsAsync())
@@ -45,7 +47,12 @@ const Statistics: React.FC = () => {
 				})
 			});
 		}
-	}, [dispatch]);
+
+		if (transLoadingStatus && basicLoadingStatus) {
+			setFilteredItems(actualType === StatType.transactions ? transactions : basicInvestments)
+		}
+
+	}, [transactions, basicInvestments]);
 
 	// Handle period change, possibly from a select dropdown or segmented control
 	const handlePeriodChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -81,18 +88,17 @@ const Statistics: React.FC = () => {
 					);
 				case StatPeriod.year:
 					return itemDate.year() === now.year();
-			// case 'all':
+			case StatPeriod.all:
 			default:
 				return true; // No filtering for 'all'
 			}
-	});
+		});
   };
 
 	useEffect(() => {
 		setFilteredItems(filterItemsByPeriod());
 	}, [actualPeriod, actualType]);
 
-	console.log('👉 actualPeriod: ', actualPeriod);
 	// Filter and sort transactions
 	return (
 		<Layout>
@@ -119,7 +125,7 @@ const Statistics: React.FC = () => {
 				<StyledCharts>
 					<StyledChart>
 						<StyledChartTitle>Pie chart</StyledChartTitle>
-						<PieChartComponent transactions={filteredItems} />
+						<PieChartComponent items={filteredItems} />
 					</StyledChart>
 					<StyledChart>
 						<StyledChartTitle>Area chart</StyledChartTitle>

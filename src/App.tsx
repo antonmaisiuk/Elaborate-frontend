@@ -15,6 +15,7 @@ import {store} from './redux/store';
 import Statistics from './components/Statistics/Statistics'
 import {BasicInvestmentType} from "./components/Investments/Overview/InvestOverview";
 import SetNewPassword from "./components/Auth/SetNewPassword/SetNewPassword";
+import Settings from "./components/Settings/Settings";
 
 export const getActualToken = () => {
   let token = null;
@@ -53,6 +54,7 @@ const App = () => {
               <Route path="/invest/crypto" element={<BasicInvestments basicInvestType={BasicInvestmentType.crypto}/>}/>
               <Route path="/confirm" element={<EmailConfirm/>}/>
               <Route path="/stats" element={<Statistics/>}/>
+              <Route path="/settings" element={<Settings/>}/>
             </Route>
             <Route path="/" element={
               <GoogleOAuthProvider clientId="106155053534-6d2124m98sto75hhemhjo2fa0339l08n.apps.googleusercontent.com">

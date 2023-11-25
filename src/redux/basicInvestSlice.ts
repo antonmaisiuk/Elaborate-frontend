@@ -46,7 +46,7 @@ const basicInvestSlice = createSlice({
     builder
       // ========== Basic Investments ==========
       .addCase(fetchBasicInvestsAsync.pending, (state) => {
-        state.loading = 'pending';
+        // state.loading = 'pending';
       })
       .addCase(fetchBasicInvestsAsync.fulfilled, (state, action) => {
         // state.loading = 'succeeded';
@@ -180,7 +180,6 @@ export const addBasicInvestsAsync = createAsyncThunk(
   'basicInvestments/addBasicInvests',
   async (invest: IBasicInvestment, thunkAPI: any) => {
     const state = thunkAPI.getState();
-    const invests = state.basicInvestments.basicInvests as IBasicInvestment[];
     const items = state.basicInvestments.items as IItem[];
     const categories = state.basicInvestments.basicInvestsCategories as IBasicInvestmentCat[];
 
@@ -188,7 +187,7 @@ export const addBasicInvestsAsync = createAsyncThunk(
     const response = await axios.post(
       `${backendApi}/api/user/basicinvestment`,
       JSON.stringify({
-        dateOfCreated: invest.date,
+        dateOfCreated: moment().toISOString(),
         comment: invest.comment,
         categoryId: invest.categoryId,
         itemId: invest.itemId,
@@ -203,29 +202,14 @@ export const addBasicInvestsAsync = createAsyncThunk(
       });
 
     const newInvest = response.data as IBasicInvestment;
-    console.log('👉 newInvest: ', newInvest);
-    // const existedItem = invests.filter((invest) => invest.itemId === newInvest.itemId);
-    // console.log('👉 existedItem? ', existedItem);
-    // if (existedItem.length){
-    //   const newAmount = existedItem[0].amount + newInvest.amount;
-    //
-    //   return {
-    //     ...newInvest,
-    //     date: moment(newInvest.date).format('DD.MM.YYYY'),
-    //     comment: newInvest.comment,
-    //     amount: newInvest.amount,
-    //     value: _.round(newAmount * await getPrice(items.filter((item: IItem) => item.id === newInvest.itemId)[0].index, newInvest.categoryId), 2)
-    //   };
-    // } else {
-    //   console.log('👉 categories: ', categories);
+
       return {
         ...newInvest,
-        date: moment(newInvest.date).format('DD.MM.YYYY'),
+        date: moment().format('DD.MM.YYYY'),
         category: categories.filter((cat) => cat.id === newInvest.categoryId)[0]?.name || 'No category',
         item: items.filter((item) => item.id === newInvest.itemId)[0]?.name || 'No index',
         value: _.round(newInvest.amount * await getPrice(items.filter((item: IItem) => item.id === newInvest.itemId)[0].index, newInvest.categoryId), 2)
       };
-    // }
   }
 );
 
@@ -234,6 +218,7 @@ export const updateBasicInvestAsync = createAsyncThunk(
   async (invest: IBasicInvestment, thunkAPI: any) => {
     const state = thunkAPI.getState();
 
+    console.log('👉 Updated item before req: ', invest);
     await axios.put(
       `${backendApi}/api/user/basicinvestment/${invest.id}`,
       JSON.stringify({
@@ -332,7 +317,6 @@ export const getPrice = async (index: string, categoryId: string) => {
 
           return _.round(metalsPrice, 2) || 0;
         case '029e8ff3-8aca-4b2e-a938-7a1e97fb9c8d': // crypto
-          console.log('👉 Random key: ', _.shuffle(keys));
           response = await axios.get(
             `${cryptoApi}${index}/ohlcv/latest`,
             {

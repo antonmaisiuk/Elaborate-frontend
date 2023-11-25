@@ -3,6 +3,8 @@ import transactionReducer from './transactionSlice';
 import basicInvestmentsReducer from './basicInvestSlice';
 import modalReducer from "./modalSlice";
 import statsSlice from "./statSlice";
+import settingsSlice from "./settingsSlice";
+import userSlice from "./userSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +12,8 @@ export const store = configureStore({
     basicInvestments: basicInvestmentsReducer,
     modal: modalReducer,
     stats: statsSlice,
+    settings: settingsSlice,
+    user: userSlice,
   }
 });
 

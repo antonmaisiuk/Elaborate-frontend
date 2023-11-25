@@ -132,6 +132,11 @@ export const StyledLogoutWrapper = styled.button`
 export const StyledUserPhoto = styled.div`
   width: 32px;
   height: 32px;
+  
+  img{
+    width: 100%;
+    border-radius: 100%;
+  }
 
   border-radius: 32px;
   background: lightgray 50% / cover no-repeat;

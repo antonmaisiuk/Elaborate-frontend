@@ -71,13 +71,13 @@ const transactionSlice = createSlice({
       })
 
       .addCase(addTransactionAsync.fulfilled, (state, action) => {
-        state.loading = 'succeeded';
+        // state.loading = 'succeeded';
         action.payload.category = state.transCategories.filter((cat) => cat.id === action.payload.categoryTransactionId)[0].name || 'No category';
         state.transactions.push(action.payload);
         state.error = null;
       })
       .addCase(updateTransactionAsync.fulfilled, (state, action) => {
-        state.loading = 'succeeded';
+        // state.loading = 'succeeded';
         const index = state.transactions.findIndex(
           (transaction) => transaction.id === action.payload.id
         );
@@ -91,7 +91,7 @@ const transactionSlice = createSlice({
         state.error = null;
       })
       .addCase(deleteTransactionAsync.fulfilled, (state, action) => {
-        state.loading = 'succeeded';
+        // state.loading = 'succeeded';
         state.transactions = state.transactions.filter(
           (transaction) => transaction.id !== action.payload
         );
@@ -99,7 +99,7 @@ const transactionSlice = createSlice({
       })
       // ---------- Transaction Categories ----------
       .addCase(fetchTransCatsAsync.pending, (state) => {
-        state.loading = 'pending';
+        // state.loading = 'pending';
       })
       .addCase(fetchTransCatsAsync.fulfilled, (state, action) => {
         state.loading = 'succeeded';

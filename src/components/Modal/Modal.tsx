@@ -141,7 +141,8 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
     console.log('👉 newItem: ', newItem);
 
     if (newItem.categoryId === '') newItem.categoryId = modalCatData[0].id;
-    if ((newItem as IBasicInvestment).itemId === '') (newItem as IBasicInvestment).itemId = currentItems[0].id;
+    if (!(newItem as IBasicInvestment).itemId) (newItem as IBasicInvestment).itemId = currentItems[0].id;
+    console.log('👉 [modal] New item: ', newItem);
     dispatch(addBasicInvestsAsync(newItem as IBasicInvestment));
 
     dispatch(toggleActive(false));
@@ -603,7 +604,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
   useEffect(() => {
     setCurrentItems(items.filter((item) => item.categoryInvestmentId === newItem.categoryId));
     // (newItem as IBasicInvestment).itemId = currentItems[0].id;
-  }, [newItem.categoryId]);
+  }, [modalCatData]);
 
   const renderByType = () => {
     switch (modalType) {

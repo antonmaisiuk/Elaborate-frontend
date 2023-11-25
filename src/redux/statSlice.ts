@@ -34,7 +34,7 @@ interface StatState {
 
 const initialState: StatState = {
   type: StatType.transactions,
-  period: StatPeriod.today,
+  period: StatPeriod.week,
   loading: 'idle',
   error: null,
 };

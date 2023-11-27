@@ -12,6 +12,10 @@ import {
 import {CredentialResponse} from "@react-oauth/google";
 import {useNavigate} from "react-router-dom";
 import {ColorRing} from "react-loader-spinner";
+import {fetchTransactionsAsync, fetchTransCatsAsync} from "../../../redux/transactionSlice";
+import {fetchBasicInvestsAsync, fetchInvestCatsAsync, fetchItemsAsync} from "../../../redux/basicInvestSlice";
+import {useDispatch} from "react-redux";
+import {AppDispatch} from "../../../redux/store";
 
 const Login = () => {
   const [errorMsg, setErrorMsg] = useState('');
@@ -24,6 +28,7 @@ const Login = () => {
     code: null,
   });
 
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
   const responseMessage = (response: CredentialResponse) => {
@@ -53,14 +58,26 @@ const Login = () => {
           setIs2FA(true)
         } else {
           const { token, expiration } = JSON.parse(resData);
+
+          await dispatch(fetchTransactionsAsync()).then(() =>
+            dispatch(fetchTransCatsAsync())
+          );
+
+          await dispatch(fetchItemsAsync()).then(() => {
+            dispatch(fetchBasicInvestsAsync()).then(() => {
+              dispatch(fetchInvestCatsAsync())
+            })
+          });
+
           setSpinnerActive(false);
           setSuccessMsg('Successfully logged')
           document.cookie = `token=${token}; expires=${new Date(expiration).toUTCString()};`;
 
+
           setTimeout(() => {
             navigate('/overview');
-            window.location.reload();
-          }, 15e2)
+            // window.location.reload();
+          }, 5e2);
         }
       } else {
         setErrorMsg(await response.text());

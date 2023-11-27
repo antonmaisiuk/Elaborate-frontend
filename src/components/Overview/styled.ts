@@ -5,7 +5,6 @@ export const StyledOverview = styled.div`
   display: grid;
   grid-template-areas: 
           'trans invest' 
-          'stat stat' 
           'stat stat';
   gap: 20px;
   height: 100%;
@@ -25,6 +24,9 @@ export const StyledOverview = styled.div`
   //}
   .tile_stats{
     grid-area: stat;
+  }
+  .tile_stats2{
+    grid-area: stat2;
   }
 `;
 
@@ -74,4 +76,8 @@ export const StyledTileSelector = styled(Form.Select)`
     color: #6c757d;
   }
 `;
+export const StyledTileSelectorsWrapper = styled.div`
+  display: flex;
+  gap: 15px;
+`
 // export const StyledSettings = styled.div``

@@ -602,9 +602,10 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
   });
 
   useEffect(() => {
+    console.log('👉 Items: ', items);
     setCurrentItems(items.filter((item) => item.categoryInvestmentId === newItem.categoryId));
     // (newItem as IBasicInvestment).itemId = currentItems[0].id;
-  }, [modalCatData]);
+  }, [items, modalCatData, newItem.categoryId]);
 
   const renderByType = () => {
     switch (modalType) {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import Layout from "../Layout/Layout";
 import Navigation from "../Navigation/Navigation";
 import Content from "../Content/Content";
@@ -10,27 +10,40 @@ import {
   StyledOverview,
   StyledTile,
   StyledTileHeader,
-  StyledTileSelector,
+  StyledTileSelector, StyledTileSelectorsWrapper,
   StyledTileTitle,
   StyledTileValue
 } from "./styled";
 import {dataMainType} from "../Table/Table";
 import {StyledSelector} from "../Statistics/styled";
 import _ from "lodash";
-import {setPeriod, StatPeriod} from "../../redux/statSlice";
+import {setPeriod, setType, StatPeriod, StatType} from "../../redux/statSlice";
 import moment from "moment/moment";
 import TransactionTimeChart from "../Statistics/TransactionTimeChart/TransactionTimeChart";
+import {fetchTransactionsAsync, fetchTransCatsAsync} from "../../redux/transactionSlice";
+import {fetchBasicInvestsAsync, fetchInvestCatsAsync, fetchItemsAsync} from "../../redux/basicInvestSlice";
 
 const Overview = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
+
   const transactions = useSelector((state: RootState) => state.transactions.transactions);
   const invests = useSelector((state: RootState) => state.basicInvestments.basicInvests);
+
   const actualPeriod = useSelector((state: RootState) => state.stats.period);
+  const actualType = useSelector((state: RootState) => state.stats.type);
+
+  const transLoadingStatus = useSelector((state: RootState) => state.transactions.loading);
+  const basicLoadingStatus = useSelector((state: RootState) => state.basicInvestments.loading);
+
 
   const handlePeriodChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     dispatch(setPeriod(event.target.value));
+  };
+
+  const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    dispatch(setType(event.target.value));
   };
 
   const filterItems = (data: dataMainType[]) => {
@@ -64,10 +77,29 @@ const Overview = () => {
 
     const filteredByPeriod = filterItems(data)
 
-    return filteredByPeriod.reduce((accumulator, currentValue) => {
+    return _.round(filteredByPeriod.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.value
-    },0)
+    },0), 2);
   }
+
+  useEffect(() => {
+    console.log('👉 transLoadingStatus: ', transLoadingStatus);
+    console.log('👉 basicLoadingStatus: ', basicLoadingStatus);
+    if (transLoadingStatus !== 'succeeded') {
+      dispatch(fetchTransactionsAsync()).then(() =>
+        dispatch(fetchTransCatsAsync())
+      );
+    }
+
+    if (basicLoadingStatus !== 'succeeded') {
+      dispatch(fetchItemsAsync()).then(() => {
+        dispatch(fetchBasicInvestsAsync()).then(() => {
+          dispatch(fetchInvestCatsAsync())
+        })
+      });
+    }
+
+  }, [transactions, invests]);
 
   return (
     <Layout>
@@ -97,14 +129,23 @@ const Overview = () => {
           <StyledTile className={'tile_stats'}>
             <StyledTileHeader>
               <StyledTileTitle>Statistics</StyledTileTitle>
-              <StyledTileSelector onChange={handlePeriodChange}>
-                {
-                  _.keys(StatPeriod).map((period, i) =>
-                    (<option selected={actualPeriod === _.values(StatPeriod)[i]} value={period}>{_.values(StatPeriod)[i]}</option>))
-                }
-              </StyledTileSelector>
+              <StyledTileSelectorsWrapper>
+                <StyledTileSelector onChange={handleTypeChange}>
+                  {
+                    _.keys(StatType).map((type, i) =>
+                      (<option selected={actualType === _.values(StatType)[i]} value={type}>{_.values(StatType)[i]}</option>))
+                  }
+                </StyledTileSelector>
+                <StyledTileSelector onChange={handlePeriodChange}>
+                  {
+                    _.keys(StatPeriod).map((period, i) =>
+                      (<option selected={actualPeriod === _.values(StatPeriod)[i]} value={period}>{_.values(StatPeriod)[i]}</option>))
+                  }
+                </StyledTileSelector>
+              </StyledTileSelectorsWrapper>
             </StyledTileHeader>
-            <TransactionTimeChart transactions={filterItems(transactions)} period={actualPeriod} />
+            {/*<TransactionTimeChart transactions={filterItems(transactions)} period={actualPeriod} />*/}
+            <TransactionTimeChart transactions={filterItems(actualType === StatType.investments ? invests : transactions)} period={actualPeriod} />
           </StyledTile>
           {/*<StyledTile className={'tile_basic'}>*/}
           {/*  <StyledTileHeader>Basic investments</StyledTileHeader>*/}

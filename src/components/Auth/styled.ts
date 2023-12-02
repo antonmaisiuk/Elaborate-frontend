@@ -101,6 +101,10 @@ export const StyledPassInputWrapper = styled.div`
   display: flex;
   height: 48px;
   
+  input{
+    border-radius: 8px 0 0 8px;
+  }
+  
 `
 export const StyledInputGroup = styled(InputGroup.Text)`
   border-radius: 0 8px 8px 0;

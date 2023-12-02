@@ -6,7 +6,7 @@ export interface IUser {
   username: string,
   email: string,
   phoneNumber: string,
-  avatar: string,
+  avatar?: string,
   role: string,
 }
 
@@ -31,9 +31,9 @@ interface UserSlice {
 
 const initialState: UserSlice = {
   userInfo: {
-    username: 'Anonymous',
-    email: 'anonymous@ann.com',
-    phoneNumber: '+111111111',
+    username: '',
+    email: '',
+    phoneNumber: '',
     avatar: 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg',
     role: 'User',
   },
@@ -55,11 +55,26 @@ const userSlice = createSlice({
     setCurrency: (state, action: PayloadAction<string>) => {
       state.currency = CurrencyEnum[action.payload as keyof typeof CurrencyEnum];
     },
+    setUser: (state, action: PayloadAction<IUser>) => {
+      state.userInfo = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(changeProfileAsync.fulfilled, (state, action) => {
-        state.userInfo = action.payload;
+
+        state.error = null;
+      })
+      .addCase(changeProfileAsync.rejected, (state, action) => {
+        state.loading = 'failed';
+        state.error = 'Something was wrong. Please try again.';
+      })
+      .addCase(getUserAsync.fulfilled, (state, action) => {
+        state.userInfo = {
+          ...action.payload,
+          avatar: 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg',
+          role: 'User',
+        };
 
         state.error = null;
       })
@@ -68,23 +83,23 @@ const userSlice = createSlice({
 
 export const {
   setLang,
-  setCurrency
+  setCurrency,
+  setUser
 } = userSlice.actions;
 
 export default userSlice.reducer;
 
 export const changeProfileAsync = createAsyncThunk(
   'user/changeProfile',
-  async (changedUser: IUser) => {
+  async (changedUser: IUser, { rejectWithValue }) => {
     try {
-      const response = await axios.post(
+      const response = await axios.put(
         `${backendApi}/api/users`,
-        JSON.stringify({
-          username: changedUser.username,
+        {
+          username: changedUser.username.replaceAll(' ', '-'),
           email: changedUser.email,
           phoneNumber: changedUser.phoneNumber,
-          role: changedUser.role,
-        }),
+        },
         {
           headers: {
             accept: 'application/json',
@@ -93,10 +108,55 @@ export const changeProfileAsync = createAsyncThunk(
         }
       );
 
-      // return Promise.all(response.data.map(async (invest: IBasicInvestment) =>({
-      //   ...invest,
-      //   value: invest.amount * await getPrice(state.basicInvestments.items.filter((item: IItem) => item.id === invest.itemId)[0].index, invest.categoryId),
-      // })));
+      return response.data;
+    } catch (error) {
+      return rejectWithValue({ error: 'Something was wrong. Please try again.'})
+    }
+  });
+
+export const changePasswordAsync = createAsyncThunk(
+  'user/changePassword',
+  async (changePass: { pass: string, confirmPass: string, email: string }, thunkAPI: any) => {
+
+    try {
+      const response = await axios.post(
+        `${backendApi}/api/users/change-password`,
+        {
+          password: changePass.pass,
+          confirmPassword: changePass.confirmPass ,
+          email: changePass.email,
+          token: getActualToken(),
+        },
+        {
+          headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${getActualToken()}`
+          },
+        }
+      );
+
+      console.log('👉 ',);
+
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  });
+
+export const getUserAsync = createAsyncThunk(
+  'user/getUser',
+  async () => {
+    try {
+      const response = await axios.get(
+        `${backendApi}/api/users`,
+        {
+          headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${getActualToken()}`
+          },
+        }
+      );
+
       return response.data;
     } catch (error) {
       throw error;

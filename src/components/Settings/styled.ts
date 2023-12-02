@@ -8,9 +8,9 @@ export const StyledSettings = styled.div`
   flex-direction: column;
   align-items: start;
   align-self: stretch;
-  overflow-y: scroll;
+  //overflow-y: scroll;
 
-  .
+  //.
 
   border-radius: 16px;
   background: #fff;
@@ -93,10 +93,12 @@ export const StyledSettingsMenu = styled.ul`
 export const StyledAuthForm = styled(Form)`
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
   
   .pass_wrap{
     display: flex;
-    gap: 15px;
+    flex-wrap: wrap;
+    gap: 30px;
   }
 `;
 
@@ -123,8 +125,10 @@ export const StyledProfileForm = styled(Form)`
   }
   
   .profile_other{
+    width: 100%;
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
     gap: 20px;
   }
   
@@ -172,7 +176,7 @@ export const StyledProfileForm = styled(Form)`
   }
   
   button {
-    width: 20%;
+    max-width: 250px;
   }
 `
 export const StyledProfileControl = styled(Form.Control)`
@@ -188,6 +192,10 @@ export const StyledProfileControl = styled(Form.Control)`
 `
 export const StyledSettingsFormGroup = styled(Form.Group)`  
   margin-bottom: 2% ;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  
 `
 export const StyledPrefWrapper = styled.div`
   display: flex;

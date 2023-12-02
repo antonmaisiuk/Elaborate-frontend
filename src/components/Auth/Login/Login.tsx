@@ -16,6 +16,7 @@ import {fetchTransactionsAsync, fetchTransCatsAsync} from "../../../redux/transa
 import {fetchBasicInvestsAsync, fetchInvestCatsAsync, fetchItemsAsync} from "../../../redux/basicInvestSlice";
 import {useDispatch} from "react-redux";
 import {AppDispatch} from "../../../redux/store";
+import {setUser} from "../../../redux/userSlice";
 
 const Login = () => {
   const [errorMsg, setErrorMsg] = useState('');
@@ -57,7 +58,14 @@ const Login = () => {
         if (isTwoFactorEnabled) {
           setIs2FA(true)
         } else {
-          const { token, expiration } = JSON.parse(resData);
+          const { token, expiration, userDto:user } = JSON.parse(resData);
+          document.cookie = `token=${token}; expires=${new Date(expiration).toUTCString()};`;
+
+          dispatch(setUser({
+            ...user,
+            avatar: 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg',
+            role: 'user',
+          }))
 
           await dispatch(fetchTransactionsAsync()).then(() =>
             dispatch(fetchTransCatsAsync())
@@ -71,7 +79,6 @@ const Login = () => {
 
           setSpinnerActive(false);
           setSuccessMsg('Successfully logged')
-          document.cookie = `token=${token}; expires=${new Date(expiration).toUTCString()};`;
 
 
           setTimeout(() => {

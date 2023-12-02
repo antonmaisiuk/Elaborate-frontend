@@ -179,10 +179,6 @@ const Registration = () => {
               />
               <StyledInputGroup id='password' onClick={() => setShowPass(!showPass)} >
                 {showPass ? <OpenEyeIcon/> : <CloseEyeIcon/>}
-                {/*<Button variant="outline-secondary">*/}
-                {/*  Show*/}
-                {/*  {true ? 'Hide' : 'Show'}*/}
-                {/*</Button>*/}
               </StyledInputGroup>
             </StyledPassInputWrapper>
             <Tooltip id="password-tooltip" style={{whiteSpace: 'pre-line'}} />

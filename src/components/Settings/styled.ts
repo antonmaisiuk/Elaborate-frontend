@@ -3,8 +3,8 @@ import {Form} from "react-bootstrap";
 
 export const StyledSettings = styled.div`
   display: flex;
-  padding: 0 28px 56px 28px;
-  height: 100%;
+  padding: 0 28px 28px 28px;
+  //height: 80%;
   flex-direction: column;
   align-items: start;
   align-self: stretch;
@@ -33,17 +33,14 @@ export const StyledProfileContent = styled.div`
 export const StyledAuthContent = styled.div`
   width: 100%;
   height: 100%;
-  
+
   display: flex;
-  flex-direction: column;
+  align-content: center;
   justify-content: center;
-  align-items: center;
-  
-  .pass{
-    grid-area: pass;
-  }
+  gap: 30px;
+
   .btn{
-    grid-area: btn;
+    grid-column: 1 / 3;
   }
   .changePassword{
     display: flex;
@@ -91,25 +88,38 @@ export const StyledSettingsMenu = styled.ul`
   }
 `
 export const StyledAuthForm = styled(Form)`
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
+  //display: flex;
+  //flex-direction: column;
+  //flex-wrap: wrap;
+
+  display: grid;
+  grid-template-columns: auto auto;
+  align-content: center;
+  justify-content: center;
+  gap: 30px;
   
   .pass_wrap{
     display: flex;
     flex-wrap: wrap;
     gap: 30px;
   }
+
+  @media only screen and (max-width: 440px) {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
 `;
 
 export const StyledProfileForm = styled(Form)`
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 
-  margin-bottom: 15px;
+  //margin-bottom: 15px;
   
   .changeProfile{
     display: flex;
@@ -126,15 +136,18 @@ export const StyledProfileForm = styled(Form)`
   
   .profile_other{
     width: 100%;
-    display: flex;
+    display: grid;
+    grid-template-columns: auto auto auto;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 30px;
   }
   
   .profile_avatar {
-    width: 150px;
-    height: 150px;
+    grid-column: 1 / 4;
+    
+    width: 100%;
+    height: 100%;
 
     position: relative;
     
@@ -142,16 +155,14 @@ export const StyledProfileForm = styled(Form)`
     justify-content: center;
     align-items: center;
 
-    border: 1px solid #D0D5DD;
     border-radius: 100%;
-    //background-color: rgba(228, 228, 228, 0.54);
-
     cursor: pointer;
   }
 
   .profile_avatar img {
     position: absolute;
-    width: 100%;
+    height: 100%;
+    border: 1px solid #D0D5DD;
     
     border-radius: 100%;
   }
@@ -176,7 +187,17 @@ export const StyledProfileForm = styled(Form)`
   }
   
   button {
+    grid-column: 2 / 3;
     max-width: 250px;
+  }
+
+  @media only screen and (max-width: 440px) {
+    .profile_other{
+      display: flex;
+    }
+    .profile_avatar{
+      height: auto;
+    }
   }
 `
 export const StyledProfileControl = styled(Form.Control)`
@@ -191,11 +212,14 @@ export const StyledProfileControl = styled(Form.Control)`
   color: #1c1f22;
 `
 export const StyledSettingsFormGroup = styled(Form.Group)`  
-  margin-bottom: 2% ;
+  //margin-bottom: 2% ;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  
+
+  @media only screen and (max-width: 440px) {
+    width: 100%;
+  }
 `
 export const StyledPrefWrapper = styled.div`
   display: flex;

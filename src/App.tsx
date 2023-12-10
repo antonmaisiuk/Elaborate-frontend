@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import Registration from './components/Auth/Registration/Registration';
 import Login from './components/Auth/Login/Login';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -13,11 +13,11 @@ import BasicInvestments from "./components/Investments/BasicInvestments/BasicInv
 import {Provider, useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState, store} from './redux/store';
 import Statistics from './components/Statistics/Statistics'
-import {BasicInvestmentType} from "./components/Investments/Overview/InvestOverview";
+import InvestOverview, {BasicInvestmentType} from "./components/Investments/Overview/InvestOverview";
 import SetNewPassword from "./components/Auth/SetNewPassword/SetNewPassword";
 import Settings from "./components/Settings/Settings";
 import {getUserAsync} from "./redux/userSlice";
-
+import './i18n';
 
 export const getActualToken = () => {
   let token = null;
@@ -34,6 +34,7 @@ export const getActualToken = () => {
 
 const App = () => {
 
+  const [navVisible, toggleNavVisible] = useState(false);
 
   return (
       <Provider store={store}>
@@ -52,14 +53,15 @@ const App = () => {
             <Route path="/forgot" element={<ForgotPassword />}/>
             <Route path="/api/Authentication/reset-password" element={<SetNewPassword />}/>
             <Route element={<PrivateRoute/>}>
-              <Route path="/overview" element={<Overview/>}/>
-              <Route path="/transactions" element={<Transactions/>}/>
-              <Route path="/invest/stocks" element={<BasicInvestments basicInvestType={BasicInvestmentType.stocks}/>}/>
-              <Route path="/invest/metals" element={<BasicInvestments basicInvestType={BasicInvestmentType.metals}/>}/>
-              <Route path="/invest/crypto" element={<BasicInvestments basicInvestType={BasicInvestmentType.crypto}/>}/>
+              <Route path="/overview" element={<Overview visible={navVisible} toggle={toggleNavVisible}/>}/>
+              <Route path="/transactions" element={<Transactions  visible={navVisible} toggle={toggleNavVisible}/>}/>
+              <Route path="/invest" element={<InvestOverview visible={navVisible} toggle={toggleNavVisible}/>}/>
+              <Route path="/invest/stocks" element={<BasicInvestments visible={navVisible} toggle={toggleNavVisible} basicInvestType={BasicInvestmentType.stocks}/>}/>
+              <Route path="/invest/metals" element={<BasicInvestments visible={navVisible} toggle={toggleNavVisible} basicInvestType={BasicInvestmentType.metals}/>}/>
+              <Route path="/invest/crypto" element={<BasicInvestments visible={navVisible} toggle={toggleNavVisible} basicInvestType={BasicInvestmentType.crypto}/>}/>
               <Route path="/confirm" element={<EmailConfirm/>}/>
-              <Route path="/stats" element={<Statistics/>}/>
-              <Route path="/settings" element={<Settings/>}/>
+              <Route path="/stats" element={<Statistics visible={navVisible} toggle={toggleNavVisible}/>}/>
+              <Route path="/settings" element={<Settings visible={navVisible} toggle={toggleNavVisible}/>}/>
             </Route>
             <Route path="/" element={
               <GoogleOAuthProvider clientId="106155053534-6d2124m98sto75hhemhjo2fa0339l08n.apps.googleusercontent.com">

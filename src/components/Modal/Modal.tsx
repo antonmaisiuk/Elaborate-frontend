@@ -21,6 +21,7 @@ import {AppDispatch, RootState} from "../../redux/store";
 import {setModalType, toggleActive} from "../../redux/modalSlice";
 import {addBasicInvestsAsync, deleteBasicInvestAsync, updateBasicInvestAsync} from "../../redux/basicInvestSlice";
 import {IBasicInvestment, IItem} from "../Investments/Overview/InvestOverview";
+import {useTranslation} from "react-i18next";
 
 export enum ModalType {
   addTransaction,
@@ -34,6 +35,8 @@ export enum ModalType {
 const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
 
   const dispatch = useDispatch<AppDispatch>();
+  const { t } = useTranslation();
+
   const modalType = useSelector((state: RootState) => state.modal.modalType);
   const isActive = useSelector((state: RootState) => state.modal.isActive);
   const modalData = useSelector((state: RootState) => state.modal.modalData);
@@ -197,7 +200,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         await handleNewTransaction(e)
       }}>
         <StyledFormGroup controlId='name'>
-          <StyledFormLabel>Title</StyledFormLabel>
+          <StyledFormLabel>{t('table.title')}</StyledFormLabel>
           <StyledFormControl
             type='text'
             name='name'
@@ -208,22 +211,22 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
           />
         </StyledFormGroup>
         <StyledFormGroup controlId="categoryId">
-          <StyledFormLabel>Category</StyledFormLabel>
+          <StyledFormLabel>{t('table.category')}</StyledFormLabel>
           <StyledFormSelect
             type="text"
             name="categoryId"
-            placeholder='Category'
+            placeholder={t('table.category')}
             onChange={handleSelectChange}
             required
           >
-            <option disabled>Category</option>
+            <option disabled>{t('table.category')}</option>
             {modalCatData.map((cat) => (
               <option value={cat.id}>{cat.name}</option>
             ))}
           </StyledFormSelect>
         </StyledFormGroup>
         <StyledFormGroup controlId="date">
-          <StyledFormLabel>Date</StyledFormLabel>
+          <StyledFormLabel>{t('table.date')}</StyledFormLabel>
           <StyledFormControl
             type="date"
             name="date"
@@ -232,7 +235,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
           />
         </StyledFormGroup>
         <StyledFormGroup controlId="comment">
-          <StyledFormLabel>Comment</StyledFormLabel>
+          <StyledFormLabel>{t('table.comment')}</StyledFormLabel>
           <StyledFormControl
             type="text"
             name="comment"
@@ -244,7 +247,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
           />
         </StyledFormGroup>
         <StyledFormGroup controlId="value">
-          <StyledFormLabel>Amount</StyledFormLabel>
+          <StyledFormLabel>{t('table.total')}</StyledFormLabel>
           <StyledFormControl
             type="number"
             name="value"
@@ -257,7 +260,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         </StyledFormGroup>
         {errorMsg && <StyledError> {errorMsg} </StyledError>}
         <StyledButton variant="success" type="submit">
-          Save
+          {t('modal.save')}
         </StyledButton>
       </StyledForm>
     )
@@ -301,7 +304,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
           </StyledFormSelect>
         </StyledFormGroup>
         <StyledFormGroup controlId="comment">
-          <StyledFormLabel>Comment</StyledFormLabel>
+          <StyledFormLabel>{t('table.comment')}</StyledFormLabel>
           <StyledFormControl
             type="text"
             name="comment"
@@ -311,7 +314,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
           />
         </StyledFormGroup>
         <StyledFormGroup controlId="amount">
-          <StyledFormLabel>Amount</StyledFormLabel>
+          <StyledFormLabel>{t('table.amount')}</StyledFormLabel>
           <StyledFormControl
             type="number"
             name="amount"
@@ -324,7 +327,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         </StyledFormGroup>
         {errorMsg && <StyledError> {errorMsg} </StyledError>}
         <StyledButton variant="success" type="submit">
-          Save
+          {t('modal.save')}
         </StyledButton>
       </StyledForm>
     )
@@ -335,31 +338,31 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
       <StyledDetailsWrapper>
 
         <StyledFormGroup controlId="category">
-          <StyledFormLabel>Investment Type</StyledFormLabel>
+          <StyledFormLabel>{t('modal.investmentType')}</StyledFormLabel>
           <StyledItem>
             {modalData.category}
           </StyledItem>
         </StyledFormGroup>
         <StyledFormGroup controlId="item">
-          <StyledFormLabel>Index</StyledFormLabel>
+          <StyledFormLabel>{t('table.index')}</StyledFormLabel>
           <StyledItem>
             {(modalData as IBasicInvestment).item}
           </StyledItem>
         </StyledFormGroup>
         <StyledFormGroup controlId="date">
-          <StyledFormLabel>Date</StyledFormLabel>
+          <StyledFormLabel>{t('table.date')}</StyledFormLabel>
           <StyledItem>
             {modalData.date}
           </StyledItem>
         </StyledFormGroup>
         <StyledFormGroup controlId="comment">
-          <StyledFormLabel>Comment</StyledFormLabel>
+          <StyledFormLabel>{t('table.comment')}</StyledFormLabel>
           <StyledItem>
             {modalData.comment}
           </StyledItem>
         </StyledFormGroup>
         <StyledFormGroup controlId="amount">
-          <StyledFormLabel>Amount</StyledFormLabel>
+          <StyledFormLabel>{t('table.amount')}</StyledFormLabel>
           <StyledItem>
             {(modalData as IBasicInvestment).amount}
           </StyledItem>
@@ -373,10 +376,10 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         <StyledButtonGroup>
           {errorMsg && <StyledError> {errorMsg} </StyledError>}
           <StyledButton variant="warning" onClick={() => dispatch(setModalType(ModalType.editBasicInvest))}>
-            Edit
+            {t('modal.edit')}
           </StyledButton>
           <StyledButton variant="danger" onClick={async (e) => await handleDeleteBasicInvest(e)}>
-            Delete
+            {t('modal.deletel')}
           </StyledButton>
         </StyledButtonGroup>
 
@@ -388,7 +391,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
       <StyledDetailsWrapper>
 
         <StyledFormGroup controlId="name">
-          <StyledFormLabel>Title</StyledFormLabel>
+          <StyledFormLabel>{t('table.title')}</StyledFormLabel>
           <StyledItem>
             {
               // @ts-ignore
@@ -398,25 +401,25 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
 
         </StyledFormGroup>
         <StyledFormGroup controlId="Category">
-          <StyledFormLabel>Category</StyledFormLabel>
+          <StyledFormLabel>{t('table.category')}</StyledFormLabel>
           <StyledItem>
             {modalData?.category}
           </StyledItem>
         </StyledFormGroup>
         <StyledFormGroup controlId="date">
-          <StyledFormLabel>Date</StyledFormLabel>
+          <StyledFormLabel>{t('table.date')}</StyledFormLabel>
           <StyledItem>
             {modalData?.date}
           </StyledItem>
         </StyledFormGroup>
         <StyledFormGroup controlId="comment">
-          <StyledFormLabel>Comment</StyledFormLabel>
+          <StyledFormLabel>{t('table.comment')}</StyledFormLabel>
           <StyledItem>
             {modalData?.comment}
           </StyledItem>
         </StyledFormGroup>
         <StyledFormGroup controlId="Value">
-          <StyledFormLabel>Amount</StyledFormLabel>
+          <StyledFormLabel>{t('table.total')}</StyledFormLabel>
           <StyledItem>
             {modalData?.value}
           </StyledItem>
@@ -424,10 +427,10 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         <StyledButtonGroup>
           {errorMsg && <StyledError> {errorMsg} </StyledError>}
           <StyledButton variant="warning" onClick={() => dispatch(setModalType(ModalType.editTransaction))}>
-            Edit
+            {t('modal.edit')}
           </StyledButton>
           <StyledButton variant="danger" onClick={async (e) => await handleDeleteTransactions(e)}>
-            Delete
+            {t('modal.delete')}
           </StyledButton>
         </StyledButtonGroup>
 
@@ -442,7 +445,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         await handleEditTransaction(e)
       }}>
         <StyledFormGroup controlId="name">
-          <StyledFormLabel>Title</StyledFormLabel>
+          <StyledFormLabel>{t('table.title')}</StyledFormLabel>
           <StyledFormControl
             type="text"
             name="name"
@@ -456,11 +459,11 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
           />
         </StyledFormGroup>
         <StyledFormGroup controlId="categoryId">
-          <StyledFormLabel>Category</StyledFormLabel>
+          <StyledFormLabel>{t('table.category')}</StyledFormLabel>
           <StyledFormSelect
             type="text"
             name="categoryId"
-            placeholder='Category'
+            placeholder={t('table.category')}
             defaultValue={modalData?.categoryId}
             onChange={handleSelectEditEvent}
             required
@@ -471,7 +474,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
           </StyledFormSelect>
         </StyledFormGroup>
         <StyledFormGroup controlId="date">
-          <StyledFormLabel>Date</StyledFormLabel>
+          <StyledFormLabel>{t('table.date')}</StyledFormLabel>
           <StyledFormControl
             type="date"
             name="date"
@@ -480,7 +483,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
           />
         </StyledFormGroup>
         <StyledFormGroup controlId="comment">
-          <StyledFormLabel>Comment</StyledFormLabel>
+          <StyledFormLabel>{t('table.comment')}</StyledFormLabel>
           <StyledFormControl
             type="text"
             name="comment"
@@ -491,7 +494,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
           />
         </StyledFormGroup>
         <StyledFormGroup controlId="value">
-          <StyledFormLabel>Amount</StyledFormLabel>
+          <StyledFormLabel>{t('table.total')}</StyledFormLabel>
           <StyledFormControl
             type="number"
             name="value"
@@ -505,10 +508,10 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         {errorMsg && <StyledError> {errorMsg} </StyledError>}
         <StyledButtonGroup>
           <StyledButton variant='success' type='submit'>
-            Save
+            {t('modal.save')}
           </StyledButton>
           <StyledButton variant='danger' onClick={() => dispatch(setModalType(ModalType.transactionDetails))}>
-            Cancel
+            {t('modal.cancel')}
           </StyledButton>
         </StyledButtonGroup>
       </StyledForm>
@@ -521,13 +524,14 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         await handleEditBasicInvest(e)
       }}>
         <StyledFormGroup controlId="categoryId">
-          <StyledFormLabel>Investment Type</StyledFormLabel>
+          <StyledFormLabel>{t('modal.investmentType')}</StyledFormLabel>
           <StyledFormSelect
             type="text"
             name="categoryId"
             placeholder='Investment Type'
             defaultValue={(modalData as IBasicInvestment).categoryId}
             onChange={handleSelectEditEvent}
+            disabled
             required
           >
             {modalCatData.map((cat) => (
@@ -536,11 +540,11 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
           </StyledFormSelect>
         </StyledFormGroup>
         <StyledFormGroup controlId="itemId">
-          <StyledFormLabel>Index</StyledFormLabel>
+          <StyledFormLabel>{t('table.index')}</StyledFormLabel>
           <StyledFormSelect
             type="text"
             name="itemId"
-            placeholder='Index'
+            placeholder={t('table.index')}
             defaultValue={(modalData as IBasicInvestment).itemId}
             onChange={handleSelectEditEvent}
             required
@@ -551,7 +555,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
           </StyledFormSelect>
         </StyledFormGroup>
         <StyledFormGroup controlId="comment">
-          <StyledFormLabel>Comment</StyledFormLabel>
+          <StyledFormLabel>{t('table.comment')}</StyledFormLabel>
           <StyledFormControl
             type="text"
             name="comment"
@@ -562,7 +566,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
           />
         </StyledFormGroup>
         <StyledFormGroup controlId="amount">
-          <StyledFormLabel>Amount</StyledFormLabel>
+          <StyledFormLabel>{t('table.amount')}</StyledFormLabel>
           <StyledFormControl
             type="number"
             name="amount"
@@ -576,10 +580,10 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         {errorMsg && <StyledError> {errorMsg} </StyledError>}
         <StyledButtonGroup>
           <StyledButton variant='success' type='submit'>
-            Save
+            {t('modal.save')}
           </StyledButton>
           <StyledButton variant='danger' onClick={() => dispatch(setModalType(ModalType.basicInvestDetails))}>
-            Cancel
+            {t('modal.cancel')}
           </StyledButton>
         </StyledButtonGroup>
       </StyledForm>

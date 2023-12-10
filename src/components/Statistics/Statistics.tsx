@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import PieChartComponent from './PieChartComponent/PieChartComponent';
 import TransactionTimeChart from './TransactionTimeChart/TransactionTimeChart';
 import {fetchTransactionsAsync, fetchTransCatsAsync,} from '../../redux/transactionSlice';
@@ -6,7 +6,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../../redux/store';
 import {dataMainType} from '../Table/Table';
 import Layout from "../Layout/Layout";
-import Navigation from "../Navigation/Navigation";
+import Navigation, {NavInterface} from "../Navigation/Navigation";
 import Content from "../Content/Content";
 import Header from "../Header/Header";
 import {StyledSelectorsBlock, StyledTitle} from "../Transactions/style";
@@ -16,9 +16,16 @@ import {fetchBasicInvestsAsync, fetchInvestCatsAsync, fetchItemsAsync} from "../
 import moment from "moment";
 import {StyledChart, StyledCharts, StyledChartTitle, StyledSelector} from "./styled";
 import {ResponsiveContainer} from "recharts";
+import {useTranslation} from "react-i18next";
+import {StyledTileHeader} from "../Overview/styled";
 
-const Statistics: React.FC = () => {
+const Statistics: FC<NavInterface> = ({
+																				visible,
+																				toggle,
+																			}) => {
 	const dispatch = useDispatch<AppDispatch>();
+	const { t } = useTranslation();
+
 	const actualType = useSelector((state: RootState) => state.stats.type);
 	const actualPeriod = useSelector((state: RootState) => state.stats.period);
 	const transLoadingStatus = useSelector((state: RootState) => state.transactions.loading);
@@ -32,8 +39,6 @@ const Statistics: React.FC = () => {
 
 
 	useEffect(() => {
-		console.log('👉 transLoadingStatus: ', transLoadingStatus);
-		console.log('👉 basicLoadingStatus: ', basicLoadingStatus);
 		if (transLoadingStatus !== 'succeeded') {
 			dispatch(fetchTransactionsAsync()).then(() =>
 				dispatch(fetchTransCatsAsync())
@@ -102,35 +107,38 @@ const Statistics: React.FC = () => {
 	// Filter and sort transactions
 	return (
 		<Layout>
-			<Navigation/>
-			<Content>
-				<Header/>
-				<StyledTitle>Statistics</StyledTitle>
+			<Header toggle={toggle} visible={visible}/>
+			<Navigation toggle={toggle} visible={visible}/>
+			<Content onClick={() => toggle(false)}>
+				<StyledTileHeader>
+					<StyledTitle>{t('statistics')}</StyledTitle>
 
-				<StyledSelectorsBlock>
-					<StyledSelector onChange={handleTypeChange}>
-						{
-							_.keys(StatType).map((type, i) =>
-								(<option selected={actualType === _.values(StatType)[i]} value={type}>{_.values(StatType)[i]}</option>))
-						}
-					</StyledSelector>
-					<StyledSelector onChange={handlePeriodChange}>
-						{
-							_.keys(StatPeriod).map((period, i) =>
-								(<option selected={actualPeriod === _.values(StatPeriod)[i]} value={period}>{_.values(StatPeriod)[i]}</option>))
-						}
-					</StyledSelector>
-				</StyledSelectorsBlock>
+					<StyledSelectorsBlock>
+						<StyledSelector onChange={handleTypeChange}>
+							{
+								_.keys(StatType).map((type, i) =>
+									(<option selected={actualType === _.values(StatType)[i]} value={type}>{_.values(StatType)[i]}</option>))
+							}
+						</StyledSelector>
+						<StyledSelector onChange={handlePeriodChange}>
+							{
+								_.keys(StatPeriod).map((period, i) =>
+									(<option selected={actualPeriod === _.values(StatPeriod)[i]} value={period}>{_.values(StatPeriod)[i]}</option>))
+							}
+						</StyledSelector>
+					</StyledSelectorsBlock>
+				</StyledTileHeader>
+
 
 				<StyledCharts>
 					<StyledChart>
-						<StyledChartTitle>Pie chart</StyledChartTitle>
+						<StyledChartTitle>{t('pieChart')}</StyledChartTitle>
 						<PieChartComponent items={filteredItems} />
 					</StyledChart>
-					<StyledChart>
-						<StyledChartTitle>Area chart</StyledChartTitle>
-						<TransactionTimeChart transactions={filteredItems} period={actualPeriod} />
-					</StyledChart>
+					{/*<StyledChart>*/}
+					{/*	<StyledChartTitle>Area chart</StyledChartTitle>*/}
+					{/*	<TransactionTimeChart transactions={filteredItems} period={actualPeriod} />*/}
+					{/*</StyledChart>*/}
 
 				</StyledCharts>
 

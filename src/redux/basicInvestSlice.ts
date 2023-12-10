@@ -309,7 +309,8 @@ export const getPrice = async (index: string, categoryId: string) => {
             `${metalsApi}${index}&symbols=USD`,
             {
               headers: {
-                accept: 'application/json',
+                // 'Sec-Fetch-Mode': 'no-cors',
+                // accept: 'application/json',
               },
             }
           );

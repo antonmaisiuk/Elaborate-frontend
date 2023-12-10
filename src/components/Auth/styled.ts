@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import {Button, Form, InputGroup} from "react-bootstrap";
 import GoogleIcon from "../../assets/GoogleIcon/GoogleIcon";
 import {GoogleLogin} from "@react-oauth/google";
+import {device} from "../../devices/devices";
 
 export const AuthContainer = styled.div`
   display: flex;
@@ -19,6 +20,19 @@ export const AuthWrapper = styled.div`
   justify-content: center;
   align-items: center;
   width: 25%;
+  
+  @media ${device.tablet} {
+    width: 40%;
+  }  
+  @media ${device.mobileL} {
+    width: 60%;
+  }
+  @media ${device.mobileM} {
+    width: 70%;
+  }
+  @media ${device.mobileS} {
+    width: 75%;
+  }
 `;
 
 export const StyledAuthLogo = styled.h1`

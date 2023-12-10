@@ -1,4 +1,9 @@
-import React from 'react';
+import React, {FC} from 'react';
+import Layout from "../../Layout/Layout";
+import Navigation, {NavInterface} from "../../Navigation/Navigation";
+import Content from "../../Content/Content";
+import Header from "../../Header/Header";
+import {StyledTitle} from "../../Transactions/style";
 
 export enum BasicInvestmentType {
   stocks,
@@ -31,11 +36,19 @@ export interface IItem {
   categoryInvestmentId:	string
 }
 
-const InvestOverview = () => {
+const InvestOverview: FC<NavInterface> = ({
+  visible,
+  toggle,
+}) => {
   return (
-    <div>
+    <Layout>
+      <Header toggle={toggle} visible={visible}/>
+      <Navigation toggle={toggle} visible={visible}/>
+      <Content>
+        <StyledTitle>Investments Overview</StyledTitle>
 
-    </div>
+      </Content>
+    </Layout>
   );
 };
 

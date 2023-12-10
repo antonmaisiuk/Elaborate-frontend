@@ -48,7 +48,7 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({
   return (
     data.length ?
       <ResponsiveContainer width="100%" height={250}>
-        <PieChart width={100} height={200}>
+        <PieChart>
           <Pie
             dataKey="value"
             data={data}

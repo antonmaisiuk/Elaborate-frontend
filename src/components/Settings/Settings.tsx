@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../../redux/store';
 import Layout from "../Layout/Layout";
-import Navigation from "../Navigation/Navigation";
+import Navigation, {NavInterface} from "../Navigation/Navigation";
 import Content from "../Content/Content";
 import Header from "../Header/Header";
 import {StyledTitle} from "../Transactions/style";
@@ -29,11 +29,9 @@ import {
 import {
   changePasswordAsync,
   changeProfileAsync,
-  CurrencyEnum,
-  getUserAsync,
+  getUserAsync, ILang,
   IUser,
-  LangEnum,
-  setCurrency,
+  setCurrency, setIsDark,
   setLang
 } from "../../redux/userSlice";
 import {ColorRing} from "react-loader-spinner";
@@ -42,20 +40,29 @@ import OpenEyeIcon from "../../assets/OpenEye/OpenEyeIcon";
 import CloseEyeIcon from "../../assets/CloseEye/CloseEyeIcon";
 import validator from "validator";
 import {useNavigate} from "react-router-dom";
+import {useTranslation} from "react-i18next";
 
 export enum SettingsType {
   profile = 'Profile',
-  preferences = 'Preferences',
+  // preferences = 'Preferences',
   auth = 'Auth',
 }
 
-const Settings: React.FC = () => {
+const Settings: FC<NavInterface> = ({
+                              visible,
+                              toggle,
+                            }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const { t } = useTranslation();
+
   const currentType = useSelector((state: RootState) => state.settings.type);
   const user = useSelector((state: RootState) => state.user.userInfo);
   const userError = useSelector((state: RootState) => state.user.error);
-  const currentLang = useSelector((state: RootState) => state.user.lang);
-  const currentCurr = useSelector((state: RootState) => state.user.currency);
+  const currentLang = useSelector((state: RootState) => state.user.userInfo.lang);
+  const currentCurr = useSelector((state: RootState) => state.user.userInfo.currency);
+  const isDark = useSelector((state: RootState) => state.user.userInfo.isDarkScreen);
+  const languages = useSelector((state: RootState) => state.user.languages);
+  const currencies = useSelector((state: RootState) => state.user.currencies);
 
   const [isPassCorrect, setIsPassCorrect] = useState(false);
   const [showPass, setShowPass] = useState(false);
@@ -81,7 +88,6 @@ const Settings: React.FC = () => {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const {name, value} = event.target;
 
-    console.log('👉 name: ', name);
     if (/pass/i.test(name)) {
       if (name === 'pass') {
         if (validator.isStrongPassword(value, {
@@ -90,17 +96,17 @@ const Settings: React.FC = () => {
         })) {
           setErrorMsg('');
           setIsPassCorrect(true);
-          setSuccessMsg('Strong password')
+          setSuccessMsg(t('settings.strongPass'))
         } else {
           setSuccessMsg('');
           setIsPassCorrect(false);
-          setErrorMsg('New password is\'t strong.')
+          setErrorMsg(t('settings.weakPass'))
         }
       } else  {
         if (name === 'confirmPass' && changePass.pass !== value) {
           setIsPassCorrect(false);
           setSuccessMsg('');
-          setErrorMsg('Passwords aren\'t the same');
+          setErrorMsg(t('settings.diffPass'));
         } else {
           setIsPassCorrect(true);
           setSuccessMsg('');
@@ -112,12 +118,7 @@ const Settings: React.FC = () => {
         ...prevData,
         [name]: value,
       }));
-
-
-
-      console.log('👉 change pass: ', changePass);
     }
-
 
     setChangedUser((prevData) => ({
       ...prevData,
@@ -142,7 +143,7 @@ const Settings: React.FC = () => {
       setTimeout(() => {setErrorMsg('')}, 3e3);
     } else {
       dispatch(getUserAsync());
-      setSuccessMsg('Profile was updated successfully');
+      setSuccessMsg(t('settings.successProfile'));
       setTimeout(() => {setSuccessMsg('')}, 3e3);
     }
 
@@ -164,7 +165,7 @@ const Settings: React.FC = () => {
     //   setTimeout(() => {setErrorMsg('')}, 3e3);
     // } else {
       // dispatch(getUserAsync());
-      setSuccessMsg('Password was updated successfully. Please login again.');
+      setSuccessMsg(t('settings.successPass'));
       setTimeout(() => {
         document.cookie = "token= ; expires = Thu, 01 Jan 1970 00:00:00 GMT";
         navigate('/login');
@@ -174,42 +175,18 @@ const Settings: React.FC = () => {
     resetForm();
   }
 
-  const renderPreferencesType = () => {
-    return (
-        <StyledPrefContent>
-          <StyledPrefWrapper>
-            <StyledFormLabel>Language:</StyledFormLabel>
-            <StyledFormSelect onChange={(e) => dispatch(setLang(e.target.value))}>
-              {
-                _.keys(LangEnum).map((type, i) =>
-                  (<option selected={currentLang === _.values(LangEnum)[i]} value={type}>{_.values(LangEnum)[i]}</option>))
-              }
-            </StyledFormSelect>
-          </StyledPrefWrapper>
-          <StyledPrefWrapper>
-            <StyledFormLabel>Currency:</StyledFormLabel>
-            <StyledFormSelect onChange={(e) => dispatch(setCurrency(e.target.value))}>
-              {
-                _.keys(CurrencyEnum).map((type, i) =>
-                  (<option selected={currentCurr === _.values(CurrencyEnum)[i]} value={type}>{_.values(CurrencyEnum)[i]}</option>))
-              }
-            </StyledFormSelect>
-          </StyledPrefWrapper>
-        </StyledPrefContent>
-    );
-  }
   const renderAuthType = () => {
     return (
       <StyledAuthContent>
         <StyledAuthForm onSubmit={handlePasswordChange}>
-          <StyledSettingsFormGroup className={'pass_wrap'}>
+          {/*<StyledSettingsFormGroup className={'pass_wrap'}>*/}
             <StyledSettingsFormGroup className={'pass'} controlId="pass">
-              <StyledFormLabel>New Password</StyledFormLabel>
+              <StyledFormLabel>{t('settings.newPass')}</StyledFormLabel>
               <StyledPassInputWrapper>
                 <StyledProfileControl
                   type={showPass ? 'text' : 'password'}
                   name="pass"
-                  placeholder='Your new password'
+                  placeholder={t('settings.newPass')}
                   onChange={handleInputChange}
                   required
                 />
@@ -220,16 +197,10 @@ const Settings: React.FC = () => {
             </StyledSettingsFormGroup>
             <StyledSettingsFormGroup className={'pass'} controlId="confirmPass">
               <StyledFormLabel>
-                Confirm Password
+                {t('settings.confirmPass')}
                 <StyledTooltip
                   data-tooltip-id="password-tooltip"
-                  data-tooltip-html='The password must have at least:
-                <ul>
-                  <li>8 characters</li>
-                  <li>1 lowercase and uppercase letter</li>
-                  <li>1 number</li>
-                  <li>1 symbol</li>
-                </ul>'
+                  data-tooltip-html={t('settings.tooltip')}
                   data-tooltip-place="right">
                   ?
                 </StyledTooltip>
@@ -238,7 +209,7 @@ const Settings: React.FC = () => {
                 <StyledProfileControl
                   type={showPass ? 'text' : 'password'}
                   name="confirmPass"
-                  placeholder='Confirm password'
+                  placeholder={t('settings.confirmPass')}
                   // value={formData.Email}
                   onChange={handleInputChange}
                   required
@@ -249,10 +220,10 @@ const Settings: React.FC = () => {
               </StyledPassInputWrapper>
               <Tooltip id="password-tooltip" style={{whiteSpace: 'pre-line'}} />
             </StyledSettingsFormGroup>
-          </StyledSettingsFormGroup>
+          {/*</StyledSettingsFormGroup>*/}
           <StyledButton variant="success" type="submit">
             { !toggleSpinner
-              ? 'Change password'
+              ? t('settings.changePass')
               : <ColorRing
                 visible={true}
                 height="40"
@@ -275,14 +246,14 @@ const Settings: React.FC = () => {
     return (
       <StyledProfileContent>
         <StyledProfileForm className={'changeProfile'} onSubmit={handleProfileChange}>
-          <StyledSettingsFormGroup className={'profile_avatar'} controlId="photo">
-            <img src={user.avatar} alt="Avatar"/>
-            <StyledProfileControl type='file' name='photo' accept='image/*'/>
-          </StyledSettingsFormGroup>
 
           <StyledSettingsFormGroup className={'profile_other'}>
+            <StyledSettingsFormGroup className={'profile_avatar'} controlId="photo">
+              <img src={user.avatar} alt="Avatar"/>
+              <StyledProfileControl type='file' name='photo' accept='image/*'/>
+            </StyledSettingsFormGroup>
             <StyledSettingsFormGroup controlId="username">
-              <StyledFormLabel>Nickname</StyledFormLabel>
+              <StyledFormLabel>{t('settings.nickName')}</StyledFormLabel>
               <StyledProfileControl
                 type="text"
                 name="username"
@@ -294,7 +265,7 @@ const Settings: React.FC = () => {
               />
             </StyledSettingsFormGroup>
             <StyledSettingsFormGroup controlId="email">
-              <StyledFormLabel>Email</StyledFormLabel>
+              <StyledFormLabel>{t('settings.email')}</StyledFormLabel>
               <StyledProfileControl
                 type="email"
                 name="email"
@@ -305,7 +276,7 @@ const Settings: React.FC = () => {
               />
             </StyledSettingsFormGroup>
             <StyledSettingsFormGroup controlId="phoneNumber">
-              <StyledFormLabel>Email</StyledFormLabel>
+              <StyledFormLabel>{t('settings.phone')}</StyledFormLabel>
               <StyledProfileControl
                 type="tel"
                 name="phoneNumber"
@@ -315,22 +286,51 @@ const Settings: React.FC = () => {
                 required
               />
             </StyledSettingsFormGroup>
+            <StyledSettingsFormGroup controlId="lang">
+              <StyledFormLabel>{t('settings.lang')}:</StyledFormLabel>
+              <StyledFormSelect onChange={(e) => dispatch(setLang(e.target.value))}>
+                {
+                  languages.map((langObj) =>
+                    (<option selected={currentLang === langObj.id} value={langObj.id}>{langObj.name}</option>))
+                }
+              </StyledFormSelect>
+            </StyledSettingsFormGroup>
+            <StyledSettingsFormGroup controlId="curr">
+              <StyledFormLabel>{t('settings.curr')}:</StyledFormLabel>
+              <StyledFormSelect onChange={(e) => dispatch(setCurrency(e.target.value))}>
+                {
+                  currencies.map((currObj) =>
+                    (<option selected={currentCurr === currObj.id} value={currObj.id}>{currObj.name}</option>))
+                }
+              </StyledFormSelect>
+            </StyledSettingsFormGroup>
+            <StyledSettingsFormGroup controlId="theme">
+              <StyledFormLabel>{t('settings.theme')}:</StyledFormLabel>
+              <StyledFormSelect onChange={(e) => dispatch(setIsDark(Boolean(e.target.value)))}>
+                {
+                  <>
+                    <option selected={isDark} value={1}>Dark</option>
+                    <option selected={!isDark} value={0}>Light</option>
+                  </>
+                }
+              </StyledFormSelect>
+            </StyledSettingsFormGroup>
+            <StyledButton variant="success" type="submit">
+              { !toggleSpinner
+                ? t('settings.save')
+                : <ColorRing
+                  visible={true}
+                  height="40"
+                  width="40"
+                  ariaLabel="spinner"
+                  wrapperStyle={{}}
+                  wrapperClass="blocks-wrapper"
+                  colors={['#F4F5F7', '#F4F5F7', '#F4F5F7', '#F4F5F7', '#F4F5F7']}
+                />
+              }
+            </StyledButton>
           </StyledSettingsFormGroup>
 
-          <StyledButton variant="success" type="submit">
-            { !toggleSpinner
-              ? 'Save profile changes'
-              : <ColorRing
-                visible={true}
-                height="40"
-                width="40"
-                ariaLabel="spinner"
-                wrapperStyle={{}}
-                wrapperClass="blocks-wrapper"
-                colors={['#F4F5F7', '#F4F5F7', '#F4F5F7', '#F4F5F7', '#F4F5F7']}
-              />
-            }
-          </StyledButton>
           {errorMsg && <StyledError> {errorMsg} </StyledError>}
           {successMsg && <StyledSuccess> {successMsg} </StyledSuccess>}
         </StyledProfileForm>
@@ -341,8 +341,6 @@ const Settings: React.FC = () => {
     switch (currentType) {
       case SettingsType.profile:
         return renderProfileType();
-      case SettingsType.preferences:
-        return renderPreferencesType();
       case SettingsType.auth:
         return renderAuthType();
       default:
@@ -352,10 +350,10 @@ const Settings: React.FC = () => {
 
   return (
     <Layout>
-      <Navigation/>
-      <Content>
-        <Header/>
-        <StyledTitle>Settings</StyledTitle>
+      <Header toggle={toggle} visible={visible}/>
+      <Navigation toggle={toggle} visible={visible}/>
+      <Content onClick={() => toggle(false)}>
+        <StyledTitle>{t('settings.settings')}</StyledTitle>
 
         <StyledSettings>
           <StyledSettingsMenu>
@@ -366,16 +364,11 @@ const Settings: React.FC = () => {
                   value={type}
                   onClick={() => dispatch(setType(type))}
                 >
-                  {_.values(SettingsType)[i]}
+                  {t(`settings.${_.values(SettingsType)[i]}`)}
                 </li>))
             }
-            {/*<li>Profile</li>*/}
-            {/*<li>Preferences</li>*/}
-            {/*<li>Auth</li>*/}
           </StyledSettingsMenu>
-          {/*<StyledSettingsContent>*/}
-            {getTemplateByType()}
-          {/*</StyledSettingsContent>*/}
+          {getTemplateByType()}
         </StyledSettings>
 
       </Content>

@@ -1,30 +1,51 @@
 import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import axios from 'axios';
 import {getActualToken} from "../App";
+import i18next from "i18next";
+import _ from "lodash";
 
 export interface IUser {
   username: string,
   email: string,
   phoneNumber: string,
+  lang: string,
+  currency: string,
+  isDarkScreen: boolean,
   avatar?: string,
-  role: string,
+  // role: string,
 }
 
-export enum LangEnum {
-  eng = 'English',
-  pl = 'Polish',
-  ru = 'Russian',
+export interface ILang {
+  id: string,
+  name: string,
+  index: string,
+}
+export interface ICurrency {
+  id: string,
+  name: string,
+  index: string,
 }
 
-export enum CurrencyEnum {
-  usd = 'US $',
-  pln = 'zł',
+// export enum LangEnum {
+//   eng = 'English',
+//   pl = 'Polish',
+//   ru = 'Russian',
+// }
+//
+export enum ThemeEnum {
+  dark = 'Dark',
+  white = 'White',
 }
+//
+// export enum CurrencyEnum {
+//   usd = 'US $',
+//   pln = 'zł',
+// }
 
 interface UserSlice {
   userInfo: IUser;
-  lang: LangEnum,
-  currency: CurrencyEnum,
+  languages: ILang[],
+  currencies: ICurrency[],
   loading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
   error: string | null; // Ошибка, если что-то пошло не так
 }
@@ -34,11 +55,14 @@ const initialState: UserSlice = {
     username: '',
     email: '',
     phoneNumber: '',
+    lang: '',
+    currency: '',
+    isDarkScreen: false,
     avatar: 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg',
-    role: 'User',
+    // role: 'User',
   },
-  lang: LangEnum.eng,
-  currency: CurrencyEnum.usd,
+  languages: [],
+  currencies: [],
   loading: 'idle',
   error: null,
 };
@@ -50,10 +74,13 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     setLang: (state, action: PayloadAction<string>) => {
-      state.lang = LangEnum[action.payload as keyof typeof LangEnum];
+      state.userInfo.lang = action.payload;
     },
     setCurrency: (state, action: PayloadAction<string>) => {
-      state.currency = CurrencyEnum[action.payload as keyof typeof CurrencyEnum];
+      state.userInfo.currency = action.payload;
+    },
+    setIsDark: (state, action: PayloadAction<boolean>) => {
+      state.userInfo.isDarkScreen = action.payload;
     },
     setUser: (state, action: PayloadAction<IUser>) => {
       state.userInfo = action.payload;
@@ -62,7 +89,13 @@ const userSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(changeProfileAsync.fulfilled, (state, action) => {
-
+        const currentLang = _.filter(state.languages, (lang) => state.userInfo.lang === lang.id)[0].index;
+        i18next
+          .changeLanguage(currentLang)
+          .then((t) => {
+            t('key'); // -> same as i18next.t
+          });
+        document.documentElement.lang = currentLang;
         state.error = null;
       })
       .addCase(changeProfileAsync.rejected, (state, action) => {
@@ -70,11 +103,25 @@ const userSlice = createSlice({
         state.error = 'Something was wrong. Please try again.';
       })
       .addCase(getUserAsync.fulfilled, (state, action) => {
+        const { user, userSettings, languagesList, currenciesList } = action.payload
         state.userInfo = {
-          ...action.payload,
+          ...user,
           avatar: 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg',
           role: 'User',
         };
+        state.userInfo.lang = userSettings?.languagesId;
+        state.userInfo.currency = userSettings?.currenciesId;
+        state.userInfo.isDarkScreen = userSettings?.isDarkScreen;
+        state.languages = languagesList;
+        state.currencies = currenciesList;
+
+        const currentLang = _.filter(state.languages, (lang) => state.userInfo.lang === lang.id)[0].index;
+        i18next
+          .changeLanguage(currentLang)
+          .then((t) => {
+            t('key'); // -> same as i18next.t
+          });
+        document.documentElement.lang = currentLang;
 
         state.error = null;
       })
@@ -84,6 +131,7 @@ const userSlice = createSlice({
 export const {
   setLang,
   setCurrency,
+  setIsDark,
   setUser
 } = userSlice.actions;
 
@@ -96,9 +144,16 @@ export const changeProfileAsync = createAsyncThunk(
       const response = await axios.put(
         `${backendApi}/api/users`,
         {
-          username: changedUser.username.replaceAll(' ', '-'),
-          email: changedUser.email,
-          phoneNumber: changedUser.phoneNumber,
+          userDto: {
+            username: changedUser.username,
+            email: changedUser.email,
+            phoneNumber: changedUser.phoneNumber
+          },
+          settingsDto: {
+            languagesId: changedUser.lang,
+            currenciesId: changedUser.currency,
+            isDarkScreen: changedUser.isDarkScreen,
+          }
         },
         {
           headers: {

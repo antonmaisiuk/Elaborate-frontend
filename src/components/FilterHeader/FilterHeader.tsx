@@ -14,6 +14,7 @@ import {setModalCatData, setModalType, toggleActive} from "../../redux/modalSlic
 import {useDispatch} from "react-redux";
 import {AppDispatch} from "../../redux/store";
 import {catMainType, TableType} from "../Table/Table";
+import {useTranslation} from "react-i18next";
 
 
 interface FilterHeaderInterface {
@@ -28,6 +29,7 @@ const FilterHeader: FC<FilterHeaderInterface & HTMLAttributes<HTMLDivElement>> =
    }) => {
 
   const dispatch = useDispatch<AppDispatch>();
+  const { t } = useTranslation();
 
   return (
     <StyledFilterHeader>
@@ -40,7 +42,7 @@ const FilterHeader: FC<FilterHeaderInterface & HTMLAttributes<HTMLDivElement>> =
           <StyledFilterSearch
             type="text"
             name="SearchText"
-            placeholder='Search here'
+            placeholder={t('filterHeader.searchHere')}
             onChange={searchFunc}
           />
           <SearchIcon/>
@@ -49,7 +51,7 @@ const FilterHeader: FC<FilterHeaderInterface & HTMLAttributes<HTMLDivElement>> =
           dispatch(setModalType(tableType === TableType.transactions ? ModalType.addTransaction : ModalType.addBasicInvest));
           dispatch(toggleActive(true));
           dispatch(setModalCatData(tableCategories));
-        }}>New</StyledNewButton>
+        }}>{t('filterHeader.new')}</StyledNewButton>
 
       </StyledFilterButtons>
     </StyledFilterHeader>

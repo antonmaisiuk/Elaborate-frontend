@@ -10,7 +10,9 @@ export const StyledTitle = styled.h2`
   line-height: 32px;
   cursor: default;
   
-  margin: 40px 0 15px 0;  
+  margin: 0;
+  padding: 0;
+  //margin: 40px 0 15px 0;  
 `;
 
 export const StyledSelectorsBlock = styled.div`

@@ -5,11 +5,11 @@ import {ColorRing} from "react-loader-spinner";
 
 export const StyledTableWrapper = styled.div`
   display: flex;
-  padding: 0 28px 56px 28px;
-  height: 100%;
+  padding: 0 28px 28px 28px;
+  max-height: 80%;
+  //max-width: 100%;
   flex-direction: column;
-  align-items: start;
-  align-self: stretch;
+  flex: 1;
   overflow-y: scroll;
   
 
@@ -17,18 +17,13 @@ export const StyledTableWrapper = styled.div`
   background: #fff;
   box-shadow: 0 20px 25px 0 rgba(76, 103, 100, 0.10);
   margin-top: 15px;
+
+  @media only screen and (max-width: 440px) {
+    padding: 0 15px 15px 15px;
+  } 
   
-  .pagination{
-    .page-link{
-      color: black;
-    }
-    .page-item.active .page-link{
-      //position: relative;
-      z-index: 0;
-      background-color: #25AB52;
-      border-color: #25AB52;
-      color: white;
-    }
+  @media only screen and (max-width: 320px) {
+    padding: 0 5px 5px 5px;
   }
 `
 
@@ -46,6 +41,10 @@ export const StyledTable = styled(Table)`
     text-align: left;
     font-weight: 700;
     text-transform: capitalize;
+
+    position: sticky;
+    top: 0;
+    background-color: #fff;
 
   }
   th, td{
@@ -71,9 +70,38 @@ export const StyledTable = styled(Table)`
       margin: 0;
     }
   }
-  
-  
+
+  @media only screen and (max-width: 440px) {
+    font-size: 3vw;
+  }
 `;
+export const StyledPagination = styled.div`
+  display: flex;
+  justify-content: center;
+  padding-top: 15px;
+  
+  ul{
+    margin: 0;
+    padding: 0;
+  }
+
+  .pagination{
+    .page-link{
+      color: black;
+    }
+    .page-item.active .page-link{
+      z-index: 0;
+      background-color: #25AB52;
+      border-color: #25AB52;
+      color: white;
+    }
+  }
+
+  @media only screen and (max-width: 440px) {
+    font-size: 3vw;
+  }
+`;
+
 export const StyledLoading = styled.div`
   display: flex;
   justify-content: center;

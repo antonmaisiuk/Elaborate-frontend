@@ -73,6 +73,7 @@ export const pl = {
       'stocks': 'Akcje',
       'crypto': 'Kryptowaluty',
       'metals': 'Metale',
+      'other': 'Pozostałe',
       'statistics': 'Statystyki',
       'pieChart': 'Diagram kołowy',
       'logout': 'Wyloguj się',

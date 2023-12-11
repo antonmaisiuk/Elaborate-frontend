@@ -14,6 +14,7 @@ export const StyledModalContainer = styled.div<{ isActive: boolean }>`
   opacity: 0;
   pointer-events: none;
   transition: 0.5s;
+  z-index: 1;
 
   ${props => props.isActive && `
     opacity: 1;
@@ -23,15 +24,33 @@ export const StyledModalContainer = styled.div<{ isActive: boolean }>`
 
 export const StyledModalContent = styled.div`
   display: inline-flex;
-  padding: 64px 64px 48px 64px;
+  padding: 64px;
   flex-direction: column;
   align-items: center;
   border-radius: 16px;
   background: #fff;
+  z-index: 1;
   
   width: 40%;
   max-width: 577px;
-  //height: 20%;
+
+  @media only screen and (max-width: 1024px) {
+    width: 50%;
+  }
+  
+  @media only screen and (max-width: 768px) {
+    width: 70%;
+  }
+  
+  @media only screen and (max-width: 425px) {
+    width: 90%;
+    padding: 32px;
+  }
+  
+  @media only screen and (max-width: 320px) {
+    width: 90%;
+    padding: 32px 24px;
+  }
 `
 
 export const StyledDetailsWrapper = styled.div`

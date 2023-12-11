@@ -60,66 +60,10 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
   // const itemsPerPage = 15;
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  // const handlePageChange = ({ selected }) => {
-  //   setCurrentPage(selected);
-  // };
-
-  const calculatePageSize = () => {
-    console.log('👉 containerRef: ', containerRef);
-    console.log('👉 containerRef.current: ', containerRef.current);
-    // @ts-ignore
-    const containerHeight = containerRef.current.clientHeight - 60;
-    const rowHeight = 60;
-    const itemsPerPage = Math.floor(containerHeight / rowHeight);
-    console.log('👉 containerHeight: ', containerHeight);
-    console.log('👉 itemsPerPage: ', itemsPerPage);
-    setItemsPerPage(itemsPerPage);
-  };
-
-  useEffect(() => {
-    calculatePageSize();
-
-  }, []);
-
-
-
   const [isLoaded, setIsLoaded] = useState(false);
-  const [sortedData, setSortedData] = useState<dataMainType[]>([...tableData]);
+  const [sortedData, setSortedData] = useState<dataMainType[]>(tableData);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [sortColumn, setSortColumn] = useState<string | null>(null);
-
-  const { t } = useTranslation();
-
-  useEffect(() => {
-    setSortedData(tableData);
-    // calculatePageSize();
-
-
-    if (tableType === TableType.transactions && transLoading === 'succeeded') setIsLoaded(true)
-    if (tableType === TableType.investments && basicInvestLoading === 'succeeded') setIsLoaded(true)
-  }, [tableData]);
-
-
-
-  function openDetailsModal(row: dataMainType) {
-    dispatch(setModalType(tableType === TableType.transactions ? ModalType.transactionDetails : ModalType.basicInvestDetails));
-    dispatch(setModalData(row));
-    dispatch(setModalCatData(tableCategories));
-    dispatch(toggleActive(true));
-  }
-
-  // @ts-ignore
-  function Items({currentItems}) {
-    return (
-      <>
-        {currentItems && currentItems.map((row: ITransaction) => (
-          <tr key={row.id} onClick={() => openDetailsModal(row)}>
-            { getRowByTableType(row)}
-          </tr>
-        ))}
-      </>
-    );
-  }
 
   const [pageCount, setPageCount] = useState<number>(0);
   const [itemOffset, setItemOffset] = useState(0);
@@ -133,48 +77,51 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
     date: new Date().toISOString(),
     value: 0,
   }]);
-  const handlePageClick = (event: { selected: number; }) => {
-    const newOffset = event.selected * itemsPerPage % sortedData.length;
-    setItemOffset(newOffset);
+
+  const { t } = useTranslation();
+
+  const calculatePageSize = () => {
+    // @ts-ignore
+    const containerHeight = containerRef.current.clientHeight - 60;
+    const rowHeight = 60;
+    const itemsPerPage = Math.floor(containerHeight / rowHeight);
+    setItemsPerPage(itemsPerPage);
   };
+
+  useEffect(() => {
+    calculatePageSize();
+
+  }, []);
+
+  useEffect(() => {
+    setSortedData(tableData);
+
+    // calculatePageSize();
+
+
+    if (tableType === TableType.transactions && transLoading === 'succeeded') setIsLoaded(true)
+    if (tableType === TableType.investments && basicInvestLoading === 'succeeded') setIsLoaded(true)
+  }, [tableData, tableType]);
 
   useEffect(() => {
     const endOffset = itemOffset + itemsPerPage;
     setCurrentItems(sortedData.slice(itemOffset, endOffset));
     setPageCount(Math.ceil(sortedData.length / itemsPerPage));
-  }, [itemOffset, itemsPerPage]);
-
-  // @ts-ignore
-  function PaginatedItems({itemsPerPage}) {
-    // const [pageCount, setPageCount] = useState<number>(0);
-    // const [itemOffset, setItemOffset] = useState(0);
-    // const [currentItems, setCurrentItems] = useState<dataMainType[]>([{
-    //   id: '',
-    //   name: '',
-    //   category: '',
-    //   categoryId: '',
-    //   itemId: '',
-    //   comment: '',
-    //   date: new Date().toISOString(),
-    //   value: 0,
-    // }]);
+  }, [itemOffset, tableData, sortedData]);
 
 
-
-    // const handlePageClick = (event: { selected: number; }) => {
-    //   const newOffset = event.selected * itemsPerPage % sortedData.length;
-    //   setItemOffset(newOffset);
-    // };
-
-    return (
-      <>
-        <tbody>
-          <Items currentItems={currentItems} />
-
-        </tbody>
-      </>
-    );
+  function openDetailsModal(row: dataMainType) {
+    dispatch(setModalType(tableType === TableType.transactions ? ModalType.transactionDetails : ModalType.basicInvestDetails));
+    dispatch(setModalData(row));
+    dispatch(setModalCatData(tableCategories));
+    dispatch(toggleActive(true));
   }
+
+
+  const handlePageClick = (event: { selected: number; }) => {
+    const newOffset = event.selected * itemsPerPage % sortedData.length;
+    setItemOffset(newOffset);
+  };
 
   const getNormalizedDate = (date: string) => {
     const [day, month, year] = date.split('.');
@@ -207,19 +154,19 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
     setSortColumn(column);
   };
 
-  const search = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = event.target;
-    if (value){
-      const searchResult = tableData.filter((item) => {
-        const {id, categoryId, ...obj } = item;
-
-        return _.values(obj).some((val) => new RegExp(value, 'i').test(String(val)))
-      });
-      setSortedData(searchResult)
-    } else {
-      setSortedData(tableData);
-    }
-  }
+  // const search = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { value } = event.target;
+  //   if (value){
+  //     const searchResult = tableData.filter((item) => {
+  //       const {id, categoryId, ...obj } = item;
+  //
+  //       return _.values(obj).some((val) => new RegExp(value, 'i').test(String(val)))
+  //     });
+  //     setSortedData(searchResult)
+  //   } else {
+  //     setSortedData(tableData);
+  //   }
+  // }
 
   const getHeadersByTableType = () => {
     switch (tableType) {
@@ -277,30 +224,38 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
     <>
       {/*<FilterHeader tableCategories={tableCategories} searchFunc={search} tableType={tableType}/>*/}
       <StyledTableWrapper ref={containerRef}>
-        {isLoaded ?
-          <>
+        {/*{isLoaded ?*/}
+        {/*  <>*/}
             <StyledTable>
               <thead>
-              <tr>{getHeadersByTableType()}</tr>
+                <tr>
+                  {getHeadersByTableType()}
+                </tr>
               </thead>
-              <PaginatedItems itemsPerPage={itemsPerPage}/>
+              <tbody>
+                {currentItems && currentItems.map((row: dataMainType) => (
+                  <tr key={row.id} onClick={() => openDetailsModal(row)}>
+                    { getRowByTableType(row)}
+                  </tr>
+                ))}
+              </tbody>
             </StyledTable>
-          </>
-          :
-          <>
-            <StyledLoading>
-              <ColorRing
-                visible={true}
-                height="80"
-                width="80"
-                ariaLabel="spinner"
-                wrapperStyle={{}}
-                wrapperClass="blocks-wrapper"
-                colors={['#25AB52', '#25AB52', '#25AB52', '#25AB52', '#25AB52']}
-              />
-            </StyledLoading>
-          </>
-        }
+          {/*</>*/}
+          {/*:*/}
+          {/*<>*/}
+          {/*  <StyledLoading>*/}
+          {/*    <ColorRing*/}
+          {/*      visible={true}*/}
+          {/*      height="80"*/}
+          {/*      width="80"*/}
+          {/*      ariaLabel="spinner"*/}
+          {/*      wrapperStyle={{}}*/}
+          {/*      wrapperClass="blocks-wrapper"*/}
+          {/*      colors={['#25AB52', '#25AB52', '#25AB52', '#25AB52', '#25AB52']}*/}
+          {/*    />*/}
+          {/*  </StyledLoading>*/}
+          {/*</>*/}
+        {/*}*/}
 
 
       </StyledTableWrapper>

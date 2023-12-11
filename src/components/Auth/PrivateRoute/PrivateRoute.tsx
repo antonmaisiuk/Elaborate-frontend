@@ -4,12 +4,13 @@ import {Navigate, Outlet, useNavigate} from "react-router-dom";
 import Login from '../Login/Login';
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../../../redux/store";
-import {getUserAsync} from "../../../redux/userSlice";
+import {getUserAsync, setRoute} from "../../../redux/userSlice";
 
 
 const PrivateRoute = () => {
 
   const dispatch = useDispatch<AppDispatch>();
+  dispatch(setRoute(window.location.href.split(/\d\//)[1]));
   const user = useSelector((state: RootState) => state.user.userInfo);
 
   useEffect(() => {

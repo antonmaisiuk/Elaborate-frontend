@@ -1,10 +1,16 @@
 import styled from 'styled-components';
 import {Button, Container, Form, Nav, Navbar, NavDropdown} from "react-bootstrap";
+import React from "react";
 
 export const StyledFilterHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  @media only screen and (max-width: 768px) {
+    width: 100%;
+    justify-content: center;
+  }
 `
 
 export const StyledFilterUl = styled.ul`
@@ -42,6 +48,7 @@ export const StyledFilterForm = styled(Form)`
   padding: 12px;
   align-items: center;
   margin-right: 15px;
+  position: relative;
 
   border-radius: 12px;
   background: #FFF;
@@ -59,6 +66,15 @@ export const StyledFilterSearch = styled(Form.Control)`
   font-style: normal;
   font-weight: 400;
   line-height: 24px;
+
+  //@media only screen and (max-width: 440px) {
+  //  display: none;
+  //  
+  //  :active{
+  //    position: absolute;
+  //    display: block;
+  //  }
+  //}
 `
 export const StyledNewButton = styled.button`
   display: flex;

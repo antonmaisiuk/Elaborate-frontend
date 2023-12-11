@@ -73,6 +73,7 @@ export const en = {
       'stocks': 'Stocks',
       'crypto': 'Cryptocurrencies',
       'metals': 'Metals',
+      'other': 'Other',
       'statistics': 'Statistics',
       'pieChart': 'Pie Chart',
       'logout': 'Logout',

@@ -17,6 +17,7 @@ export const StyledHeader = styled.div`
 export const StyledNavLogo = styled.div<NavInterface>`
   display: flex;
   justify-content: space-around;
+  align-items: center;  
   
   background: #191919;
   flex-grow: 1;

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import Registration from './components/Auth/Registration/Registration';
 import Login from './components/Auth/Login/Login';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {BrowserRouter as Router, redirect, Route, Routes} from 'react-router-dom';
+import {BrowserRouter as Router, redirect, Route, Routes, useLocation} from 'react-router-dom';
 import {GoogleOAuthProvider} from "@react-oauth/google";
 import ForgotPassword from "./components/Auth/ForgotPassword/ForgotPassword";
 import Overview from "./components/Overview/Overview";
@@ -16,8 +16,9 @@ import Statistics from './components/Statistics/Statistics'
 import InvestOverview, {BasicInvestmentType} from "./components/Investments/Overview/InvestOverview";
 import SetNewPassword from "./components/Auth/SetNewPassword/SetNewPassword";
 import Settings from "./components/Settings/Settings";
-import {getUserAsync} from "./redux/userSlice";
+import {getUserAsync, setRoute} from "./redux/userSlice";
 import './i18n';
+import _ from "lodash";
 
 export const getActualToken = () => {
   let token = null;
@@ -34,7 +35,8 @@ export const getActualToken = () => {
 
 const App = () => {
 
-  const [navVisible, toggleNavVisible] = useState(false);
+  const [navVisible, toggleNavVisible] = useState<boolean>(false);
+
 
   return (
       <Provider store={store}>
@@ -59,6 +61,7 @@ const App = () => {
               <Route path="/invest/stocks" element={<BasicInvestments visible={navVisible} toggle={toggleNavVisible} basicInvestType={BasicInvestmentType.stocks}/>}/>
               <Route path="/invest/metals" element={<BasicInvestments visible={navVisible} toggle={toggleNavVisible} basicInvestType={BasicInvestmentType.metals}/>}/>
               <Route path="/invest/crypto" element={<BasicInvestments visible={navVisible} toggle={toggleNavVisible} basicInvestType={BasicInvestmentType.crypto}/>}/>
+              <Route path="/invest/other" element={<BasicInvestments visible={navVisible} toggle={toggleNavVisible} basicInvestType={BasicInvestmentType.crypto}/>}/>
               <Route path="/confirm" element={<EmailConfirm/>}/>
               <Route path="/stats" element={<Statistics visible={navVisible} toggle={toggleNavVisible}/>}/>
               <Route path="/settings" element={<Settings visible={navVisible} toggle={toggleNavVisible}/>}/>

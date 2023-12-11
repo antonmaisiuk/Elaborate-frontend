@@ -89,6 +89,10 @@ export const StyledTileHeader = styled.div`
   align-items: center;
   flex-wrap: wrap;
   margin-bottom: 15px;
+  
+  h2{
+    margin: 0;
+  }
 `;
 export const StyledTileTitle = styled.h3`
   font-size: 1.3em;

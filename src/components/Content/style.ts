@@ -3,6 +3,8 @@ import styled from 'styled-components';
 export const StyledContent = styled.div`
   display: flex;
   flex-direction: column;
+  max-width: 1500px;
+  
 
   grid-area: content;
 

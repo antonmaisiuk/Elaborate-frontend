@@ -305,19 +305,21 @@ export const getPrice = async (index: string, categoryId: string) => {
       let response;
       switch (categoryId) {
         case '2530f9f3-5dc5-4d7c-9233-3df8705bd4e2': // metals
+          setTimeout(() => {}, _.random(1e2,5e2));
+
           response = await axios.get(
             `${metalsApi}${index}&symbols=USD`,
             {
-              headers: {
-                // 'Sec-Fetch-Mode': 'no-cors',
-                // accept: 'application/json',
-              },
+              headers: {},
             }
           );
+
           const { rates: { USD: metalsPrice }} = response.data;
 
           return _.round(metalsPrice, 2) || 0;
         case '029e8ff3-8aca-4b2e-a938-7a1e97fb9c8d': // crypto
+          setTimeout(() => {}, _.random(1e2,5e2));
+
           response = await axios.get(
             `${cryptoApi}${index}/ohlcv/latest`,
             {
@@ -332,6 +334,8 @@ export const getPrice = async (index: string, categoryId: string) => {
 
           return _.round(cryptoPrice, 2) || 0;
         case '59631964-1cf5-41b3-9e33-303d39033590': // stocks
+          setTimeout(() => {}, _.random(1e2,5e2));
+
           response = await axios.get(
             `${stocksApi}${index}`,
             {

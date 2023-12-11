@@ -15,6 +15,8 @@ import {
 import {BasicInvestmentType} from "../Overview/InvestOverview";
 import {useTranslation} from "react-i18next";
 import {StyledTileHeader} from "../../Overview/styled";
+import FilterHeader from "../../FilterHeader/FilterHeader";
+import _ from "lodash";
 
 export interface BasicInvestmentsInterface {
   basicInvestType: BasicInvestmentType,
@@ -35,6 +37,24 @@ const BasicInvestments: FC<BasicInvestmentsInterface & HTMLAttributes<HTMLDivEle
 
   const { t } = useTranslation();
 
+  const filterByType = () => {
+    switch (basicInvestType) {
+      case BasicInvestmentType.crypto:
+        setTitle(t('recentCrypto'));
+        setData(basicInvestments.filter((invest) => invest.categoryId === '029e8ff3-8aca-4b2e-a938-7a1e97fb9c8d'));
+        break;
+      case BasicInvestmentType.metals:
+        setTitle(t('recentMetals'));
+        setData(basicInvestments.filter((invest) => invest.categoryId === '2530f9f3-5dc5-4d7c-9233-3df8705bd4e2'));
+        break;
+      case BasicInvestmentType.stocks:
+        setTitle(t('recentStocks'));
+        setData(basicInvestments.filter((invest) => invest.categoryId === '59631964-1cf5-41b3-9e33-303d39033590'));
+        break;
+      default:
+    }
+  }
+
   useEffect(() => {
     if (loadingStatus !== 'succeeded'){
       dispatch(fetchItemsAsync()).then(() => {
@@ -45,24 +65,23 @@ const BasicInvestments: FC<BasicInvestmentsInterface & HTMLAttributes<HTMLDivEle
     }
 
     if (loadingStatus === 'succeeded') {
-      switch (basicInvestType) {
-        case BasicInvestmentType.crypto:
-          setTitle(t('recentCrypto'));
-          setData(basicInvestments.filter((invest) => invest.categoryId === '029e8ff3-8aca-4b2e-a938-7a1e97fb9c8d'));
-          break;
-        case BasicInvestmentType.metals:
-          setTitle(t('recentMetals'));
-          setData(basicInvestments.filter((invest) => invest.categoryId === '2530f9f3-5dc5-4d7c-9233-3df8705bd4e2'));
-          break;
-        case BasicInvestmentType.stocks:
-          setTitle(t('recentStocks'));
-          setData(basicInvestments.filter((invest) => invest.categoryId === '59631964-1cf5-41b3-9e33-303d39033590'));
-          break;
-        default:
-      }
+      filterByType();
     }
   }, [basicInvestType, basicInvestments]);
 
+  const search = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    if (value){
+      const searchResult = data.filter((item) => {
+        const {id, categoryId, ...obj } = item;
+
+        return _.values(obj).some((val) => new RegExp(value, 'i').test(String(val)))
+      });
+      setData(searchResult)
+    } else {
+      filterByType();
+    }
+  }
 
 
 
@@ -73,7 +92,7 @@ const BasicInvestments: FC<BasicInvestmentsInterface & HTMLAttributes<HTMLDivEle
       <Content onClick={() => toggle(false)}>
         <StyledTileHeader>
           <StyledTitle>{title}</StyledTitle>
-          {/*<FilterHeader tableCategories={investCategories} searchFunc={() => {}} tableType={TableType.investments}/>*/}
+          <FilterHeader tableCategories={investCategories} searchFunc={search} tableType={TableType.investments}/>
 
         </StyledTileHeader>
         <Table tableType={TableType.investments} tableData={data} tableCategories={investCategories}/>

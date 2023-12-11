@@ -46,6 +46,7 @@ interface UserSlice {
   userInfo: IUser;
   languages: ILang[],
   currencies: ICurrency[],
+  route: string,
   loading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
   error: string | null; // Ошибка, если что-то пошло не так
 }
@@ -63,6 +64,7 @@ const initialState: UserSlice = {
   },
   languages: [],
   currencies: [],
+  route: 'overview',
   loading: 'idle',
   error: null,
 };
@@ -84,6 +86,9 @@ const userSlice = createSlice({
     },
     setUser: (state, action: PayloadAction<IUser>) => {
       state.userInfo = action.payload;
+    },
+    setRoute: (state, action: PayloadAction<string>) => {
+      state.route = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -132,7 +137,8 @@ export const {
   setLang,
   setCurrency,
   setIsDark,
-  setUser
+  setUser,
+  setRoute,
 } = userSlice.actions;
 
 export default userSlice.reducer;

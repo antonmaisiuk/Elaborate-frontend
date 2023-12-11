@@ -72,6 +72,7 @@ export const ru = {
       'stocks': 'Акции',
       'crypto': 'Криптовалюты',
       'metals': 'Металлы',
+      'other': 'Остальные',
       'statistics': 'Статистика',
       'pieChart': 'Круговая диаграмма',
       'logout': 'Выход',

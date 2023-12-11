@@ -97,7 +97,6 @@ export const StyledNavbar = styled.div`
 `
 export const StyledDivider = styled(NavDropdown.Divider)`
   color: rgba(255, 255, 255, 0.70);
-  
 `
 
 export const StyledNavContainer = styled.div`
@@ -108,22 +107,28 @@ export const StyledNavContainer = styled.div`
 
   background: #191919;
 
-  :hover{
+  .nav-active, :hover {
     color: #fff;
     background: #25AB52;
   }
-  
-  a{
+
+  a {
     padding: 12px 16px;
   }
-  
-  p{
+
+  p {
     padding: 0;
-    margin: 0;    
+    margin: 0;
   }
-  
-  
-  a, div a, div, .dropdown-menu a, hr{
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  a, div a, div, .dropdown-menu a, hr {
+
     color: rgba(255, 255, 255, 0.70);
     font-family: Inter, sans-serif;
     font-size: 16px;
@@ -136,32 +141,32 @@ export const StyledNavContainer = styled.div`
     width: 100%;
     gap: 15px;
   }
-  
-  .dropdown-menu{
+
+  .dropdown-menu {
     background: #191919;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    
-    a:hover{
+
+    .nav-active, a:hover {
       background: #25AB52;
     }
   }
 
-  @media only screen and (max-width: 768px){
+  @media only screen and (max-width: 768px) {
     min-width: 0;
     padding: 0;
 
-    a{
+    a {
       padding: 8px 5px;
     }
 
-    a:after{
+    a:after {
       display: none;
     }
 
     p {
       display: none;
     }
-    
+
     .dropdown-menu a {
       padding: 8px 12px;
     }

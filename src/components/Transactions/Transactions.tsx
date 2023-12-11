@@ -1,4 +1,4 @@
-import React, {FC, useEffect} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import Layout from "../Layout/Layout";
 import Navigation, {NavInterface} from "../Navigation/Navigation";
 import Content from "../Content/Content";
@@ -11,6 +11,7 @@ import {fetchTransactionsAsync, fetchTransCatsAsync} from "../../redux/transacti
 import {useTranslation} from "react-i18next";
 import {StyledTileHeader} from "../Overview/styled";
 import FilterHeader from "../FilterHeader/FilterHeader";
+import _ from "lodash";
 
 
 const Transactions: FC<NavInterface> = ({
@@ -22,6 +23,8 @@ const Transactions: FC<NavInterface> = ({
   const transCategories = useSelector((state: RootState) => state.transactions.transCategories);
   const loadingStatus = useSelector((state: RootState) => state.transactions.loading);
 
+  const [data, setData] = useState(transactions);
+
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -30,6 +33,20 @@ const Transactions: FC<NavInterface> = ({
     }
   }, []);
 
+  const search = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    if (value){
+      const searchResult = data.filter((item) => {
+        const {id, categoryId, ...obj } = item;
+
+        return _.values(obj).some((val) => new RegExp(value, 'i').test(String(val)))
+      });
+      setData(searchResult)
+    } else {
+      setData(transactions);
+    }
+  }
+
   return (
     <Layout>
       <Header toggle={toggle} visible={visible}/>
@@ -37,10 +54,10 @@ const Transactions: FC<NavInterface> = ({
       <Content onClick={() => toggle(false)}>
         <StyledTileHeader>
           <StyledTitle>{t('recentTrans')}</StyledTitle>
-          {/*<FilterHeader tableCategories={transCategories} searchFunc={() => {}} tableType={TableType.transactions}/>*/}
+          <FilterHeader tableCategories={transCategories} searchFunc={search} tableType={TableType.transactions}/>
 
         </StyledTileHeader>
-        <Table tableType={TableType.transactions} tableData={transactions} tableCategories={transCategories}/>
+        <Table tableType={TableType.transactions} tableData={data} tableCategories={transCategories}/>
       </Content>
     </Layout>
   );

@@ -29,6 +29,7 @@ const FilterHeader: FC<FilterHeaderInterface & HTMLAttributes<HTMLDivElement>> =
    }) => {
 
   const dispatch = useDispatch<AppDispatch>();
+  const [searchActive, setSearchActive] = useState(false);
   const { t } = useTranslation();
 
   return (
@@ -42,10 +43,11 @@ const FilterHeader: FC<FilterHeaderInterface & HTMLAttributes<HTMLDivElement>> =
           <StyledFilterSearch
             type="text"
             name="SearchText"
+            className='search-header'
             placeholder={t('filterHeader.searchHere')}
             onChange={searchFunc}
           />
-          <SearchIcon/>
+          <SearchIcon onClick={() => setSearchActive(!searchActive)} />
         </StyledFilterForm>
         <StyledNewButton onClick={() => {
           dispatch(setModalType(tableType === TableType.transactions ? ModalType.addTransaction : ModalType.addBasicInvest));

@@ -10,7 +10,6 @@ export const StyledLayout = styled.div`
           'nav content';
 
   width: 100%;
-  max-width: 1500px;
   height: 100vh;
 
   @media only screen and (max-width: 768px){

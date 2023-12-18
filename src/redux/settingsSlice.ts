@@ -15,7 +15,7 @@ const initialState: SettingsState = {
   error: null,
 };
 
-const backendApi = 'https://localhost:7247';
+
 
 const settingsSlice = createSlice({
   name: 'settings',

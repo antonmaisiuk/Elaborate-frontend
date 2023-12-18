@@ -85,7 +85,7 @@ const Registration = () => {
 
     setSpinnerActive(true);
 
-    const response = await fetch(`https://localhost:7247/api/Authentication`,
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/Authentication`,
       {
         method: 'POST',
         headers: {

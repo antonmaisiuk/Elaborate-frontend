@@ -22,7 +22,7 @@ const initialState: TransactionState = {
   error: null,
 };
 
-const backendApi = 'https://localhost:7247';
+
 
 const transactionSlice = createSlice({
   name: 'transactions',
@@ -113,7 +113,7 @@ export const fetchTransactionsAsync = createAsyncThunk(
   async () => {
     try {
       const response = await axios.get(
-        `${backendApi}/api/user/transaction`,
+        `${process.env.REACT_APP_API_URL}/api/user/transaction`,
         {
           headers: {
             accept: 'application/json',
@@ -131,7 +131,7 @@ export const addTransactionAsync = createAsyncThunk(
   'transactions/addTransaction',
   async (transaction: ITransaction) => {
     const response = await axios.post(
-      `${backendApi}/api/user/transaction`,
+      `${process.env.REACT_APP_API_URL}/api/user/transaction`,
       JSON.stringify({
         name: transaction.name,
         comment: transaction.comment,
@@ -156,7 +156,7 @@ export const updateTransactionAsync = createAsyncThunk(
   async (transaction: ITransaction) => {
     console.log('👉 Updated transaction: ', transaction);
     const response = await axios.put(
-      `${backendApi}/api/user/transaction/${transaction.id}`,
+      `${process.env.REACT_APP_API_URL}/api/user/transaction/${transaction.id}`,
       JSON.stringify({
         name: transaction.name,
         comment: transaction.comment,
@@ -179,7 +179,7 @@ export const deleteTransactionAsync = createAsyncThunk(
   'transactions/deleteTransaction',
   async (transactionId: string) => {
     await axios.delete(
-      `${backendApi}/api/user/transaction/${transactionId}`,
+      `${process.env.REACT_APP_API_URL}/api/user/transaction/${transactionId}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -196,7 +196,7 @@ export const fetchTransCatsAsync = createAsyncThunk(
   async () => {
     try {
       const response = await axios.get(
-        `${backendApi}/api/transaction-category`,
+        `${process.env.REACT_APP_API_URL}/api/transaction-category`,
         {
           headers: {
             accept: 'application/json',

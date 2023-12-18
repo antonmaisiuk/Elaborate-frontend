@@ -69,7 +69,7 @@ const initialState: UserSlice = {
   error: null,
 };
 
-const backendApi = 'https://localhost:7247';
+
 
 const userSlice = createSlice({
   name: 'user',
@@ -161,7 +161,7 @@ export const changeProfileAsync = createAsyncThunk(
       data.append('FileName', changedUser.avatarFile?.name as string);
 
       const response = await axios.put(
-        `${backendApi}/api/users`,
+        `${process.env.REACT_APP_API_URL}/api/users`,
         data,
         {
           headers: {
@@ -183,7 +183,7 @@ export const changePasswordAsync = createAsyncThunk(
 
     try {
       const response = await axios.post(
-        `${backendApi}/api/users/change-password`,
+        `${process.env.REACT_APP_API_URL}/api/users/change-password`,
         {
           password: changePass.pass,
           confirmPassword: changePass.confirmPass ,
@@ -211,7 +211,7 @@ export const getUserAsync = createAsyncThunk(
   async () => {
     try {
       const response = await axios.get(
-        `${backendApi}/api/users`,
+        `${process.env.REACT_APP_API_URL}/api/users`,
         {
           headers: {
             accept: 'application/json',

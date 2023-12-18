@@ -43,7 +43,7 @@ const Login = () => {
     setSpinnerActive(true);
 
     try {
-      const response = await fetch(`https://localhost:7247/api/Authentication/login`,
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/Authentication/login`,
         {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
@@ -109,7 +109,7 @@ const Login = () => {
     e.preventDefault()
     console.log('👉 2FA: ', formData);
     // console.log('👉 Email: ', formData);
-    const response = await fetch(`https://localhost:7247/api/Authentication/login-2FA?code=${formData.code}&email=${formData.email}`,
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/Authentication/login-2FA?code=${formData.code}&email=${formData.email}`,
       {
         method: 'Post',
         headers: {'Content-Type': 'application/json'},

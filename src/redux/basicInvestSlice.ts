@@ -21,22 +21,6 @@ const initialState: BasicInvestState = {
   loading: 'idle',
   error: null,
 };
-// https://rapidapi.com/lbraciszewski/api/coinpaprika1 - crypto
-// https://rapidapi.com/amansharma2910/api/realstonks - stocks
-const backendApi = 'https://localhost:7247';
-
-// const key = 'dce75a2233mshd18a7fa0853e340p159359jsn3d6895c9690f';
-const keys = [
-  'ae21ca62c7msh7d8082876c34b78p13e6a0jsn0dbb35b3d3a8',
-  'dce75a2233mshd18a7fa0853e340p159359jsn3d6895c9690f',
-  'b7f693bd5bmsh15d4fb4def8fb20p1cd336jsn6a66c0245a0c'
-];
-const metalKey = '407ce20e80bde2fd714142bc8b5047bb';
-
-const stocksApi = 'https://realstonks.p.rapidapi.com/';
-const cryptoApi = 'https://coinpaprika1.p.rapidapi.com/coins/';
-const metalsApi = `https://api.currencybeacon.com/v1/latest?api_key=${metalKey}&base=`;
-
 
 const basicInvestSlice = createSlice({
   name: 'basicInvestments',
@@ -157,7 +141,7 @@ export const fetchBasicInvestsAsync = createAsyncThunk(
     try {
       const state = thunkAPI.getState();
       const response = await axios.get(
-        `${backendApi}/api/user/basicinvestment`,
+        `${process.env.REACT_APP_API_URL}/api/user/basicinvestment`,
         {
           headers: {
             accept: 'application/json',
@@ -185,7 +169,7 @@ export const addBasicInvestsAsync = createAsyncThunk(
 
     console.log('👉 new invest: ', invest);
     const response = await axios.post(
-      `${backendApi}/api/user/basicinvestment`,
+      `${process.env.REACT_APP_API_URL}/api/user/basicinvestment`,
       JSON.stringify({
         dateOfCreated: moment().toISOString(),
         comment: invest.comment,
@@ -220,7 +204,7 @@ export const updateBasicInvestAsync = createAsyncThunk(
 
     console.log('👉 Updated item before req: ', invest);
     await axios.put(
-      `${backendApi}/api/user/basicinvestment/${invest.id}`,
+      `${process.env.REACT_APP_API_URL}/api/user/basicinvestment/${invest.id}`,
       JSON.stringify({
         comment: invest.comment,
         categoryId: invest.categoryId,
@@ -247,7 +231,7 @@ export const deleteBasicInvestAsync = createAsyncThunk(
   'basicInvestments/deleteBasicInvest',
   async (investId: string) => {
     await axios.delete(
-      `${backendApi}/api/user/basicinvestment/${investId}`,
+      `${process.env.REACT_APP_API_URL}/api/user/basicinvestment/${investId}`,
       {
         headers: {
           accept: 'application/json',
@@ -265,7 +249,7 @@ export const fetchInvestCatsAsync = createAsyncThunk(
   async () => {
     try {
       const response = await axios.get(
-        `${backendApi}/api/category-investment`,
+        `${process.env.REACT_APP_API_URL}/api/category-investment`,
         {
           headers: {
             accept: 'application/json',
@@ -285,7 +269,7 @@ export const fetchItemsAsync = createAsyncThunk(
   async () => {
     try {
       const response = await axios.get(
-        `${backendApi}/api/item`,
+        `${process.env.REACT_APP_API_URL}/api/item`,
         {
           headers: {
             accept: 'application/json',
@@ -304,11 +288,11 @@ export const getPrice = async (index: string, categoryId: string) => {
     try {
       let response;
       switch (categoryId) {
-        case '2530f9f3-5dc5-4d7c-9233-3df8705bd4e2': // metals
+        case process.env.REACT_APP_METALS_ID: // metals
           setTimeout(() => {}, _.random(1e2,5e2));
 
           response = await axios.get(
-            `${metalsApi}${index}&symbols=USD`,
+            `${process.env.REACT_APP_METAL_API}${index}&symbols=USD`,
             {
               headers: {},
             }
@@ -317,15 +301,15 @@ export const getPrice = async (index: string, categoryId: string) => {
           const { rates: { USD: metalsPrice }} = response.data;
 
           return _.round(metalsPrice, 2) || 0;
-        case '029e8ff3-8aca-4b2e-a938-7a1e97fb9c8d': // crypto
+        case process.env.REACT_APP_CRYPTO_ID: // crypto
           setTimeout(() => {}, _.random(1e2,5e2));
 
           response = await axios.get(
-            `${cryptoApi}${index}/ohlcv/latest`,
+            `${process.env.REACT_APP_CRYPTO_API}${index}/ohlcv/latest`,
             {
               headers: {
                 accept: 'application/json',
-                'X-RapidAPI-Key': _.shuffle(keys)[0],
+                'X-RapidAPI-Key': process.env.REACT_APP_RAPID_KEY,
                 'X-RapidAPI-Host': 'coinpaprika1.p.rapidapi.com'
               },
             }
@@ -333,15 +317,15 @@ export const getPrice = async (index: string, categoryId: string) => {
           const { open: cryptoPrice } = response.data[0];
 
           return _.round(cryptoPrice, 2) || 0;
-        case '59631964-1cf5-41b3-9e33-303d39033590': // stocks
+        case process.env.REACT_APP_STOCKS_ID: // stocks
           setTimeout(() => {}, _.random(1e2,5e2));
 
           response = await axios.get(
-            `${stocksApi}${index}`,
+            `${process.env.REACT_APP_STOCKS_API}${index}`,
             {
               headers: {
                 accept: 'application/json',
-                'X-RapidAPI-Key': _.shuffle(keys)[0],
+                'X-RapidAPI-Key': process.env.REACT_APP_RAPID_KEY,
                 'X-RapidAPI-Host': 'realstonks.p.rapidapi.com'
               },
             }

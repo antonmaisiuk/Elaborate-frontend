@@ -72,9 +72,9 @@ const InvestOverview: FC<NavInterface> = ({
   const dispatch = useDispatch<AppDispatch>();
 
   const invests = useSelector((state: RootState) => state.basicInvestments.basicInvests);
-  const stocks = _.filter(invests, (invest: IBasicInvestment) => invest.categoryId === '59631964-1cf5-41b3-9e33-303d39033590');
-  const metals = _.filter(invests, (invest: IBasicInvestment) => invest.categoryId === '2530f9f3-5dc5-4d7c-9233-3df8705bd4e2');
-  const crypto = _.filter(invests, (invest: IBasicInvestment) => invest.categoryId === '029e8ff3-8aca-4b2e-a938-7a1e97fb9c8d');
+  const stocks = _.filter(invests, (invest: IBasicInvestment) => invest.categoryId === process.env.REACT_APP_STOCKS_ID);
+  const metals = _.filter(invests, (invest: IBasicInvestment) => invest.categoryId === process.env.REACT_APP_METALS_ID);
+  const crypto = _.filter(invests, (invest: IBasicInvestment) => invest.categoryId === process.env.REACT_APP_CRYPTO_ID);
 
   const otherInvests = useSelector((state: RootState) => state.otherInvestments.otherInvests);
 

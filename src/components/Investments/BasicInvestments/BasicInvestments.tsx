@@ -39,15 +39,15 @@ const BasicInvestments: FC<BasicInvestmentsInterface & HTMLAttributes<HTMLDivEle
     switch (basicInvestType) {
       case BasicInvestmentType.crypto:
         setTitle(t('recentCrypto'));
-        setData(basicInvestments.filter((invest) => invest.categoryId === '029e8ff3-8aca-4b2e-a938-7a1e97fb9c8d'));
+        setData(basicInvestments.filter((invest) => invest.categoryId === process.env.REACT_APP_CRYPTO_ID));
         break;
       case BasicInvestmentType.metals:
         setTitle(t('recentMetals'));
-        setData(basicInvestments.filter((invest) => invest.categoryId === '2530f9f3-5dc5-4d7c-9233-3df8705bd4e2'));
+        setData(basicInvestments.filter((invest) => invest.categoryId === process.env.REACT_APP_METALS_ID));
         break;
       case BasicInvestmentType.stocks:
         setTitle(t('recentStocks'));
-        setData(basicInvestments.filter((invest) => invest.categoryId === '59631964-1cf5-41b3-9e33-303d39033590'));
+        setData(basicInvestments.filter((invest) => invest.categoryId === process.env.REACT_APP_STOCKS_ID));
         break;
       case BasicInvestmentType.other:
         setTitle(t('recentOther'));

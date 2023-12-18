@@ -111,7 +111,7 @@ const SetNewPassword = () => {
 		try {
 
 			const response = await fetch(
-				`https://localhost:7247/api/Authentication/reset-password`,
+				`${process.env.REACT_APP_API_URL}/api/Authentication/reset-password`,
 				{
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },

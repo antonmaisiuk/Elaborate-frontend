@@ -20,7 +20,7 @@ const initialState: OtherInvestsState = {
   error: null,
 };
 
-const backendApi = 'https://localhost:7247';
+
 
 
 
@@ -86,7 +86,7 @@ export const fetchOtherInvestAsync = createAsyncThunk(
     try {
       const state = thunkAPI.getState();
       const response = await axios.get(
-        `${backendApi}/api/user/otherinvestment`,
+        `${process.env.REACT_APP_API_URL}/api/user/otherinvestment`,
         {
           headers: {
             accept: 'application/json',
@@ -107,7 +107,7 @@ export const addOtherInvestAsync = createAsyncThunk(
 
     console.log('👉 new invest: ', invest);
     const response = await axios.post(
-      `${backendApi}/api/user/otherinvestment`,
+      `${process.env.REACT_APP_API_URL}/api/user/otherinvestment`,
       JSON.stringify({
         dateOfCreated: moment().toISOString(),
         comment: invest.comment,
@@ -139,7 +139,7 @@ export const updateOtherInvestAsync = createAsyncThunk(
 
     console.log('👉 Updated item before req: ', invest);
     await axios.put(
-      `${backendApi}/api/user/otherinvestment/${invest.id}`,
+      `${process.env.REACT_APP_API_URL}/api/user/otherinvestment/${invest.id}`,
       JSON.stringify({
         comment: invest.comment,
         title: invest.title,
@@ -162,7 +162,7 @@ export const deleteOtherInvestAsync = createAsyncThunk(
   'otherInvestments/deleteOtherInvest',
   async (investId: string) => {
     await axios.delete(
-      `${backendApi}/api/user/otherinvestment/${investId}`,
+      `${process.env.REACT_APP_API_URL}/api/user/otherinvestment/${investId}`,
       {
         headers: {
           accept: 'application/json',

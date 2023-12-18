@@ -152,9 +152,7 @@ const Registration = () => {
           </StyledFormGroup>
 
           <StyledFormGroup controlId="Password">
-
-            <StyledFormLabel>
-              Password
+            <StyledFormLabel>      Password
               <StyledTooltip
                 data-tooltip-id="password-tooltip"
                 data-tooltip-html='The password must have at least:

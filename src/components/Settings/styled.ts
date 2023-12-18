@@ -137,14 +137,15 @@ export const StyledProfileForm = styled(Form)`
   .profile_other{
     width: 100%;
     display: grid;
-    grid-template-columns: auto auto auto;
+    grid-template-rows: 150px;
+    grid-template-columns: repeat(3, 1fr);
     justify-content: center;
     flex-wrap: wrap;
     gap: 30px;
   }
   
   .profile_avatar {
-    grid-column: 1 / 4;
+    grid-column: 2 / 3;
     
     width: 100%;
     height: 100%;
@@ -162,6 +163,7 @@ export const StyledProfileForm = styled(Form)`
   .profile_avatar img {
     position: absolute;
     height: 100%;
+    width: 150px;
     border: 1px solid #D0D5DD;
     
     border-radius: 100%;
@@ -196,7 +198,7 @@ export const StyledProfileForm = styled(Form)`
       display: flex;
     }
     .profile_avatar{
-      height: auto;
+      height: 150px;
     }
   }
 `

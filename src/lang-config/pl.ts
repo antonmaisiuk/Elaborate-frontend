@@ -60,7 +60,14 @@ export const pl = {
                   <li>1 symbol specjalny</li>
                 </ul>`,
       },
+      invests: {
+        totalStocks: 'Suma akcji',
+        totalCrypto: 'Suma krypto',
+        totalMetals: 'Suma metale',
+        totalOther: 'Suma pozostałych',
+      },
       'overview': 'Przegląd',
+      'investOverview': 'Przegląd inwestycji',
       'hello': 'Cześć',
       'totalInvest': 'Suma inwestycji',
       'totalTrans': 'Suma transakcji',
@@ -68,6 +75,7 @@ export const pl = {
       'recentCrypto': 'Ostatnie kryptowaluty',
       'recentStocks': 'Ostatnie akcje',
       'recentMetals': 'Ostatnie metale',
+      'recentOther': 'Ostatnie pozostałe inwestycje',
       'transactions': 'Transakcje',
       'investments': 'Inwestycje',
       'stocks': 'Akcje',

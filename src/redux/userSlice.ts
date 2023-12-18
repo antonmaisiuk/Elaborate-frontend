@@ -11,7 +11,8 @@ export interface IUser {
   lang: string,
   currency: string,
   isDarkScreen: boolean,
-  avatar?: string,
+  avatar: string,
+  avatarFile?: File,
   // role: string,
 }
 
@@ -59,12 +60,11 @@ const initialState: UserSlice = {
     lang: '',
     currency: '',
     isDarkScreen: false,
-    avatar: 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg',
-    // role: 'User',
+    avatar: '',
   },
   languages: [],
   currencies: [],
-  route: 'overview',
+  route: '',
   loading: 'idle',
   error: null,
 };
@@ -94,6 +94,8 @@ const userSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(changeProfileAsync.fulfilled, (state, action) => {
+        state.userInfo.avatar = action.payload.url;
+
         const currentLang = _.filter(state.languages, (lang) => state.userInfo.lang === lang.id)[0].index;
         i18next
           .changeLanguage(currentLang)
@@ -101,6 +103,7 @@ const userSlice = createSlice({
             t('key'); // -> same as i18next.t
           });
         document.documentElement.lang = currentLang;
+
         state.error = null;
       })
       .addCase(changeProfileAsync.rejected, (state, action) => {
@@ -111,8 +114,7 @@ const userSlice = createSlice({
         const { user, userSettings, languagesList, currenciesList } = action.payload
         state.userInfo = {
           ...user,
-          avatar: 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg',
-          role: 'User',
+          avatar: action.payload.photoFileName || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg',
         };
         state.userInfo.lang = userSettings?.languagesId;
         state.userInfo.currency = userSettings?.currenciesId;
@@ -147,23 +149,23 @@ export const changeProfileAsync = createAsyncThunk(
   'user/changeProfile',
   async (changedUser: IUser, { rejectWithValue }) => {
     try {
+      const data = new FormData();
+      data.append('userDto.Username', changedUser.username);
+      data.append('UserDto.Email', changedUser.email);
+      data.append('userDto.PhoneNumber', changedUser.phoneNumber);
+      data.append('SettingsDto.LanguagesId', changedUser.lang);
+      data.append('SettingsDto.CurrenciesId', changedUser.currency);
+      data.append('SettingsDto.IsDarkScreen', `${changedUser.isDarkScreen}`);
+      data.append('ContentType', 'multipart/form-data');
+      data.append('photo', changedUser.avatarFile as Blob);
+      data.append('FileName', changedUser.avatarFile?.name as string);
+
       const response = await axios.put(
         `${backendApi}/api/users`,
-        {
-          userDto: {
-            username: changedUser.username,
-            email: changedUser.email,
-            phoneNumber: changedUser.phoneNumber
-          },
-          settingsDto: {
-            languagesId: changedUser.lang,
-            currenciesId: changedUser.currency,
-            isDarkScreen: changedUser.isDarkScreen,
-          }
-        },
+        data,
         {
           headers: {
-            accept: 'application/json',
+            accept: 'multipart/form-data',
             Authorization: `Bearer ${getActualToken()}`
           },
         }

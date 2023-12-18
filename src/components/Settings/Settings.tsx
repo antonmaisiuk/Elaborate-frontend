@@ -85,6 +85,18 @@ const Settings: FC<NavInterface> = ({
 
   const navigate = useNavigate();
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { files } = event.target;
+
+    if (files && files.length) {
+      setChangedUser((prevData) => ({
+        ...prevData,
+        avatar: URL.createObjectURL(files[0]),
+        avatarFile: files[0],
+      }));
+    }
+  }
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const {name, value} = event.target;
 
@@ -134,6 +146,8 @@ const Settings: FC<NavInterface> = ({
     setErrorMsg('');
 
     setToggleSpinner(true);
+
+    console.log('👉 changedUser: ', changedUser);
 
     const { payload } = await dispatch(changeProfileAsync(changedUser as IUser));
     setToggleSpinner(false);
@@ -248,10 +262,13 @@ const Settings: FC<NavInterface> = ({
         <StyledProfileForm className={'changeProfile'} onSubmit={handleProfileChange}>
 
           <StyledSettingsFormGroup className={'profile_other'}>
-            <StyledSettingsFormGroup className={'profile_avatar'} controlId="photo">
-              <img src={user.avatar} alt="Avatar"/>
-              <StyledProfileControl type='file' name='photo' accept='image/*'/>
+            {/*<div></div>*/}
+            <StyledSettingsFormGroup className={'profile_avatar'} controlId="avatar">
+              <img src={changedUser.avatar} alt="Avatar"/>
+              <StyledProfileControl type='file' name='avatar' accept='image/*' onChange={handleFileChange} />
             </StyledSettingsFormGroup>
+            <div></div>
+
             <StyledSettingsFormGroup controlId="username">
               <StyledFormLabel>{t('settings.nickName')}</StyledFormLabel>
               <StyledProfileControl
@@ -264,6 +281,7 @@ const Settings: FC<NavInterface> = ({
                 required
               />
             </StyledSettingsFormGroup>
+
             <StyledSettingsFormGroup controlId="email">
               <StyledFormLabel>{t('settings.email')}</StyledFormLabel>
               <StyledProfileControl

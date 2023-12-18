@@ -60,7 +60,14 @@ export const en = {
                   <li>1 symbol</li>
                 </ul>`,
       },
+      invests: {
+        totalStocks: 'Total stocks',
+        totalCrypto: 'Total crypto',
+        totalMetals: 'Total metals',
+        totalOther: 'Total other',
+      },
       'overview': 'Overview',
+      'investOverview': 'Investments overview',
       'hello': 'Hello',
       'totalInvest': 'Total investments',
       'totalTrans': 'Total transactions',
@@ -68,6 +75,7 @@ export const en = {
       'recentCrypto': 'Recent cryptocurrencies',
       'recentStocks': 'Recent stocks',
       'recentMetals': 'Recent metals',
+      'recentOther': 'Recent other investments',
       'transactions': 'Transactions',
       'investments': 'Investments',
       'stocks': 'Stocks',

@@ -25,6 +25,8 @@ import {fetchBasicInvestsAsync, fetchInvestCatsAsync, fetchItemsAsync} from "../
 import PieChartComponent from "../Statistics/PieChartComponent/PieChartComponent";
 import {Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
 import {useTranslation} from "react-i18next";
+import {IOtherInvestment} from "../Investments/Overview/InvestOverview";
+import {fetchOtherInvestAsync} from "../../redux/otherInvestSlice";
 
 const Overview: FC<NavInterface> = ({
   visible,
@@ -37,6 +39,7 @@ const Overview: FC<NavInterface> = ({
 
   const transactions = useSelector((state: RootState) => state.transactions.transactions);
   const invests = useSelector((state: RootState) => state.basicInvestments.basicInvests);
+  const otherInvests = useSelector((state: RootState) => state.otherInvestments.otherInvests);
 
   const actualPeriod = useSelector((state: RootState) => state.stats.period);
   const actualType = useSelector((state: RootState) => state.stats.type);
@@ -53,7 +56,7 @@ const Overview: FC<NavInterface> = ({
     dispatch(setType(event.target.value));
   };
 
-  const filterItems = (data: dataMainType[]) => {
+  const filterItems = (data: any[]) => {
     const now = moment();
 
     return data.filter((item: dataMainType) => {
@@ -80,9 +83,11 @@ const Overview: FC<NavInterface> = ({
       }
     });
   }
-  const getTotal = (data: dataMainType[]) => {
 
-    const filteredByPeriod = filterItems(data)
+  const getTotal = (data: [any[], any[]]) => {
+
+    const filteredByPeriod = filterItems(_.flattenDeep(data));
+    console.log('👉 filteredByPeriod: ', filteredByPeriod);
 
     return _.round(filteredByPeriod.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.value
@@ -97,6 +102,7 @@ const Overview: FC<NavInterface> = ({
     }
 
     if (basicLoadingStatus !== 'succeeded') {
+      dispatch(fetchOtherInvestAsync());
       dispatch(fetchItemsAsync()).then(() => {
         dispatch(fetchBasicInvestsAsync()).then(() => {
           dispatch(fetchInvestCatsAsync())
@@ -104,7 +110,7 @@ const Overview: FC<NavInterface> = ({
       });
     }
 
-  }, [transactions, invests]);
+  }, [transactions, invests, otherInvests]);
 
 
   // const [navVisible, toggleNavVisible] = useState(false);
@@ -122,7 +128,7 @@ const Overview: FC<NavInterface> = ({
               <StyledTileTitle>{t('totalTrans')}</StyledTileTitle>
             </StyledTileHeader>
             <StyledTileValue>
-              {getTotal(transactions)} $
+              {getTotal([transactions, []])} zł
             </StyledTileValue>
             <ResponsiveContainer className={'tile_chart'} width="100%" height="60%">
               <LineChart data={filterItems(transactions)}>
@@ -136,10 +142,10 @@ const Overview: FC<NavInterface> = ({
               <StyledTileTitle>{t('totalInvest')}</StyledTileTitle>
             </StyledTileHeader>
             <StyledTileValue>
-              {getTotal(invests)} $
+              {getTotal([invests, otherInvests])} zł
             </StyledTileValue>
             <ResponsiveContainer className={'tile_chart'} width="100%" height="60%">
-              <LineChart width={300} height={100} data={filterItems(invests)}>
+              <LineChart width={300} height={100} data={filterItems([...invests, ...otherInvests])}>
                 <Line type="monotone" dataKey="value" stroke="#25AB52" dot={false} strokeWidth={2}/>
               </LineChart>
             </ResponsiveContainer>

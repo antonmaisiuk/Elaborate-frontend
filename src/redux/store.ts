@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import transactionReducer from './transactionSlice';
 import basicInvestmentsReducer from './basicInvestSlice';
+import otherInvestmentsReducer from './otherInvestSlice';
 import modalReducer from "./modalSlice";
 import statsSlice from "./statSlice";
 import settingsSlice from "./settingsSlice";
@@ -10,6 +11,7 @@ export const store = configureStore({
   reducer: {
     transactions: transactionReducer,
     basicInvestments: basicInvestmentsReducer,
+    otherInvestments: otherInvestmentsReducer,
     modal: modalReducer,
     stats: statsSlice,
     settings: settingsSlice,

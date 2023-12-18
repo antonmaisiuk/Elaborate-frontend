@@ -61,7 +61,7 @@ const App = () => {
               <Route path="/invest/stocks" element={<BasicInvestments visible={navVisible} toggle={toggleNavVisible} basicInvestType={BasicInvestmentType.stocks}/>}/>
               <Route path="/invest/metals" element={<BasicInvestments visible={navVisible} toggle={toggleNavVisible} basicInvestType={BasicInvestmentType.metals}/>}/>
               <Route path="/invest/crypto" element={<BasicInvestments visible={navVisible} toggle={toggleNavVisible} basicInvestType={BasicInvestmentType.crypto}/>}/>
-              <Route path="/invest/other" element={<BasicInvestments visible={navVisible} toggle={toggleNavVisible} basicInvestType={BasicInvestmentType.crypto}/>}/>
+              <Route path="/invest/other" element={<BasicInvestments visible={navVisible} toggle={toggleNavVisible} basicInvestType={BasicInvestmentType.other}/>}/>
               <Route path="/confirm" element={<EmailConfirm/>}/>
               <Route path="/stats" element={<Statistics visible={navVisible} toggle={toggleNavVisible}/>}/>
               <Route path="/settings" element={<Settings visible={navVisible} toggle={toggleNavVisible}/>}/>

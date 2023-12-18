@@ -20,15 +20,19 @@ import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../../redux/store";
 import {setModalType, toggleActive} from "../../redux/modalSlice";
 import {addBasicInvestsAsync, deleteBasicInvestAsync, updateBasicInvestAsync} from "../../redux/basicInvestSlice";
-import {IBasicInvestment, IItem} from "../Investments/Overview/InvestOverview";
+import {IBasicInvestment, IItem, IOtherInvestment} from "../Investments/Overview/InvestOverview";
 import {useTranslation} from "react-i18next";
+import {addOtherInvestAsync, deleteOtherInvestAsync, updateOtherInvestAsync} from "../../redux/otherInvestSlice";
 
 export enum ModalType {
   addTransaction,
+  addOtherInvest,
   addBasicInvest,
   editTransaction,
+  editOtherInvest,
   editBasicInvest,
   transactionDetails,
+  otherInvestDetails,
   basicInvestDetails
 }
 
@@ -49,7 +53,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
   // const currentItems = items.filter((item) => item.categoryInvestmentId === newItem.categoryId);
 
   const updatedItem = {...modalData};
-  const [newItem, setNewItem] = useState<dataMainType>({
+  const [newItem, setNewItem] = useState<dataMainType | IOtherInvestment>({
     id: '',
     name: '',
     category: '',
@@ -133,8 +137,17 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const handleNewTransaction = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (newItem.categoryId === '') newItem.categoryId = modalCatData[0].id;
+    if ((newItem as ITransaction).categoryId === '') (newItem as ITransaction).categoryId = modalCatData[0].id;
     dispatch(addTransactionAsync(newItem as ITransaction));
+
+    dispatch(toggleActive(false));
+    resetForm();
+  };
+
+  const handleNewOtherInvest = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    dispatch(addOtherInvestAsync(newItem as IOtherInvestment));
 
     dispatch(toggleActive(false));
     resetForm();
@@ -143,7 +156,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
     e.preventDefault();
     console.log('👉 newItem: ', newItem);
 
-    if (newItem.categoryId === '') newItem.categoryId = modalCatData[0].id;
+    if ((newItem as IBasicInvestment).categoryId === '') (newItem as IBasicInvestment).categoryId = modalCatData[0].id;
     if (!(newItem as IBasicInvestment).itemId) (newItem as IBasicInvestment).itemId = currentItems[0].id;
     console.log('👉 [modal] New item: ', newItem);
     dispatch(addBasicInvestsAsync(newItem as IBasicInvestment));
@@ -155,6 +168,14 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const handleDeleteTransactions = async (e: React.MouseEvent) => {
     e.preventDefault();
     dispatch(deleteTransactionAsync(modalData.id))
+
+    dispatch(toggleActive(false));
+    setErrorMsg('');
+  }
+
+  const handleDeleteOtherInvest = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    dispatch(deleteOtherInvestAsync(modalData.id))
 
     dispatch(toggleActive(false));
     setErrorMsg('');
@@ -173,6 +194,19 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
 
     // @ts-ignore
     dispatch(updateTransactionAsync({
+      ...updatedItem,
+      date: formatDate(updatedItem.date),
+    }))
+
+    dispatch(toggleActive(false));
+    setErrorMsg('');
+  };
+
+  const handleEditOtherInvest = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // @ts-ignore
+    dispatch(updateOtherInvestAsync({
       ...updatedItem,
       date: formatDate(updatedItem.date),
     }))
@@ -244,6 +278,61 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
             onChange={handleInputChange}
             // value={formData[0].comment}
 
+          />
+        </StyledFormGroup>
+        <StyledFormGroup controlId="value">
+          <StyledFormLabel>{t('table.total')}</StyledFormLabel>
+          <StyledFormControl
+            type="number"
+            name="value"
+            placeholder='12.2'
+            value={newItem.value}
+            onChange={handleInputChange}
+            step={0.01}
+            required
+          />
+        </StyledFormGroup>
+        {errorMsg && <StyledError> {errorMsg} </StyledError>}
+        <StyledButton variant="success" type="submit">
+          {t('modal.save')}
+        </StyledButton>
+      </StyledForm>
+    )
+  }
+
+  function renderNewOtherInvestForm() {
+    return (
+      <StyledForm onSubmit={async (e: React.FormEvent<HTMLFormElement>) => {
+        await handleNewOtherInvest(e)
+      }}>
+        <StyledFormGroup controlId='title'>
+          <StyledFormLabel>{t('table.title')}</StyledFormLabel>
+          <StyledFormControl
+            type='text'
+            name='title'
+            placeholder='Phone'
+            value={'title' in newItem ? (newItem as IOtherInvestment).title : ''}
+            onChange={handleInputChange}
+            required
+          />
+        </StyledFormGroup>
+        <StyledFormGroup controlId="date">
+          <StyledFormLabel>{t('table.date')}</StyledFormLabel>
+          <StyledFormControl
+            type="date"
+            name="date"
+            defaultValue={new Date().toISOString().split('T')[0]}
+            onChange={handleInputChange}
+          />
+        </StyledFormGroup>
+        <StyledFormGroup controlId="comment">
+          <StyledFormLabel>{t('table.comment')}</StyledFormLabel>
+          <StyledFormControl
+            type="text"
+            name="comment"
+            placeholder='More info'
+            value={newItem.comment}
+            onChange={handleInputChange}
           />
         </StyledFormGroup>
         <StyledFormGroup controlId="value">
@@ -340,7 +429,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         <StyledFormGroup controlId="category">
           <StyledFormLabel>{t('modal.investmentType')}</StyledFormLabel>
           <StyledItem>
-            {modalData.category}
+            {(modalData as ITransaction | IBasicInvestment).category}
           </StyledItem>
         </StyledFormGroup>
         <StyledFormGroup controlId="item">
@@ -379,7 +468,48 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
             {t('modal.edit')}
           </StyledButton>
           <StyledButton variant="danger" onClick={async (e) => await handleDeleteBasicInvest(e)}>
-            {t('modal.deletel')}
+            {t('modal.delete')}
+          </StyledButton>
+        </StyledButtonGroup>
+
+      </StyledDetailsWrapper>
+    );
+  }
+
+  function renderOtherInvestDetails() {
+    return (
+      <StyledDetailsWrapper>
+        <StyledFormGroup controlId="title">
+          <StyledFormLabel>{t('table.title')}</StyledFormLabel>
+          <StyledItem>
+            {(modalData as IOtherInvestment).title}
+          </StyledItem>
+        </StyledFormGroup>
+        <StyledFormGroup controlId="comment">
+          <StyledFormLabel>{t('table.comment')}</StyledFormLabel>
+          <StyledItem>
+            {modalData.comment}
+          </StyledItem>
+        </StyledFormGroup>
+        <StyledFormGroup controlId="date">
+          <StyledFormLabel>{t('table.date')}</StyledFormLabel>
+          <StyledItem>
+            {(modalData as IOtherInvestment).date}
+          </StyledItem>
+        </StyledFormGroup>
+        <StyledFormGroup controlId="value">
+          <StyledFormLabel>Total</StyledFormLabel>
+          <StyledItem>
+            {modalData.value}
+          </StyledItem>
+        </StyledFormGroup>
+        <StyledButtonGroup>
+          {errorMsg && <StyledError> {errorMsg} </StyledError>}
+          <StyledButton variant="warning" onClick={() => dispatch(setModalType(ModalType.editOtherInvest))}>
+            {t('modal.edit')}
+          </StyledButton>
+          <StyledButton variant="danger" onClick={async (e) => await handleDeleteOtherInvest(e)}>
+            {t('modal.delete')}
           </StyledButton>
         </StyledButtonGroup>
 
@@ -403,7 +533,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         <StyledFormGroup controlId="Category">
           <StyledFormLabel>{t('table.category')}</StyledFormLabel>
           <StyledItem>
-            {modalData?.category}
+            {(modalData as ITransaction | IBasicInvestment).category}
           </StyledItem>
         </StyledFormGroup>
         <StyledFormGroup controlId="date">
@@ -464,7 +594,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
             type="text"
             name="categoryId"
             placeholder={t('table.category')}
-            defaultValue={modalData?.categoryId}
+            defaultValue={(modalData as ITransaction | IBasicInvestment)?.categoryId}
             onChange={handleSelectEditEvent}
             required
           >
@@ -517,6 +647,71 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
       </StyledForm>
     )
   }
+
+  function renderOtherInvestEdit() {
+
+    return (
+      <StyledForm onSubmit={async (e: React.FormEvent<HTMLFormElement>) => {
+        await handleEditOtherInvest(e)
+      }}>
+        <StyledFormGroup controlId="name">
+          <StyledFormLabel>{t('table.title')}</StyledFormLabel>
+          <StyledFormControl
+            type="text"
+            name="name"
+            placeholder='Telefon'
+            defaultValue={
+              // @ts-ignore
+              modalData?.title
+            }
+            onChange={handleInputEditEvent}
+            required
+          />
+        </StyledFormGroup>
+        <StyledFormGroup controlId="date">
+          <StyledFormLabel>{t('table.date')}</StyledFormLabel>
+          <StyledFormControl
+            type="date"
+            name="date"
+            defaultValue={formatDate(modalData?.date)}
+            onChange={handleInputEditEvent}
+          />
+        </StyledFormGroup>
+        <StyledFormGroup controlId="comment">
+          <StyledFormLabel>{t('table.comment')}</StyledFormLabel>
+          <StyledFormControl
+            type="text"
+            name="comment"
+            placeholder='More info'
+            defaultValue={modalData?.comment}
+            onChange={handleInputEditEvent}
+
+          />
+        </StyledFormGroup>
+        <StyledFormGroup controlId="value">
+          <StyledFormLabel>{t('table.total')}</StyledFormLabel>
+          <StyledFormControl
+            type="number"
+            name="value"
+            placeholder='12.2'
+            defaultValue={modalData?.value}
+            onChange={handleInputEditEvent}
+            step={0.01}
+            required
+          />
+        </StyledFormGroup>
+        {errorMsg && <StyledError> {errorMsg} </StyledError>}
+        <StyledButtonGroup>
+          <StyledButton variant='success' type='submit'>
+            {t('modal.save')}
+          </StyledButton>
+          <StyledButton variant='danger' onClick={() => dispatch(setModalType(ModalType.otherInvestDetails))}>
+            {t('modal.cancel')}
+          </StyledButton>
+        </StyledButtonGroup>
+      </StyledForm>
+    )
+  }
   function renderBasicInvestEdit() {
 
     return (
@@ -549,7 +744,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
             onChange={handleSelectEditEvent}
             required
           >
-            {items.filter((item) => item.categoryInvestmentId === updatedItem.categoryId).map((item) => (
+            {items.filter((item) => item.categoryInvestmentId === (updatedItem as ITransaction | IBasicInvestment).categoryId).map((item) => (
               <option value={item.id}>{item.name}</option>
             ))}
           </StyledFormSelect>
@@ -607,27 +802,29 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
 
   useEffect(() => {
     console.log('👉 Items: ', items);
-    setCurrentItems(items.filter((item) => item.categoryInvestmentId === newItem.categoryId));
-    // (newItem as IBasicInvestment).itemId = currentItems[0].id;
-  }, [items, modalCatData, newItem.categoryId]);
+    setCurrentItems(items.filter((item) => item.categoryInvestmentId === (newItem as ITransaction | IBasicInvestment).categoryId));
+  }, [items, modalCatData, (newItem as ITransaction | IBasicInvestment).categoryId, (newItem as IOtherInvestment).title]);
 
   const renderByType = () => {
     switch (modalType) {
       case ModalType.addTransaction:
         return renderNewTransactionForm();
-
-      case ModalType.addBasicInvest:
-        return renderNewBasicInvestForm();
-
       case ModalType.editTransaction:
         return renderTransactionEdit();
-
-      case ModalType.editBasicInvest:
-        return renderBasicInvestEdit();
-
       case ModalType.transactionDetails:
         return renderTransactionDetails();
 
+      case ModalType.addOtherInvest:
+        return renderNewOtherInvestForm();
+      case ModalType.otherInvestDetails:
+        return renderOtherInvestDetails();
+      case ModalType.editOtherInvest:
+        return renderOtherInvestEdit();
+
+      case ModalType.addBasicInvest:
+        return renderNewBasicInvestForm();
+      case ModalType.editBasicInvest:
+        return renderBasicInvestEdit();
       case ModalType.basicInvestDetails:
         return renderBasicInvestDetails();
       default:

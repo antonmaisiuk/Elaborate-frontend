@@ -1,6 +1,5 @@
-import React, {Dispatch, FC, HTMLAttributes, SetStateAction, useState} from 'react';
+import React, {FC, HTMLAttributes, useState} from 'react';
 import {
-  StyledFilterButton,
   StyledFilterButtons,
   StyledFilterForm,
   StyledFilterHeader,
@@ -50,7 +49,11 @@ const FilterHeader: FC<FilterHeaderInterface & HTMLAttributes<HTMLDivElement>> =
           <SearchIcon onClick={() => setSearchActive(!searchActive)} />
         </StyledFilterForm>
         <StyledNewButton onClick={() => {
-          dispatch(setModalType(tableType === TableType.transactions ? ModalType.addTransaction : ModalType.addBasicInvest));
+          dispatch(setModalType(tableType === TableType.transactions
+            ? ModalType.addTransaction
+            : tableType === TableType.investments
+              ? ModalType.addBasicInvest
+              : ModalType.addOtherInvest));
           dispatch(toggleActive(true));
           dispatch(setModalCatData(tableCategories));
         }}>{t('filterHeader.new')}</StyledNewButton>

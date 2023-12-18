@@ -58,12 +58,12 @@ const Login = () => {
         if (isTwoFactorEnabled) {
           setIs2FA(true)
         } else {
-          const { token, expiration, userDto:user } = JSON.parse(resData);
+          const { token, expiration, userDetails:user } = JSON.parse(resData);
           document.cookie = `token=${token}; expires=${new Date(expiration).toUTCString()};`;
 
           dispatch(setUser({
             ...user,
-            avatar: 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg',
+            avatar: user.photoFileName || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg',
             role: 'user',
           }))
 

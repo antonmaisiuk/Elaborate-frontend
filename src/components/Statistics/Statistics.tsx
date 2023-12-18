@@ -18,6 +18,7 @@ import {StyledChart, StyledCharts, StyledChartTitle, StyledSelector} from "./sty
 import {ResponsiveContainer} from "recharts";
 import {useTranslation} from "react-i18next";
 import {StyledTileHeader} from "../Overview/styled";
+import {IOtherInvestment} from "../Investments/Overview/InvestOverview";
 
 const Statistics: FC<NavInterface> = ({
 																				visible,
@@ -33,6 +34,7 @@ const Statistics: FC<NavInterface> = ({
 
 	const transactions = useSelector((state: RootState) => state.transactions.transactions);
 	const basicInvestments = useSelector((state: RootState) => state.basicInvestments.basicInvests);
+	const otherInvestments = useSelector((state: RootState) => state.otherInvestments.otherInvests);
 	// const [period, setPeriod] = useState<string>(statPeriods[0].name);
 	// const [type, setType] = useState<string>(statTypes[0].name);
 	const [filteredItems, setFilteredItems] = useState<dataMainType[]>(actualType === StatType.transactions ? transactions : basicInvestments);
@@ -57,7 +59,7 @@ const Statistics: FC<NavInterface> = ({
 			setFilteredItems(actualType === StatType.transactions ? transactions : basicInvestments)
 		}
 
-	}, [transactions, basicInvestments]);
+	}, [transactions, basicInvestments, otherInvestments]);
 
 	// Handle period change, possibly from a select dropdown or segmented control
 	const handlePeriodChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -71,14 +73,12 @@ const Statistics: FC<NavInterface> = ({
 		const now = moment();
 		// console.log('👉 type: ', type);
 		// console.log('👉 StatType.investments: ', StatType.investments);
-		const itemsToFilter: dataMainType[] = actualType === StatType.investments ? basicInvestments : transactions
+		const itemsToFilter: dataMainType[] = actualType === StatType.investments ? [...basicInvestments, ...otherInvestments] : transactions
 
 		return itemsToFilter.filter((item: dataMainType) => {
 			const [day, month, year] = item.date.split('.')
 			const itemDate = moment(`${year}-${month}-${day}`);
-			// console.log('👉 Item: ', item);
-			// console.log('👉 itemDate: ', itemDate.format('DD.MM.YYYY'));
-			// console.log('👉 now: ', now.format('DD.MM.YYYY'));
+
 			switch (actualPeriod) {
 				case StatPeriod.today:
 					return now.format('DD.MM.YYYY') === itemDate.format('DD.MM.YYYY');

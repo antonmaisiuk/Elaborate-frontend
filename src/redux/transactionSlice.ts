@@ -27,30 +27,7 @@ const backendApi = 'https://localhost:7247';
 const transactionSlice = createSlice({
   name: 'transactions',
   initialState,
-  reducers: {
-    // addTransaction: (state, action: PayloadAction<ITransaction>) => {
-    //   state.transactions.push(action.payload);
-    // },
-    // selectTransaction: (state, action: PayloadAction<string>) => {
-    //   state.selectedTransaction = state.transactions.find(
-    //     (transaction) => transaction.id === action.payload
-    //   ) || null;
-    // },
-    // updateTransaction: (state, action: PayloadAction<ITransaction>) => {
-    //   const index = state.transactions.findIndex(
-    //     (transaction) => transaction.id === action.payload.id
-    //   );
-    //   if (index !== -1) {
-    //     state.transactions[index] = action.payload;
-    //   }
-    // },
-    // deleteTransaction: (state, action: PayloadAction<string>) => {
-    //   state.transactions = state.transactions.filter(
-    //     (transaction) => transaction.id !== action.payload
-    //   );
-    //   state.selectedTransaction = null;
-    // },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       // ---------- Transactions ----------

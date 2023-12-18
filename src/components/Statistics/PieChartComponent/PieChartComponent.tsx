@@ -2,7 +2,9 @@
 import React from 'react';
 import {PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer} from 'recharts';
 import {dataMainType, ITransaction} from '../../Table/Table';
-import {StyledNoData} from "../styled"; // Assuming you have this exported from another file
+import {StyledNoData} from "../styled";
+import _ from "lodash";
+import {IBasicInvestment, IOtherInvestment} from "../../Investments/Overview/InvestOverview"; // Assuming you have this exported from another file
 
 interface PieChartComponentProps {
   items: dataMainType[];
@@ -31,14 +33,18 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({
                                                              }) => {
   // Prepare the data for recharts
   const data = items.reduce(
-    (acc: { name: string; value: number }[], item: dataMainType) => {
+    (acc: { name: string; value: number }[], item: dataMainType | IOtherInvestment) => {
+      let isOtherInvest = !_.has(item, 'category');
+
       const existingCategory = acc.find(
-        (i) => i.name === item.category
+        (i) => !isOtherInvest ? i.name === (item as ITransaction | IBasicInvestment).category : i.name === (item as IOtherInvestment).title
       );
       if (existingCategory) {
         existingCategory.value += item.value;
       } else {
-        acc.push({name: item.category, value: item.value});
+        !isOtherInvest
+          ? acc.push({name: (item as ITransaction | IBasicInvestment).category, value: item.value})
+          : acc.push({name: (item as IOtherInvestment).title, value: item.value});
       }
       return acc;
     },

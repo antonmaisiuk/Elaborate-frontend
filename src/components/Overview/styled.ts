@@ -19,12 +19,6 @@ export const StyledOverview = styled.div`
     min-height: 150px;
     grid-area: invest;
   }
-  //.tile_basic{
-  //  grid-area: basic;
-  //}
-  //.tile_other{
-  //  grid-area: other;
-  //}
   .tile_stats{
     grid-area: stat;
   }

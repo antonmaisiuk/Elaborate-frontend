@@ -1,11 +1,12 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {ModalType} from "../components/Modal/Modal";
 import {catMainType, dataMainType} from "../components/Table/Table";
+import {IOtherInvestment} from "../components/Investments/Overview/InvestOverview";
 
 interface ModalState {
   isActive: boolean;
   modalType: ModalType | null;
-  modalData: dataMainType;
+  modalData: dataMainType | IOtherInvestment;
   modalCatData: catMainType[];
   loading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
   error: string | null; // Ошибка, если что-то пошло не так
@@ -38,7 +39,7 @@ const modalSlice = createSlice({
     setModalType: (state, action: PayloadAction<ModalType>) => {
       state.modalType = action.payload;
     },
-    setModalData: (state, action: PayloadAction<dataMainType>) => {
+    setModalData: (state, action: PayloadAction<dataMainType | IOtherInvestment>) => {
       state.modalData = action.payload;
     },
     setModalCatData: (state, action: PayloadAction<catMainType[]>) => {

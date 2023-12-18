@@ -7,16 +7,13 @@ import {StyledTitle} from "./style";
 import Table, {TableType} from "../../Table/Table";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../../../redux/store";
-import {
-  fetchBasicInvestsAsync,
-  fetchInvestCatsAsync,
-  fetchItemsAsync
-} from "../../../redux/basicInvestSlice";
-import {BasicInvestmentType} from "../Overview/InvestOverview";
+import {fetchBasicInvestsAsync, fetchInvestCatsAsync, fetchItemsAsync} from "../../../redux/basicInvestSlice";
+import {BasicInvestmentType, IBasicInvestment, IOtherInvestment} from "../Overview/InvestOverview";
 import {useTranslation} from "react-i18next";
 import {StyledTileHeader} from "../../Overview/styled";
 import FilterHeader from "../../FilterHeader/FilterHeader";
 import _ from "lodash";
+import {fetchOtherInvestAsync} from "../../../redux/otherInvestSlice";
 
 export interface BasicInvestmentsInterface {
   basicInvestType: BasicInvestmentType,
@@ -29,11 +26,12 @@ const BasicInvestments: FC<BasicInvestmentsInterface & HTMLAttributes<HTMLDivEle
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const basicInvestments = useSelector((state: RootState) => state.basicInvestments.basicInvests);
+  const otherInvestments = useSelector((state: RootState) => state.otherInvestments.otherInvests);
   const investCategories = useSelector((state: RootState) => state.basicInvestments.basicInvestsCategories);
   const loadingStatus = useSelector((state: RootState) => state.basicInvestments.loading);
 
   const [title, setTitle] = useState('');
-  const [data, setData] = useState(basicInvestments);
+  const [data, setData] = useState(basicInvestType === BasicInvestmentType.other ? otherInvestments : basicInvestments);
 
   const { t } = useTranslation();
 
@@ -51,12 +49,17 @@ const BasicInvestments: FC<BasicInvestmentsInterface & HTMLAttributes<HTMLDivEle
         setTitle(t('recentStocks'));
         setData(basicInvestments.filter((invest) => invest.categoryId === '59631964-1cf5-41b3-9e33-303d39033590'));
         break;
+      case BasicInvestmentType.other:
+        setTitle(t('recentOther'));
+        setData(otherInvestments);
+        break;
       default:
     }
   }
 
   useEffect(() => {
     if (loadingStatus !== 'succeeded'){
+      dispatch(fetchOtherInvestAsync());
       dispatch(fetchItemsAsync()).then(() => {
         dispatch(fetchBasicInvestsAsync()).then(() => {
           dispatch(fetchInvestCatsAsync())
@@ -67,15 +70,22 @@ const BasicInvestments: FC<BasicInvestmentsInterface & HTMLAttributes<HTMLDivEle
     if (loadingStatus === 'succeeded') {
       filterByType();
     }
-  }, [basicInvestType, basicInvestments]);
+  }, [basicInvestType, basicInvestments, otherInvestments]);
 
   const search = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     if (value){
-      const searchResult = data.filter((item) => {
-        const {id, categoryId, ...obj } = item;
+      // @ts-ignore
+      const searchResult = data.filter((item: (IBasicInvestment | IOtherInvestment)) => {
+        if (_.has(item, 'categoryId')){
+          const {id, categoryId, ...obj } = item as IBasicInvestment;
 
-        return _.values(obj).some((val) => new RegExp(value, 'i').test(String(val)))
+          return _.values(obj).some((val) => new RegExp(value, 'i').test(String(val)));
+        } else {
+          const {id, ...obj } = item as IOtherInvestment;
+
+          return _.values(obj).some((val) => new RegExp(value, 'i').test(String(val)));
+        }
       });
       setData(searchResult)
     } else {
@@ -92,10 +102,21 @@ const BasicInvestments: FC<BasicInvestmentsInterface & HTMLAttributes<HTMLDivEle
       <Content onClick={() => toggle(false)}>
         <StyledTileHeader>
           <StyledTitle>{title}</StyledTitle>
-          <FilterHeader tableCategories={investCategories} searchFunc={search} tableType={TableType.investments}/>
+          <FilterHeader
+            tableCategories={investCategories}
+            searchFunc={search}
+            tableType={basicInvestType === BasicInvestmentType.other
+            ? TableType.other
+            : TableType.investments}
+          />
 
         </StyledTileHeader>
-        <Table tableType={TableType.investments} tableData={data} tableCategories={investCategories}/>
+        <Table
+          tableType={basicInvestType === BasicInvestmentType.other
+            ? TableType.other
+            : TableType.investments}
+          tableData={data}
+          tableCategories={investCategories}/>
       </Content>
     </Layout>
   );

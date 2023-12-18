@@ -1,6 +1,5 @@
 import React, {FC, HTMLAttributes, useEffect, useRef, useState} from 'react';
-import {StyledLoading, StyledPagination, StyledTable, StyledTableWrapper} from "./style";
-import FilterHeader from "../FilterHeader/FilterHeader";
+import {StyledPagination, StyledTable, StyledTableWrapper} from "./style";
 import Modal, {ModalType} from "../Modal/Modal";
 import ReactPaginate from 'react-paginate';
 import _ from 'lodash';
@@ -8,9 +7,8 @@ import SortAsc from '../../assets/SortAsc/SortAsc';
 import SortDesc from '../../assets/SortDesc/SortDesc';
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../../redux/store";
-import {IBasicInvestment, IBasicInvestmentCat, IItem} from "../Investments/Overview/InvestOverview";
+import {IBasicInvestment, IBasicInvestmentCat, IItem, IOtherInvestment} from "../Investments/Overview/InvestOverview";
 import {setModalCatData, setModalData, setModalType, toggleActive} from "../../redux/modalSlice";
-import {ColorRing} from "react-loader-spinner";
 import {useTranslation} from "react-i18next";
 
 export interface ITransaction {
@@ -33,14 +31,15 @@ export interface ITransactionCat {
 export enum TableType {
   transactions,
   investments,
+  other,
 }
 
-export type dataMainType = ITransaction | IBasicInvestment;
+export type dataMainType = ITransaction | IBasicInvestment | IOtherInvestment;
 export type catMainType = ITransactionCat | IBasicInvestmentCat;
 
 export interface TableInterface {
   tableType: TableType,
-  tableData: dataMainType[],
+  tableData: dataMainType[] | IOtherInvestment[],
   tableCategories: catMainType[],
   items?: IItem[]
 }
@@ -61,13 +60,13 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const [isLoaded, setIsLoaded] = useState(false);
-  const [sortedData, setSortedData] = useState<dataMainType[]>(tableData);
+  const [sortedData, setSortedData] = useState<dataMainType[] | IOtherInvestment[]>(tableData);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [sortColumn, setSortColumn] = useState<string | null>(null);
 
   const [pageCount, setPageCount] = useState<number>(0);
   const [itemOffset, setItemOffset] = useState(0);
-  const [currentItems, setCurrentItems] = useState<dataMainType[]>([{
+  const [currentItems, setCurrentItems] = useState<dataMainType[] | IOtherInvestment[]>([{
     id: '',
     name: '',
     category: '',
@@ -110,8 +109,12 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
   }, [itemOffset, tableData, sortedData]);
 
 
-  function openDetailsModal(row: dataMainType) {
-    dispatch(setModalType(tableType === TableType.transactions ? ModalType.transactionDetails : ModalType.basicInvestDetails));
+  function openDetailsModal(row: dataMainType | IOtherInvestment) {
+    dispatch(setModalType(tableType === TableType.transactions
+      ? ModalType.transactionDetails
+      : tableType === TableType.investments
+        ? ModalType.basicInvestDetails
+        : ModalType.otherInvestDetails));
     dispatch(setModalData(row));
     dispatch(setModalCatData(tableCategories));
     dispatch(toggleActive(true));
@@ -149,6 +152,7 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
       });
     }
 
+    // @ts-ignore
     setSortedData(sorted);
     setSortOrder(newSortOrder);
     setSortColumn(column);
@@ -178,7 +182,7 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
             <th onClick={() => handleSort('date')} style={{width: '20%'}}>{t('table.date')} {sortOrder !== 'asc' ? <SortAsc/> : <SortDesc/>}</th>
             <th onClick={() => handleSort('value')} style={{width: '20%'}}>{t('table.total')} {sortOrder !== 'asc' ? <SortAsc/> : <SortDesc/>}</th>
           </>
-        )
+        );
 
       case TableType.investments:
         return (
@@ -188,18 +192,28 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
             <th onClick={() => handleSort('amount')}>{t('table.amount')} {sortOrder !== 'asc' ? <SortAsc/> : <SortDesc/>}</th>
             <th onClick={() => handleSort('value')}>{t('table.total')} {sortOrder === 'asc' ? <SortAsc/> : <SortDesc/>}</th>
           </>
+        );
+
+      case TableType.other:
+        return (
+          <>
+            <th onClick={() => handleSort('title')}>{t('table.title')} {sortOrder === 'asc' ? <SortAsc/> : <SortDesc/>}</th>
+            <th onClick={() => handleSort('comment')}>{t('table.comment')} {sortOrder !== 'asc' ? <SortAsc/> : <SortDesc/>}</th>
+            <th onClick={() => handleSort('date')}>{t('table.date')} {sortOrder !== 'asc' ? <SortAsc/> : <SortDesc/>}</th>
+            <th onClick={() => handleSort('value')}>{t('table.total')} {sortOrder === 'asc' ? <SortAsc/> : <SortDesc/>}</th>
+          </>
         )
       default:
         return null;
     }
   }
-  const getRowByTableType = (row: dataMainType) => {
+  const getRowByTableType = (row: dataMainType | IOtherInvestment) => {
     switch (tableType) {
       case TableType.transactions:
         return (
           <>
             <td>{(row as ITransaction).name}</td>
-            <td>{row.category}</td>
+            <td>{(row as ITransaction).category}</td>
             <td>{row.date}</td>
             <td>{row.value} zł</td>
           </>
@@ -212,6 +226,15 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
             <td>{(row as IBasicInvestment).item}</td>
             <td>{row.comment}</td>
             <td>{(row as IBasicInvestment).amount} {t('table.pcs')}</td>
+            <td>{row.value} $</td>
+          </>
+        )
+      case TableType.other:
+        return (
+          <>
+            <td>{(row as IOtherInvestment).title}</td>
+            <td>{row.comment}</td>
+            <td>{row.date}</td>
             <td>{row.value} $</td>
           </>
         )
@@ -233,7 +256,7 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
                 </tr>
               </thead>
               <tbody>
-                {currentItems && currentItems.map((row: dataMainType) => (
+                {currentItems && currentItems.map((row: dataMainType | IOtherInvestment) => (
                   <tr key={row.id} onClick={() => openDetailsModal(row)}>
                     { getRowByTableType(row)}
                   </tr>

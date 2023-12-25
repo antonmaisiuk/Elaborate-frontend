@@ -12,7 +12,8 @@ import {
 } from 'recharts';
 import {dataMainType, ITransaction} from '../../Table/Table';
 import {StatPeriod} from "../../../redux/statSlice";
-import {StyledNoData} from "../styled"; // Assuming you have this exported from another file
+import {StyledNoData} from "../styled";
+import {StyledResponsiveContainer} from "./style"; // Assuming you have this exported from another file
 
 interface ChartData {
   date: string;
@@ -63,17 +64,17 @@ const TransactionTimeChart: React.FC<TransactionTimeChartProps> = ({
   return (
     chartData.length
       ?
-      <ResponsiveContainer width='99%' height='80%' style={{display: "flex", alignItems: "center"}} aspect={3}>
+      <StyledResponsiveContainer>
 
         <AreaChart
           // height={'80%'}
           data={chartData}
-          // margin={{
-          //   top: 5,
-          //   right: 30,
-          //   left: 0,
-          //   bottom: 5,
-          // }}
+          margin={{
+            top: 5,
+            right: 30,
+            left: 0,
+            bottom: 5,
+          }}
         >
           <CartesianGrid strokeDasharray='3 3'/>
           <XAxis dataKey='date'/>
@@ -88,7 +89,7 @@ const TransactionTimeChart: React.FC<TransactionTimeChartProps> = ({
             activeDot={{r: 8}}
           />
         </AreaChart>
-      </ResponsiveContainer>
+      </StyledResponsiveContainer>
 
       :
       <StyledNoData>Sorry, but you don't have data for current period(</StyledNoData>

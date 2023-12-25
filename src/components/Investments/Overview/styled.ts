@@ -2,13 +2,13 @@ import styled from "styled-components";
 
 export const StyledInvestsOverview = styled.div`
   display: grid;
-  grid-template-rows: max(20%, 150px) max(20%, 150px);
-  grid-template-areas: 
-          'stocks crypto' 
-          'metals other' 
-          'stat stat';
+  grid-template-rows: min(30%, 150px);
+  grid-template-areas:
+        'stocks crypto metals other'
+        'stat stat stat stat';
   gap: 20px;
-  height: 100%;
+  //height: 100%;
+  //overflow-y: scroll;
   margin-top: 30px;
 
   .tile_stocks{
@@ -31,6 +31,15 @@ export const StyledInvestsOverview = styled.div`
     grid-area: stat;
   }
 
+  @media only screen and (max-width: 1024px) {
+    grid-template-rows: min(20%, 150px) min(20%, 150px);
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: 
+          'stocks crypto' 
+          'metals other' 
+          'stat stat';
+  }
+  
   @media only screen and (max-width: 440px) {
     display: flex;
     flex-direction: column;

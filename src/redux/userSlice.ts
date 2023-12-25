@@ -157,8 +157,8 @@ export const changeProfileAsync = createAsyncThunk(
       data.append('SettingsDto.CurrenciesId', changedUser.currency);
       data.append('SettingsDto.IsDarkScreen', `${changedUser.isDarkScreen}`);
       data.append('ContentType', 'multipart/form-data');
-      data.append('photo', changedUser.avatarFile as Blob);
-      data.append('FileName', changedUser.avatarFile?.name as string);
+      data.append('photo', changedUser.avatarFile as Blob || null);
+      data.append('FileName', changedUser.avatarFile?.name as string || 'null');
 
       const response = await axios.put(
         `${process.env.REACT_APP_API_URL}/api/users`,

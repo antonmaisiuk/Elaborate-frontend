@@ -23,10 +23,52 @@ import TransactionTimeChart from "../Statistics/TransactionTimeChart/Transaction
 import {fetchTransactionsAsync, fetchTransCatsAsync} from "../../redux/transactionSlice";
 import {fetchBasicInvestsAsync, fetchInvestCatsAsync, fetchItemsAsync} from "../../redux/basicInvestSlice";
 import PieChartComponent from "../Statistics/PieChartComponent/PieChartComponent";
-import {Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
+import {
+  Area,
+  AreaChart, Bar, BarChart,
+  CartesianGrid, Legend,
+  Line,
+  LineChart, PolarGrid, PolarRadiusAxis, Radar,
+  RadarChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
+} from "recharts";
 import {useTranslation} from "react-i18next";
 import {IOtherInvestment} from "../Investments/Overview/InvestOverview";
 import {fetchOtherInvestAsync} from "../../redux/otherInvestSlice";
+import {StyledResponsiveContainer} from "../Statistics/TransactionTimeChart/style";
+import {getAllData} from "../Statistics/Statistics";
+import basicInvestments from "../Investments/BasicInvestments/BasicInvestments";
+
+export const filterDataByPeriod = (actualPeriod: StatPeriod, data: any[]) => {
+  const now = moment();
+
+  return data.filter((item: dataMainType) => {
+    const [day, month, year] = item.date.split('.')
+    const itemDate = moment(`${year}-${month}-${day}`);
+
+    switch (actualPeriod) {
+      case StatPeriod.today:
+        return now.format('DD.MM.YYYY') === itemDate.format('DD.MM.YYYY');
+      case StatPeriod.week:
+        return (
+          now.diff(itemDate, 'weeks') === 0
+        );
+      case StatPeriod.month:
+        return (
+          itemDate.year() === now.year() &&
+          itemDate.month() === now.month()
+        );
+      case StatPeriod.year:
+        return itemDate.year() === now.year();
+      case StatPeriod.all:
+      default:
+        return true;
+    }
+  });
+}
 
 const Overview: FC<NavInterface> = ({
   visible,
@@ -56,37 +98,10 @@ const Overview: FC<NavInterface> = ({
     dispatch(setType(event.target.value));
   };
 
-  const filterItems = (data: any[]) => {
-    const now = moment();
-
-    return data.filter((item: dataMainType) => {
-      const [day, month, year] = item.date.split('.')
-      const itemDate = moment(`${year}-${month}-${day}`);
-
-      switch (actualPeriod) {
-        case StatPeriod.today:
-          return now.format('DD.MM.YYYY') === itemDate.format('DD.MM.YYYY');
-        case StatPeriod.week:
-          return (
-            now.diff(itemDate, 'weeks') === 0
-          );
-        case StatPeriod.month:
-          return (
-            itemDate.year() === now.year() &&
-            itemDate.month() === now.month()
-          );
-        case StatPeriod.year:
-          return itemDate.year() === now.year();
-        case StatPeriod.all:
-        default:
-          return true;
-      }
-    });
-  }
 
   const getTotal = (data: [any[], any[]]) => {
 
-    const filteredByPeriod = filterItems(_.flattenDeep(data));
+    const filteredByPeriod = filterDataByPeriod(actualPeriod, _.flattenDeep(data));
     console.log('👉 filteredByPeriod: ', filteredByPeriod);
 
     return _.round(filteredByPeriod.reduce((accumulator, currentValue) => {
@@ -112,9 +127,6 @@ const Overview: FC<NavInterface> = ({
 
   }, [transactions, invests, otherInvests]);
 
-
-  // const [navVisible, toggleNavVisible] = useState(false);
-
   return (
     <Layout>
       <Header toggle={toggle} visible={visible}/>
@@ -131,7 +143,7 @@ const Overview: FC<NavInterface> = ({
               {getTotal([transactions, []])} zł
             </StyledTileValue>
             <ResponsiveContainer className={'tile_chart'} width="100%" height="60%">
-              <LineChart data={filterItems(transactions)}>
+              <LineChart data={filterDataByPeriod(actualPeriod, transactions)}>
                 <Line type="monotone" dataKey="value" stroke="#25AB52" dot={false} strokeWidth={2}/>
               </LineChart>
             </ResponsiveContainer>
@@ -145,7 +157,7 @@ const Overview: FC<NavInterface> = ({
               {getTotal([invests, otherInvests])} zł
             </StyledTileValue>
             <ResponsiveContainer className={'tile_chart'} width="100%" height="60%">
-              <LineChart width={300} height={100} data={filterItems([...invests, ...otherInvests])}>
+              <LineChart width={300} height={100} data={filterDataByPeriod(actualPeriod, [...invests, ...otherInvests])}>
                 <Line type="monotone" dataKey="value" stroke="#25AB52" dot={false} strokeWidth={2}/>
               </LineChart>
             </ResponsiveContainer>
@@ -155,13 +167,6 @@ const Overview: FC<NavInterface> = ({
             <StyledTileHeader className={'tile_stats-header'}>
               <StyledTileTitle>{t('statistics')}</StyledTileTitle>
               <StyledTileSelectorsWrapper>
-                <StyledTileSelector onChange={handleTypeChange}>
-                  {
-                    _.keys(StatType).map((type, i) =>
-                      (<option selected={actualType === _.values(StatType)[i]}
-                               value={type}>{_.values(StatType)[i]}</option>))
-                  }
-                </StyledTileSelector>
                 <StyledTileSelector onChange={handlePeriodChange}>
                   {
                     _.keys(StatPeriod).map((period, i) =>
@@ -171,7 +176,30 @@ const Overview: FC<NavInterface> = ({
                 </StyledTileSelector>
               </StyledTileSelectorsWrapper>
             </StyledTileHeader>
-            {/*<TransactionTimeChart transactions={filterItems(actualType === StatType.investments ? invests : transactions)} period={actualPeriod} />*/}
+            <StyledResponsiveContainer>
+              <BarChart
+                width={500}
+                height={300}
+                data={getAllData(actualPeriod, transactions, invests, otherInvests)}
+                margin={{
+                  top: 20,
+                  right: 30,
+                  left: 20,
+                  bottom: 5,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="Date" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="Transactions" stackId="a" fill="#25AB52" />
+                <Bar dataKey="Basic investments" stackId="a" fill="#27aeef" />
+                <Bar dataKey="Other investments" stackId="a" fill="#b33dc6" />
+              </BarChart>
+            </StyledResponsiveContainer>
+
+            {/*<TransactionTimeChart transactions={filterDataByPeriod(actualType === StatType.investments ? invests : transactions)} period={actualPeriod} />*/}
           </StyledTile>
 
         </StyledOverview>

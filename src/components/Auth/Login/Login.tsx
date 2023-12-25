@@ -3,24 +3,100 @@ import styled from 'styled-components';
 import {
   AuthContainer,
   AuthWrapper,
-  StyledAuthHeader, StyledAuthLogo, StyledButton, StyledError, StyledFogotPassword,
+  StyledAuthHeader,
+  StyledAuthLogo,
+  StyledButton,
+  StyledError,
+  StyledFogotPassword,
   StyledForm,
   StyledFormControl,
   StyledFormGroup,
-  StyledFormLabel, StyledGoogleButton, StyledGoogleIcon, StyledLink, StyledOption, StyledSuccess
+  StyledFormLabel,
+  StyledGoogleButton,
+  StyledGoogleIcon,
+  StyledInputGroup,
+  StyledLink,
+  StyledOption,
+  StyledPassInputWrapper,
+  StyledSuccess
 } from "../styled";
 import {CredentialResponse} from "@react-oauth/google";
-import {useNavigate} from "react-router-dom";
+import {NavigateFunction, useNavigate} from "react-router-dom";
 import {ColorRing} from "react-loader-spinner";
 import {fetchTransactionsAsync, fetchTransCatsAsync} from "../../../redux/transactionSlice";
 import {fetchBasicInvestsAsync, fetchInvestCatsAsync, fetchItemsAsync} from "../../../redux/basicInvestSlice";
 import {useDispatch} from "react-redux";
 import {AppDispatch} from "../../../redux/store";
 import {setUser} from "../../../redux/userSlice";
+import OpenEyeIcon from "../../../assets/OpenEye/OpenEyeIcon";
+import CloseEyeIcon from "../../../assets/CloseEye/CloseEyeIcon";
+import {jwtDecode} from "jwt-decode";
+import {fetchRegister} from "../Registration/Registration";
+
+
+export interface ILoginUser {
+  email: string,
+  password: string,
+  code: number,
+}
+
+export const fetchLogin = async (data: any) => {
+  return fetch(`${process.env.REACT_APP_API_URL}/api/Authentication/login`,
+    {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+
+      body: JSON.stringify(data)
+    });
+}
+
+const successLoginRes = async (
+  response: Response,
+  responseText: string,
+  dispatch: any,
+  setIs2FA: React.Dispatch<React.SetStateAction<boolean>>,
+  setSpinnerActive: React.Dispatch<React.SetStateAction<boolean>>,
+  setSuccessMsg: React.Dispatch<React.SetStateAction<string>>,
+  navigate: NavigateFunction) => {
+
+  const isTwoFactorEnabled = /sent/.test(JSON.parse(responseText).message);
+  if (isTwoFactorEnabled) {
+    setIs2FA(true)
+  } else {
+    const { token, expiration, userDetails:user } = JSON.parse(responseText);
+    document.cookie = `token=${token}; expires=${new Date(expiration).toUTCString()};`;
+
+    dispatch(setUser({
+      ...user,
+      avatar: user.photoFileName || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg',
+      role: 'user',
+    }))
+
+    await dispatch(fetchTransactionsAsync()).then(() =>
+      dispatch(fetchTransCatsAsync())
+    );
+
+    await dispatch(fetchItemsAsync()).then(() => {
+      dispatch(fetchBasicInvestsAsync()).then(() => {
+        dispatch(fetchInvestCatsAsync())
+      })
+    });
+
+    setSpinnerActive(false);
+    setSuccessMsg('Successfully logged')
+
+
+    setTimeout(() => {
+      navigate('/overview');
+      // window.location.reload();
+    }, 2e2);
+  }
+}
 
 const Login = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [showPass, setShowPass] = useState(false);
   const [is2FA, setIs2FA] = useState(false);
   const [spinnerActive, setSpinnerActive] = useState(false);
   const [formData, setFormData] = useState({
@@ -32,60 +108,77 @@ const Login = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  const responseMessage = (response: CredentialResponse) => {
-    console.log(response);
+  const handleGoogle = async ({ credential }: CredentialResponse) => {
+    setErrorMsg('');
+    setSuccessMsg('');
+    setSpinnerActive(true);
+
+    if (credential){
+      // @ts-ignore
+      const { email, name, sub } = jwtDecode(credential);
+      console.log('👉 decode: ', email, name, sub);
+      const googleUser = {
+        email,
+        password: `${email}/${sub}/aA1.`,
+        code: null,
+      };
+
+      console.log('👉 New user data: ', formData);
+
+      const loginResponse = await fetchLogin(googleUser);
+      const loginResponseText = await loginResponse.text();
+
+      if (loginResponse.ok) {
+        console.log('👉 Old google user!');
+        await successLoginRes(loginResponse, loginResponseText, dispatch, setIs2FA, setSpinnerActive, setSuccessMsg, navigate);
+
+      } else if(loginResponseText === 'This account does not exist!') {
+        console.log('👉 New google user!');
+        const registerResponse = await fetchRegister({
+          username: name.replaceAll(' ', '-'),
+          email: email,
+          phoneNumber: null,
+          password: `${email}/${sub}/aA1.`,
+          // role: 'user'
+        });
+
+        if (registerResponse.ok) {
+          const newUserLoginResp = await fetchLogin(googleUser);
+
+          if (newUserLoginResp.ok){
+            await successLoginRes(loginResponse, loginResponseText, dispatch, setIs2FA, setSpinnerActive, setSuccessMsg, navigate);
+          } else {
+            const errorMsg = JSON.parse(await newUserLoginResp.text());
+            setSpinnerActive(false);
+            setErrorMsg(errorMsg.title || errorMsg.message);
+          }
+        } else {
+          const errorMsg = JSON.parse(await registerResponse.text());
+          setSpinnerActive(false);
+          setErrorMsg(errorMsg.title || errorMsg.message);
+        }
+      } else if(JSON.parse(loginResponseText).message === 'Invalid password') {
+        setSpinnerActive(false);
+        setErrorMsg('Please, login using email & password');
+      } else {
+        const errorMsg = JSON.parse(loginResponseText);
+        setSpinnerActive(false);
+        setErrorMsg(errorMsg.title || errorMsg.message);
+      }
+    }
   };
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleLogin = async (e?: React.FormEvent<HTMLFormElement>) => {
+    e && e.preventDefault();
     setErrorMsg('');
     setSuccessMsg('');
     setSpinnerActive(true);
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/Authentication/login`,
-        {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-
-          body: JSON.stringify(formData)
-        }
-        );
+      const response = await fetchLogin(formData);
 
       if (response.ok) {
-        const resData = await response.text();
-        const isTwoFactorEnabled = /sent/.test(JSON.parse(resData).message);
-        if (isTwoFactorEnabled) {
-          setIs2FA(true)
-        } else {
-          const { token, expiration, userDetails:user } = JSON.parse(resData);
-          document.cookie = `token=${token}; expires=${new Date(expiration).toUTCString()};`;
-
-          dispatch(setUser({
-            ...user,
-            avatar: user.photoFileName || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg',
-            role: 'user',
-          }))
-
-          await dispatch(fetchTransactionsAsync()).then(() =>
-            dispatch(fetchTransCatsAsync())
-          );
-
-          await dispatch(fetchItemsAsync()).then(() => {
-            dispatch(fetchBasicInvestsAsync()).then(() => {
-              dispatch(fetchInvestCatsAsync())
-            })
-          });
-
-          setSpinnerActive(false);
-          setSuccessMsg('Successfully logged')
-
-
-          setTimeout(() => {
-            navigate('/overview');
-            // window.location.reload();
-          }, 5e2);
-        }
+        await successLoginRes(response, await response.text(), dispatch, setIs2FA, setSpinnerActive, setSuccessMsg, navigate);
       } else {
         setErrorMsg(await response.text());
         setSpinnerActive(false);
@@ -180,14 +273,18 @@ const Login = () => {
                     Password
                     <StyledFogotPassword onClick={() => navigate('/forgot')}>Forgot Password?</StyledFogotPassword>
                   </StyledFormLabel>
-
+                <StyledPassInputWrapper>
                   <StyledFormControl
-                    type="password"
+                    type={showPass ? 'text' : 'password'}
                     name="password"
                     placeholder='********'
-                    // value={formData.Password}
                     onChange={handleInputChange}
-                    required/>
+                    required
+                  />
+                  <StyledInputGroup id='password' onClick={() => setShowPass(!showPass)} >
+                    {showPass ? <OpenEyeIcon/> : <CloseEyeIcon/>}
+                  </StyledInputGroup>
+                </StyledPassInputWrapper>
                 </StyledFormGroup>
               </>
             }
@@ -202,7 +299,7 @@ const Login = () => {
           <StyledOption>
             or sign up with
           </StyledOption>
-          <StyledGoogleButton onSuccess={responseMessage}/>
+          <StyledGoogleButton onError={() => setErrorMsg('Login Failed')} onSuccess={handleGoogle}/>
           <StyledOption>
             {
               is2FA

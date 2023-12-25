@@ -118,8 +118,8 @@ const Navigation: FC<HTMLAttributes<HTMLDivElement> & NavInterface> = ({toggle, 
           toggle(false);
           navigate('/settings')
         }}>
-          <StyledUserPhoto>
-            <img src={userInfo.avatar} alt="avatar"/>
+          <StyledUserPhoto avatar={userInfo.avatar}>
+            {/*<img src={userInfo.avatar} alt="avatar"/>*/}
           </StyledUserPhoto>
           <StyledUsername>
             <h4>{userInfo.username}</h4>
@@ -128,7 +128,6 @@ const Navigation: FC<HTMLAttributes<HTMLDivElement> & NavInterface> = ({toggle, 
         </StyledUserInfo>
 
         <HiOutlineLogout color={'rgba(255, 255, 255, 0.70'} onClick={logout} size={ICON_SIZE}/>
-        {/*<VerticalMoreIcon/>*/}
       </StyledNavFooter>
 
 

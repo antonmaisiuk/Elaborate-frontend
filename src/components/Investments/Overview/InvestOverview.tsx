@@ -12,7 +12,18 @@ import {
   StyledTileTitle,
   StyledTileValue
 } from "../../Overview/styled";
-import {Line, LineChart, ResponsiveContainer} from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
+} from "recharts";
 import _ from "lodash";
 import {setPeriod, setType, StatPeriod, StatType} from "../../../redux/statSlice";
 import {useTranslation} from "react-i18next";
@@ -24,6 +35,9 @@ import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../../../redux/store";
 import {fetchOtherInvestAsync} from "../../../redux/otherInvestSlice";
 import {StyledInvestsOverview} from "./styled";
+import {filterDataByPeriod} from "../../Overview/Overview";
+import {StyledResponsiveContainer} from "../../Statistics/TransactionTimeChart/style";
+import {getAllData} from "../../Statistics/Statistics";
 
 export enum BasicInvestmentType {
   stocks,
@@ -121,7 +135,7 @@ const InvestOverview: FC<NavInterface> = ({
 
   const getTotal = (data: any[]) => {
 
-    const filteredByPeriod = filterItems(data);
+    const filteredByPeriod = filterDataByPeriod(actualPeriod, data);
     console.log('👉 filteredByPeriod: ', filteredByPeriod);
 
     return _.round(filteredByPeriod.reduce((accumulator, currentValue) => {
@@ -225,7 +239,28 @@ const InvestOverview: FC<NavInterface> = ({
                 </StyledTileSelector>
               </StyledTileSelectorsWrapper>
             </StyledTileHeader>
-            {/*<TransactionTimeChart transactions={filterItems(actualType === StatType.investments ? invests : transactions)} period={actualPeriod} />*/}
+            <StyledResponsiveContainer>
+              <BarChart
+                width={500}
+                height={300}
+                data={getAllData(actualPeriod, [], invests, otherInvests)}
+                margin={{
+                  top: 20,
+                  right: 30,
+                  left: 20,
+                  bottom: 5,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="Date" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                {/*<Bar dataKey="Transactions" stackId="a" fill="#25AB52" />*/}
+                <Bar dataKey="Basic investments" stackId="a" fill="#27aeef" />
+                <Bar dataKey="Other investments" stackId="a" fill="#b33dc6" />
+              </BarChart>
+            </StyledResponsiveContainer>
           </StyledTile>
 
         </StyledInvestsOverview>

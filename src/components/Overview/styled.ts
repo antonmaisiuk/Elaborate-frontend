@@ -3,12 +3,14 @@ import {Form} from "react-bootstrap";
 
 export const StyledOverview = styled.div`
   display: grid;
-  grid-template-rows: max(25%, 200px);
+  grid-template-rows: min(25%, 200px) min(60%, 500px);
+  grid-template-columns: 1fr 1fr;
   grid-template-areas: 
           'trans invest' 
           'stat stat';
   gap: 20px;
   height: 100%;
+  //overflow-y: scroll;  
   margin-top: 30px;
 
   .tile_trans{
@@ -22,15 +24,11 @@ export const StyledOverview = styled.div`
   .tile_stats{
     grid-area: stat;
   }
-
+  
   @media only screen and (max-width: 440px) {
     display: flex;
     flex-direction: column;
     grid-template-rows: none;
-    //grid-template-areas: 
-    //      'trans'
-    //      'invest'
-    //      'stat';
   }
 
   @media only screen and (max-width: 320px) {
@@ -66,7 +64,7 @@ export const StyledTile = styled.div`
     flex-wrap: wrap;
   }
 
-  .tile_stats svg, .recharts-wrapper{
+  .tile_stats svg{
     height: 80%;
     width: 100%;
   }

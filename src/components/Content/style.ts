@@ -4,10 +4,10 @@ export const StyledContent = styled.div`
   display: flex;
   flex-direction: column;
   max-width: 1500px;
-  
 
   grid-area: content;
-
+  overflow-y: scroll;
+  
   padding: 20px 32px 32px 32px;
   background-color: #F4F5F7;
 

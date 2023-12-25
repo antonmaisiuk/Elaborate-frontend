@@ -10,7 +10,7 @@ export const StyledHeader = styled.div`
   background-color: #F4F5F7;
 
   @media only screen and (max-width: 768px){
-    grid-template-columns: max(6%, 50px) auto;
+    grid-template-columns: max(6%, 60px) auto;
   }
 `;
 

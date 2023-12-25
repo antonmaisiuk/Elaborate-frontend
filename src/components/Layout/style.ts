@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const StyledLayout = styled.div`
   position: relative;
   display: grid;
-  grid-template-rows: 65px;
+  grid-template-rows: 65px calc(100vh - 65px);
   grid-template-columns: min(30%, 300px) auto;
   grid-template-areas: 
           'header header'
@@ -13,7 +13,7 @@ export const StyledLayout = styled.div`
   height: 100vh;
 
   @media only screen and (max-width: 768px){
-    grid-template-columns: max(6%, 50px) auto;
+    grid-template-columns: max(6%, 60px) auto;
   }
 
   @media only screen and (max-width: 440px) {

@@ -27,6 +27,18 @@ import {Button, Form, InputGroup} from "react-bootstrap";
 import OpenEyeIcon from '../../../assets/OpenEye/OpenEyeIcon';
 import CloseEyeIcon from "../../../assets/CloseEye/CloseEyeIcon";
 
+
+export const fetchRegister = async (data: any) => {
+  return await fetch(`${process.env.REACT_APP_API_URL}/api/Authentication`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    })
+}
+
 const Registration = () => {
   const [isPassCorrect, setIsPassCorrect] = useState(false);
   const [showPass, setShowPass] = useState(false);
@@ -85,14 +97,7 @@ const Registration = () => {
 
     setSpinnerActive(true);
 
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/Authentication`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-      })
+    const response = await fetchRegister(formData);
 
     if (response.ok) {
       setSpinnerActive(false);
@@ -152,7 +157,8 @@ const Registration = () => {
           </StyledFormGroup>
 
           <StyledFormGroup controlId="Password">
-            <StyledFormLabel>      Password
+            <StyledFormLabel>
+              Password
               <StyledTooltip
                 data-tooltip-id="password-tooltip"
                 data-tooltip-html='The password must have at least:

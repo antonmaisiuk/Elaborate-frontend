@@ -43,14 +43,14 @@ const App = () => {
         <Router>
           <Routes>
             <Route path="/login" element={
-              <GoogleOAuthProvider clientId="106155053534-6d2124m98sto75hhemhjo2fa0339l08n.apps.googleusercontent.com">
+              // <GoogleOAuthProvider clientId="106155053534-6d2124m98sto75hhemhjo2fa0339l08n.apps.googleusercontent.com">
                 <Login />
-              </GoogleOAuthProvider>
+              // </GoogleOAuthProvider>
             }/>
             <Route path="/register" element={
-              <GoogleOAuthProvider clientId="106155053534-6d2124m98sto75hhemhjo2fa0339l08n.apps.googleusercontent.com">
+              // <GoogleOAuthProvider clientId="106155053534-6d2124m98sto75hhemhjo2fa0339l08n.apps.googleusercontent.com">
                 <Registration/>
-              </GoogleOAuthProvider>
+              // </GoogleOAuthProvider>
             }/>
             <Route path="/forgot" element={<ForgotPassword />}/>
             <Route path="/api/Authentication/reset-password" element={<SetNewPassword />}/>
@@ -67,9 +67,9 @@ const App = () => {
               <Route path="/settings" element={<Settings visible={navVisible} toggle={toggleNavVisible}/>}/>
             </Route>
             <Route path="/" element={
-              <GoogleOAuthProvider clientId="106155053534-6d2124m98sto75hhemhjo2fa0339l08n.apps.googleusercontent.com">
+              // <GoogleOAuthProvider clientId="106155053534-6d2124m98sto75hhemhjo2fa0339l08n.apps.googleusercontent.com">
                 <Login />
-              </GoogleOAuthProvider>
+              // </GoogleOAuthProvider>
             }/>
           </Routes>
         </Router>

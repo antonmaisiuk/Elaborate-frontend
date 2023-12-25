@@ -8,7 +8,7 @@ export const StyledNavigation = styled.div<NavInterface>`
   justify-content: space-between;
   padding: 20px 32px 32px;
     
-  z-index: 1;
+  z-index: 100;
   grid-area: nav;
 
   background-color: #191919;
@@ -25,7 +25,7 @@ export const StyledNavigation = styled.div<NavInterface>`
     top: 65px;
     left: 0;
     min-height: calc(100vh - 65px);
-    width: max(6%, 50px);
+    width: max(6%, 60px);
     
     transform: translateX(-100%);
 
@@ -38,15 +38,9 @@ export const StyledNavigation = styled.div<NavInterface>`
 
 export const StyledNavHeader = styled.div`
   display: flex;
-  //flex-direction: column;
   justify-content: center;
 
   .mobile-nav {
-    //background-color: #753ffd;
-    //width: 100%;
-    //height: 40px;
-    /*display: none;*/
-
     display: flex;
     align-items: center;
   }
@@ -63,13 +57,20 @@ export const StyledNavFooter = styled.div`
   padding-top: 32px;
   justify-content: space-between;
   align-items: center;
-  
+
   width: 100%;
 
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  
-  svg{
+
+  svg {
     cursor: pointer;
+  }
+
+  @media only screen and (max-width: 768px) {
+    flex-direction: column;
+    justify-content: center;
+    gap: 15px;
+    align-items: center;
   }
 `
 
@@ -206,17 +207,20 @@ export const StyledLogoutWrapper = styled.button`
     }
   }
 `
-export const StyledUserPhoto = styled.div`
-  width: 32px;
-  height: 32px;
-  
-  img{
-    width: 100%;
-    border-radius: 100%;
-  }
+export const StyledUserPhoto = styled.div<{ avatar: string }>`
+    width: 48px;
+    height: 48px;
+    border-radius: 32px;
+    
+  background-image: url("${ props => props.avatar}");
+  background-color: lightgray;
+  background-repeat: no-repeat;
+  background-size: cover;
 
-  border-radius: 32px;
-  background: lightgray 50% / cover no-repeat;
+    @media only screen and (max-width: 768px){
+        width: 38px;
+        height: 38px;
+    }
 `
 export const StyledUserInfo = styled.button`
   display: flex;

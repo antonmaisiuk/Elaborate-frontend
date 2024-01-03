@@ -42,6 +42,9 @@ export const en = {
         theme: 'Theme',
 
         save: 'Save profile changes',
+        saveAvatar: 'Save avatar',
+        deleteAvatar: 'Delete avatar',
+        emptyAvatarInput: 'Please, select new image',
 
         newPass: 'New password',
         confirmPass: 'Confirm password',
@@ -50,6 +53,7 @@ export const en = {
         strongPass: 'Strong password',
         diffPass: 'Passwords aren\'t the same',
         successProfile: 'Profile was updated successfully',
+        successAvatar: 'Avatar was updated successfully',
         successPass: 'Password was updated successfully. Please login again.',
 
         tooltip: `The password must have at least:

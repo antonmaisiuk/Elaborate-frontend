@@ -42,6 +42,9 @@ export const pl = {
         theme: 'Tryb',
 
         save: 'Zapisać zmiany profilu',
+        saveAvatar: 'Zapis awatar',
+        deleteAvatar: 'Usuń awatar',
+        emptyAvatarInput: 'Proszę wybrać zdjęcie',
 
         newPass: 'Nowe hasło',
         confirmPass: 'Powtórz nowe hasło',
@@ -50,6 +53,7 @@ export const pl = {
         strongPass: 'Mocne hasło',
         diffPass: 'Hasła się róznią',
         successProfile: 'Zmiany profilu zostały zapisane pomyślnie',
+        successAvatar: 'Zdjęcie profilowe zostało zapisane pomyślnie',
         successPass: 'Hasło zostało zmienione pomyślnie. Proszę zalogować się ponownie.',
 
         tooltip: `Hasło musi zawierać:

@@ -42,6 +42,9 @@ export const ru = {
         theme: 'Тема',
 
         save: 'Сохранить изменения профиля',
+        saveAvatar: 'Сохранить аватар',
+        deleteAvatar: 'Удалить аватар',
+        emptyAvatarInput: 'Пожалуйста, выберите фото',
 
         newPass: 'Новый пароль',
         confirmPass: 'Подтверждение пароля',
@@ -50,6 +53,7 @@ export const ru = {
         strongPass: 'Сильный пароль',
         diffPass: 'Пароли не совпадают',
         successProfile: 'Профиль был успешно изменён',
+        successAvatar: 'Аватар был успешно изменён',
         successPass: 'Пароль успешно изменём. Пожалуйста, войдите в аккаунт ещё раз.',
         tooltip: `Пароль должен состоять из:
                 <ul>

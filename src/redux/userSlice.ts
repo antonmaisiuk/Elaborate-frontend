@@ -106,6 +106,16 @@ const userSlice = createSlice({
 
         state.error = null;
       })
+      .addCase(changeAvatarAsync.fulfilled, (state, action) => {
+        state.userInfo.avatar = action.payload.url;
+
+        state.error = null;
+      })
+      .addCase(deleteAvatarAsync.fulfilled, (state, action) => {
+        state.userInfo.avatar = process.env.REACT_APP_DEFAULT_AVATAR || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg';
+
+        state.error = null;
+      })
       .addCase(changeProfileAsync.rejected, (state, action) => {
         state.loading = 'failed';
         state.error = 'Something was wrong. Please try again.';
@@ -157,8 +167,8 @@ export const changeProfileAsync = createAsyncThunk(
       data.append('SettingsDto.CurrenciesId', changedUser.currency);
       data.append('SettingsDto.IsDarkScreen', `${changedUser.isDarkScreen}`);
       data.append('ContentType', 'multipart/form-data');
-      data.append('photo', changedUser.avatarFile as Blob || null);
-      data.append('FileName', changedUser.avatarFile?.name as string || 'null');
+      // data.append('photo', changedUser.avatarFile as Blob || null);
+      // data.append('FileName', changedUser.avatarFile?.name as string || 'null');
 
       const response = await axios.put(
         `${process.env.REACT_APP_API_URL}/api/users`,
@@ -174,6 +184,49 @@ export const changeProfileAsync = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue({ error: 'Something was wrong. Please try again.'})
+    }
+  });
+
+export const changeAvatarAsync = createAsyncThunk(
+  'user/changeAvatar',
+  async (changedUser: IUser, { rejectWithValue }) => {
+    try {
+      const data = new FormData();
+      data.append('photo', changedUser.avatarFile as Blob || null);
+
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/photos/upload`,
+        data,
+        {
+          headers: {
+            accept: 'multipart/form-data',
+            Authorization: `Bearer ${getActualToken()}`
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue({ error: 'Something was wrong. Please try again.'})
+    }
+  });
+
+export const deleteAvatarAsync = createAsyncThunk(
+  'user/deleteAvatar',
+  async () => {
+    try {
+      const response = await axios.delete(
+        `${process.env.REACT_APP_API_URL}/api/photos`,
+        {
+          headers: {
+            Authorization: `Bearer ${getActualToken()}`
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      return false;
     }
   });
 

@@ -245,6 +245,7 @@ const Settings: FC<NavInterface> = ({
               <StyledProfileControl
                 type={showPass ? 'text' : 'password'}
                 name="pass"
+                className='combined_input'
                 placeholder={t('settings.newPass')}
                 onChange={handleInputChange}
                 required
@@ -268,6 +269,7 @@ const Settings: FC<NavInterface> = ({
               <StyledProfileControl
                 type={showPass ? 'text' : 'password'}
                 name="confirmPass"
+                className='combined_input'
                 placeholder={t('settings.confirmPass')}
                 // value={formData.Email}
                 onChange={handleInputChange}

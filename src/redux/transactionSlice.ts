@@ -10,7 +10,8 @@ interface TransactionState {
   transactions: ITransaction[];
   transCategories: ITransactionCat[];
   selectedTransaction: ITransaction | null;
-  loading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
+  transLoading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
+  catsLoading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
   error: string | null; // Ошибка, если что-то пошло не так
 }
 
@@ -18,7 +19,8 @@ const initialState: TransactionState = {
   transactions: [],
   transCategories: [],
   selectedTransaction: null,
-  loading: "idle",
+  transLoading: "idle",
+  catsLoading: "idle",
   error: null,
 };
 
@@ -32,10 +34,10 @@ const transactionSlice = createSlice({
     builder
       // ---------- Transactions ----------
       .addCase(fetchTransactionsAsync.pending, (state) => {
-        state.loading = 'pending';
+        state.transLoading = 'pending';
       })
       .addCase(fetchTransactionsAsync.fulfilled, (state, action) => {
-        state.loading = 'succeeded';
+        state.transLoading = 'succeeded';
         state.transactions = _.map(action.payload, (trans) => ({
           ...trans,
           categoryId: trans.categoryTransactionId
@@ -43,7 +45,7 @@ const transactionSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchTransactionsAsync.rejected, (state, action) => {
-        state.loading = 'failed';
+        state.transLoading = 'failed';
         state.error = action.error.message || 'An error occurred.';
       })
 
@@ -76,10 +78,10 @@ const transactionSlice = createSlice({
       })
       // ---------- Transaction Categories ----------
       .addCase(fetchTransCatsAsync.pending, (state) => {
-        // state.loading = 'pending';
+        state.catsLoading = 'pending';
       })
       .addCase(fetchTransCatsAsync.fulfilled, (state, action) => {
-        state.loading = 'succeeded';
+        state.catsLoading = 'succeeded';
         state.transCategories = action.payload;
 
         if (state.transactions.length){
@@ -93,7 +95,7 @@ const transactionSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchTransCatsAsync.rejected, (state, action) => {
-        state.loading = 'failed';
+        state.catsLoading = 'failed';
         state.error = action.error.message || 'An error occurred.';
       });
   },

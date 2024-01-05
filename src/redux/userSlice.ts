@@ -3,6 +3,7 @@ import axios from 'axios';
 import {getActualToken} from "../App";
 import i18next from "i18next";
 import _ from "lodash";
+import {fetchOtherInvestAsync} from "./otherInvestSlice";
 
 export interface IUser {
   username: string,
@@ -40,7 +41,7 @@ export enum ThemeEnum {
 //
 // export enum CurrencyEnum {
 //   usd = 'US $',
-//   pln = 'zł',
+//   pln = '$',
 // }
 
 interface UserSlice {
@@ -93,6 +94,9 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(changeProfileAsync.pending, (state) => {
+        state.loading = 'pending';
+      })
       .addCase(changeProfileAsync.fulfilled, (state, action) => {
         state.userInfo.avatar = action.payload.url;
 
@@ -120,6 +124,7 @@ const userSlice = createSlice({
         state.loading = 'failed';
         state.error = 'Something was wrong. Please try again.';
       })
+
       .addCase(getUserAsync.fulfilled, (state, action) => {
         const { user, userSettings, languagesList, currenciesList } = action.payload
         state.userInfo = {
@@ -141,6 +146,10 @@ const userSlice = createSlice({
         document.documentElement.lang = currentLang;
 
         state.error = null;
+        state.loading = 'succeeded';
+      })
+      .addCase(getUserAsync.pending, (state) => {
+        state.loading = 'pending';
       })
   }
 });

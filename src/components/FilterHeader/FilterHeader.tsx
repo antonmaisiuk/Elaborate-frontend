@@ -9,9 +9,9 @@ import {
 } from "./style";
 import SearchIcon from "../../assets/SearchIcon/SearchIcon";
 import {ModalType} from "../Modal/Modal";
-import {setModalCatData, setModalType, toggleActive} from "../../redux/modalSlice";
-import {useDispatch} from "react-redux";
-import {AppDispatch} from "../../redux/store";
+import {setModalCatData, setModalItems, setModalType, toggleActive} from "../../redux/modalSlice";
+import {useDispatch, useSelector} from "react-redux";
+import {AppDispatch, RootState} from "../../redux/store";
 import {catMainType, TableType} from "../Table/Table";
 import {useTranslation} from "react-i18next";
 
@@ -28,6 +28,8 @@ const FilterHeader: FC<FilterHeaderInterface & HTMLAttributes<HTMLDivElement>> =
    }) => {
 
   const dispatch = useDispatch<AppDispatch>();
+  const items = useSelector((state: RootState) => state.basicInvestments.items);
+
   const [searchActive, setSearchActive] = useState(false);
   const { t } = useTranslation();
 
@@ -56,6 +58,7 @@ const FilterHeader: FC<FilterHeaderInterface & HTMLAttributes<HTMLDivElement>> =
               : ModalType.addOtherInvest));
           dispatch(toggleActive(true));
           dispatch(setModalCatData(tableCategories));
+          dispatch(setModalItems(items.filter((item) => item.categoryInvestmentId === tableCategories[0].id)))
         }}>{t('filterHeader.new')}</StyledNewButton>
 
       </StyledFilterButtons>

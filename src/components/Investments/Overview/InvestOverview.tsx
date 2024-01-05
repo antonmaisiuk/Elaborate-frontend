@@ -55,6 +55,7 @@ export interface IBasicInvestment{
   date: string,
   amount: number,
   value: number,
+  unit?: string;
 }
 
 export interface IOtherInvestment{
@@ -95,7 +96,7 @@ const InvestOverview: FC<NavInterface> = ({
   const actualPeriod = useSelector((state: RootState) => state.stats.period);
   const actualType = useSelector((state: RootState) => state.stats.type);
 
-  const basicLoadingStatus = useSelector((state: RootState) => state.basicInvestments.loading);
+  const basicLoadingStatus = useSelector((state: RootState) => state.basicInvestments.basicLoading);
 
   const handlePeriodChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     dispatch(setPeriod(event.target.value));
@@ -136,7 +137,6 @@ const InvestOverview: FC<NavInterface> = ({
   const getTotal = (data: any[]) => {
 
     const filteredByPeriod = filterDataByPeriod(actualPeriod, data);
-    console.log('👉 filteredByPeriod: ', filteredByPeriod);
 
     return _.round(filteredByPeriod.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.value
@@ -144,14 +144,14 @@ const InvestOverview: FC<NavInterface> = ({
   }
 
   useEffect(() => {
-    if (basicLoadingStatus !== 'succeeded') {
-      dispatch(fetchOtherInvestAsync());
-      dispatch(fetchItemsAsync()).then(() => {
-        dispatch(fetchBasicInvestsAsync()).then(() => {
-          dispatch(fetchInvestCatsAsync())
-        })
-      });
-    }
+    // if (basicLoadingStatus !== 'succeeded') {
+    //   dispatch(fetchOtherInvestAsync());
+    //   dispatch(fetchItemsAsync()).then(() => {
+    //     dispatch(fetchBasicInvestsAsync()).then(() => {
+    //       dispatch(fetchInvestCatsAsync())
+    //     })
+    //   });
+    // }
 
   }, [invests, otherInvests]);
 
@@ -168,7 +168,7 @@ const InvestOverview: FC<NavInterface> = ({
               <StyledTileTitle>{t('invests.totalStocks')}</StyledTileTitle>
             </StyledTileHeader>
             <StyledTileValue>
-              {getTotal(stocks)} zł
+              {getTotal(stocks)} $
             </StyledTileValue>
             <ResponsiveContainer className={'tile_chart'} width="100%" height="60%">
               <LineChart data={filterItems(stocks)}>
@@ -182,7 +182,7 @@ const InvestOverview: FC<NavInterface> = ({
               <StyledTileTitle>{t('invests.totalCrypto')}</StyledTileTitle>
             </StyledTileHeader>
             <StyledTileValue>
-              {getTotal(crypto)} zł
+              {getTotal(crypto)} $
             </StyledTileValue>
             <ResponsiveContainer className={'tile_chart'} width="100%" height="60%">
               <LineChart data={filterItems(crypto)}>
@@ -196,7 +196,7 @@ const InvestOverview: FC<NavInterface> = ({
               <StyledTileTitle>{t('invests.totalMetals')}</StyledTileTitle>
             </StyledTileHeader>
             <StyledTileValue>
-              {getTotal(metals)} zł
+              {getTotal(metals)} $
             </StyledTileValue>
             <ResponsiveContainer className={'tile_chart'} width="100%" height="60%">
               <LineChart width={300} height={100} data={filterItems(metals)}>
@@ -210,7 +210,7 @@ const InvestOverview: FC<NavInterface> = ({
               <StyledTileTitle>{t('invests.totalOther')}</StyledTileTitle>
             </StyledTileHeader>
             <StyledTileValue>
-              {getTotal(otherInvests)} zł
+              {getTotal(otherInvests)} $
             </StyledTileValue>
             <ResponsiveContainer className={'tile_chart'} width="100%" height="60%">
               <LineChart width={300} height={100} data={filterItems(otherInvests)}>

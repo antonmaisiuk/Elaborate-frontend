@@ -72,15 +72,15 @@ const successLoginRes = async (
       role: 'user',
     }))
 
-    await dispatch(fetchTransactionsAsync()).then(() =>
-      dispatch(fetchTransCatsAsync())
-    );
-
-    await dispatch(fetchItemsAsync()).then(() => {
-      dispatch(fetchBasicInvestsAsync()).then(() => {
-        dispatch(fetchInvestCatsAsync())
-      })
-    });
+    // await dispatch(fetchTransactionsAsync()).then(() =>
+    //   dispatch(fetchTransCatsAsync())
+    // );
+    //
+    // await dispatch(fetchItemsAsync()).then(() => {
+    //   dispatch(fetchBasicInvestsAsync()).then(() => {
+    //     dispatch(fetchInvestCatsAsync())
+    //   })
+    // });
 
     setSpinnerActive(false);
     setSuccessMsg('Successfully logged')
@@ -277,6 +277,7 @@ const Login = () => {
                   <StyledFormControl
                     type={showPass ? 'text' : 'password'}
                     name="password"
+                    className='combined_input'
                     placeholder='********'
                     onChange={handleInputChange}
                     required

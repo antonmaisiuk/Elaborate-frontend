@@ -10,7 +10,9 @@ export const en = {
         'comment': 'Comment',
         'total': 'Total',
 
-        pcs: 'pcs',
+        pcs: 'pcs.',
+        gram: 'g.',
+        ozt: 'oz t.',
 
         'prev': 'Previous',
         'next': 'Next',

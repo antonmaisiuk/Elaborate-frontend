@@ -11,6 +11,8 @@ export const pl = {
         'total': 'Wartość',
 
         pcs: 'szt.',
+        gram: 'g.',
+        ozt: 'oz t.',
 
         'prev': 'Wstecz',
         'next': 'Dalej',

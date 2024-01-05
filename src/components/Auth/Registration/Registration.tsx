@@ -176,6 +176,7 @@ const Registration = () => {
               <StyledFormControl
                 type={showPass ? 'text' : 'password'}
                 name="Password"
+                className='combined_input'
                 placeholder='********'
                 onChange={handleInputChange}
                 aria-describedby="password"

@@ -51,13 +51,13 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
   items,
   }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const basicInvestLoading = useSelector((state: RootState) => state.basicInvestments.loading);
-  const transLoading = useSelector((state: RootState) => state.transactions.loading);
+  const basicInvestLoading = useSelector((state: RootState) => state.basicInvestments.basicLoading);
+  const transLoading = useSelector((state: RootState) => state.transactions.transLoading);
 
   const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  // const itemsPerPage = 15;
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  // const [itemsPerPage, setItemsPerPage] = useState(10);
+  const itemsPerPage = 15;
+  // const containerRef = useRef<HTMLDivElement | null>(null);
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [sortedData, setSortedData] = useState<dataMainType[] | IOtherInvestment[]>(tableData);
@@ -79,18 +79,18 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
 
   const { t } = useTranslation();
 
-  const calculatePageSize = () => {
-    // @ts-ignore
-    const containerHeight = containerRef.current.clientHeight - 60;
-    const rowHeight = 60;
-    const itemsPerPage = Math.floor(containerHeight / rowHeight);
-    setItemsPerPage(itemsPerPage);
-  };
+  // const calculatePageSize = () => {
+  //   // @ts-ignore
+  //   const containerHeight = containerRef.current.clientHeight - 60;
+  //   const rowHeight = 60;
+  //   const itemsPerPage = Math.floor(containerHeight / rowHeight);
+  //   setItemsPerPage(itemsPerPage);
+  // };
 
-  useEffect(() => {
-    calculatePageSize();
-
-  }, []);
+  // useEffect(() => {
+  //   calculatePageSize();
+  //
+  // }, []);
 
   useEffect(() => {
     setSortedData(tableData);
@@ -98,8 +98,8 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
     // calculatePageSize();
 
 
-    if (tableType === TableType.transactions && transLoading === 'succeeded') setIsLoaded(true)
-    if (tableType === TableType.investments && basicInvestLoading === 'succeeded') setIsLoaded(true)
+    // if (tableType === TableType.transactions && transLoading === 'succeeded') setIsLoaded(true)
+    // if (tableType === TableType.investments && basicInvestLoading === 'succeeded') setIsLoaded(true)
   }, [tableData, tableType]);
 
   useEffect(() => {
@@ -215,7 +215,7 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
             <td>{(row as ITransaction).name}</td>
             <td>{(row as ITransaction).category}</td>
             <td>{row.date}</td>
-            <td>{row.value} zł</td>
+            <td>{row.value} $</td>
           </>
         )
 
@@ -225,7 +225,7 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
             {/*<td>{row.category}</td>*/}
             <td>{(row as IBasicInvestment).item}</td>
             <td>{row.comment}</td>
-            <td>{(row as IBasicInvestment).amount} {t('table.pcs')}</td>
+            <td>{(row as IBasicInvestment).amount} {tableCategories[0]?.id === process.env.REACT_APP_METALS_ID ? t('table.ozt') : t('table.pcs')}</td>
             <td>{row.value} $</td>
           </>
         )
@@ -246,7 +246,7 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
   return (
     <>
       {/*<FilterHeader tableCategories={tableCategories} searchFunc={search} tableType={tableType}/>*/}
-      <StyledTableWrapper ref={containerRef}>
+      <StyledTableWrapper>
         {/*{isLoaded ?*/}
         {/*  <>*/}
             <StyledTable>

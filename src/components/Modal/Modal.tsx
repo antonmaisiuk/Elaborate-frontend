@@ -12,7 +12,7 @@ import {
   StyledFormControl,
   StyledFormGroup,
   StyledFormLabel,
-  StyledFormSelect
+  StyledFormSelect, StyledPassInputWrapper
 } from "../Auth/styled";
 import {dataMainType, ITransaction} from "../Table/Table";
 import {addTransactionAsync, deleteTransactionAsync, updateTransactionAsync} from "../../redux/transactionSlice";
@@ -23,6 +23,7 @@ import {addBasicInvestsAsync, deleteBasicInvestAsync, updateBasicInvestAsync} fr
 import {IBasicInvestment, IItem, IOtherInvestment} from "../Investments/Overview/InvestOverview";
 import {useTranslation} from "react-i18next";
 import {addOtherInvestAsync, deleteOtherInvestAsync, updateOtherInvestAsync} from "../../redux/otherInvestSlice";
+import _ from "lodash";
 
 export enum ModalType {
   addTransaction,
@@ -45,11 +46,11 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const isActive = useSelector((state: RootState) => state.modal.isActive);
   const modalData = useSelector((state: RootState) => state.modal.modalData);
   const modalCatData = useSelector((state: RootState) => state.modal.modalCatData);
+  const modalItems = useSelector((state: RootState) => state.modal.modalItems);
 
   const items = useSelector((state: RootState) => state.basicInvestments.items);
-  const loading = useSelector((state: RootState) => state.basicInvestments.loading);
+  const loading = useSelector((state: RootState) => state.basicInvestments.basicLoading);
 
-  const [currentItems, setCurrentItems] = useState<IItem[]>(items);
   // const currentItems = items.filter((item) => item.categoryInvestmentId === newItem.categoryId);
 
   const updatedItem = {...modalData};
@@ -63,8 +64,10 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
     date: new Date().toISOString(),
     value: 0,
     amount: 0,
+    unit: 'ozt',
   });
   const [errorMsg, setErrorMsg] = useState('');
+  const [currentItems, setCurrentItems] = useState<IItem[]>(items.filter((item) => item.categoryInvestmentId === (newItem as IBasicInvestment | ITransaction).categoryId));
 
 
 
@@ -100,10 +103,6 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
       ...prevData,
       [name]: value,
     }));
-
-    if (name === 'categoryId') {
-
-    }
   };
 
   const handleInputEditEvent = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -154,10 +153,13 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
   };
   const handleNewBasicInvest = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('👉 newItem: ', newItem);
 
     if ((newItem as IBasicInvestment).categoryId === '') (newItem as IBasicInvestment).categoryId = modalCatData[0].id;
-    if (!(newItem as IBasicInvestment).itemId) (newItem as IBasicInvestment).itemId = currentItems[0].id;
+    if (!(newItem as IBasicInvestment).itemId) (newItem as IBasicInvestment).itemId = modalItems[0].id;
+    if (modalCatData[0].id === process.env.REACT_APP_METALS_ID) {
+      if (!(newItem as IBasicInvestment).unit) (newItem as IBasicInvestment).unit = 'ozt';
+      if ((newItem as IBasicInvestment).unit === 'gram') (newItem as IBasicInvestment).amount = _.round((newItem as IBasicInvestment).amount / 31.104, 3)
+    }
     console.log('👉 [modal] New item: ', newItem);
     dispatch(addBasicInvestsAsync(newItem as IBasicInvestment));
 
@@ -367,11 +369,11 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
             name="categoryId"
             placeholder='Investment type'
             onChange={handleSelectChange}
+            disabled
             required
           >
-            <option disabled>Select investment type</option>
             {modalCatData.map((cat) => (
-              <option value={cat.id}>{cat.name}</option>
+              <option selected value={cat.id}>{cat.name}</option>
             ))}
           </StyledFormSelect>
         </StyledFormGroup>
@@ -386,7 +388,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
           >
             <option disabled>Select investment type if empty</option>
             {
-              currentItems.map((item) => (
+              modalItems.map((item) => (
               <option value={item.id}>{item.name}</option>
             ))
             }
@@ -404,15 +406,38 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         </StyledFormGroup>
         <StyledFormGroup controlId="amount">
           <StyledFormLabel>{t('table.amount')}</StyledFormLabel>
-          <StyledFormControl
-            type="number"
-            name="amount"
-            placeholder='12.2'
-            value={"amount" in newItem ? newItem.amount : ''}
-            onChange={handleInputChange}
-            step={0.01}
-            required
-          />
+          <StyledPassInputWrapper>
+            <StyledFormControl
+              type="number"
+              name="amount"
+              className={modalCatData[0].id === process.env.REACT_APP_METALS_ID ? 'combined_input' : ''}
+              placeholder='12.2'
+              value={"amount" in newItem ? newItem.amount : ''}
+              onChange={handleInputChange}
+              step={0.01}
+              required
+            />
+            {modalCatData[0].id === process.env.REACT_APP_METALS_ID
+              ? <StyledFormSelect
+                type="text"
+                className='modal_units'
+                name="unit"
+                placeholder='Index'
+                onChange={handleSelectChange}
+                required
+              >
+                <option value={'ozt'}>{t('table.ozt')}</option>
+                <option value={'gram'}>{t('table.gram')}</option>
+                {/*<option value={'pcs'}>{t('table.pcs')}</option>*/}
+                {
+                  // modalItems.map((item) => (
+                  // <option value={item.id}>унц.</option>
+                  // ))
+                }
+              </StyledFormSelect>
+              : ''
+            }
+          </StyledPassInputWrapper>
         </StyledFormGroup>
         {errorMsg && <StyledError> {errorMsg} </StyledError>}
         <StyledButton variant="success" type="submit">
@@ -742,6 +767,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
             placeholder={t('table.index')}
             defaultValue={(modalData as IBasicInvestment).itemId}
             onChange={handleSelectEditEvent}
+            disabled
             required
           >
             {items.filter((item) => item.categoryInvestmentId === (updatedItem as ITransaction | IBasicInvestment).categoryId).map((item) => (
@@ -800,10 +826,13 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
     return () => window.removeEventListener('keydown', close)
   });
 
-  useEffect(() => {
-    console.log('👉 Items: ', items);
-    setCurrentItems(items.filter((item) => item.categoryInvestmentId === (newItem as ITransaction | IBasicInvestment).categoryId));
-  }, [items, modalCatData, (newItem as ITransaction | IBasicInvestment).categoryId, (newItem as IOtherInvestment).title]);
+  // useEffect(() => {
+  //   console.log('👉 Items: ', items);
+  //   console.log('👉 Filtered items: ', items.filter((item) => item.categoryInvestmentId === (newItem as ITransaction | IBasicInvestment).categoryId));
+  //   console.log('👉 NewItem: ', newItem);
+  //   setCurrentItems(items.filter((item) => item.categoryInvestmentId === (newItem as ITransaction | IBasicInvestment).categoryId));
+  //   console.log('👉 New items: ', currentItems);
+  // }, [modalCatData]);
 
   const renderByType = () => {
     switch (modalType) {

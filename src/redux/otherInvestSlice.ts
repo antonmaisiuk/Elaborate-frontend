@@ -31,10 +31,10 @@ const otherInvestSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchOtherInvestAsync.pending, (state) => {
-        // state.loading = 'pending';
+        state.loading = 'pending';
       })
       .addCase(fetchOtherInvestAsync.fulfilled, (state, action) => {
-        // state.loading = 'succeeded';
+        state.loading = 'succeeded';
 
         state.otherInvests = _.map(action.payload, (invest) => ({
             id: invest.id,
@@ -46,6 +46,7 @@ const otherInvestSlice = createSlice({
         ));
 
         state.error = null;
+        state.loading = 'succeeded';
       })
 
       .addCase(addOtherInvestAsync.fulfilled, (state, action) => {

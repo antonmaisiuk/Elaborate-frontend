@@ -21,7 +21,7 @@ const Transactions: FC<NavInterface> = ({
   const dispatch = useDispatch<AppDispatch>();
   const transactions = useSelector((state: RootState) => state.transactions.transactions);
   const transCategories = useSelector((state: RootState) => state.transactions.transCategories);
-  const loadingStatus = useSelector((state: RootState) => state.transactions.loading);
+  const loadingStatus = useSelector((state: RootState) => state.transactions.transLoading);
 
   const [data, setData] = useState(transactions);
 
@@ -29,7 +29,7 @@ const Transactions: FC<NavInterface> = ({
 
   useEffect(() => {
     if (loadingStatus !== 'succeeded'){
-      dispatch(fetchTransactionsAsync()).then(() => dispatch(fetchTransCatsAsync()));
+      // dispatch(fetchTransactionsAsync()).then(() => dispatch(fetchTransCatsAsync()));
     }
   }, []);
 

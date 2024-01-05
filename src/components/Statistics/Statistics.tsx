@@ -69,8 +69,6 @@ export const getAllData = (actualPeriod: StatPeriod, trans: ITransaction[], basi
 		return accumulator;
 	}, {}));
 
-	console.log('👉 result = ', result);
-
 	return result;
 }
 
@@ -84,8 +82,8 @@ const Statistics: FC<NavInterface> = ({
 
 	// const actualType = useSelector((state: RootState) => state.stats.type);
 	const actualPeriod = useSelector((state: RootState) => state.stats.period);
-	const transLoadingStatus = useSelector((state: RootState) => state.transactions.loading);
-	const basicLoadingStatus = useSelector((state: RootState) => state.basicInvestments.loading);
+	const transLoadingStatus = useSelector((state: RootState) => state.transactions.transLoading);
+	const basicLoadingStatus = useSelector((state: RootState) => state.basicInvestments.basicLoading);
 
 	const transactions = useSelector((state: RootState) => state.transactions.transactions);
 	const basicInvestments = useSelector((state: RootState) => state.basicInvestments.basicInvests);
@@ -97,20 +95,20 @@ const Statistics: FC<NavInterface> = ({
 
 
 	useEffect(() => {
-		if (transLoadingStatus !== 'succeeded') {
-			dispatch(fetchTransactionsAsync()).then(() =>
-				dispatch(fetchTransCatsAsync())
-			);
-		}
-
-		if (basicLoadingStatus !== 'succeeded') {
-			dispatch(fetchOtherInvestAsync());
-			dispatch(fetchItemsAsync()).then(() => {
-				dispatch(fetchBasicInvestsAsync()).then(() => {
-					dispatch(fetchInvestCatsAsync())
-				})
-			});
-		}
+		// if (transLoadingStatus !== 'succeeded') {
+		// 	dispatch(fetchTransactionsAsync()).then(() =>
+		// 		dispatch(fetchTransCatsAsync())
+		// 	);
+		// }
+		//
+		// if (basicLoadingStatus !== 'succeeded') {
+		// 	dispatch(fetchOtherInvestAsync());
+		// 	dispatch(fetchItemsAsync()).then(() => {
+		// 		dispatch(fetchBasicInvestsAsync()).then(() => {
+		// 			dispatch(fetchInvestCatsAsync())
+		// 		})
+		// 	});
+		// }
 
 		if (transLoadingStatus && basicLoadingStatus) {
 			setFilteredTrans(filterDataByPeriod(actualPeriod, transactions));

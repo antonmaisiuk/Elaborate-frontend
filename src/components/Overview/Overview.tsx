@@ -86,8 +86,8 @@ const Overview: FC<NavInterface> = ({
   const actualPeriod = useSelector((state: RootState) => state.stats.period);
   const actualType = useSelector((state: RootState) => state.stats.type);
 
-  const transLoadingStatus = useSelector((state: RootState) => state.transactions.loading);
-  const basicLoadingStatus = useSelector((state: RootState) => state.basicInvestments.loading);
+  const transLoadingStatus = useSelector((state: RootState) => state.transactions.transLoading);
+  const basicLoadingStatus = useSelector((state: RootState) => state.basicInvestments.basicLoading);
 
 
   const handlePeriodChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -102,7 +102,6 @@ const Overview: FC<NavInterface> = ({
   const getTotal = (data: [any[], any[]]) => {
 
     const filteredByPeriod = filterDataByPeriod(actualPeriod, _.flattenDeep(data));
-    console.log('👉 filteredByPeriod: ', filteredByPeriod);
 
     return _.round(filteredByPeriod.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.value
@@ -110,20 +109,20 @@ const Overview: FC<NavInterface> = ({
   }
 
   useEffect(() => {
-    if (transLoadingStatus !== 'succeeded') {
-      dispatch(fetchTransactionsAsync()).then(() =>
-        dispatch(fetchTransCatsAsync())
-      );
-    }
-
-    if (basicLoadingStatus !== 'succeeded') {
-      dispatch(fetchOtherInvestAsync());
-      dispatch(fetchItemsAsync()).then(() => {
-        dispatch(fetchBasicInvestsAsync()).then(() => {
-          dispatch(fetchInvestCatsAsync())
-        })
-      });
-    }
+    // if (transLoadingStatus !== 'succeeded') {
+    //   dispatch(fetchTransactionsAsync()).then(() =>
+    //     dispatch(fetchTransCatsAsync())
+    //   );
+    // }
+    //
+    // if (basicLoadingStatus !== 'succeeded') {
+    //   dispatch(fetchOtherInvestAsync());
+    //   dispatch(fetchItemsAsync()).then(() => {
+    //     dispatch(fetchBasicInvestsAsync()).then(() => {
+    //       dispatch(fetchInvestCatsAsync())
+    //     })
+    //   });
+    // }
 
   }, [transactions, invests, otherInvests]);
 
@@ -140,7 +139,7 @@ const Overview: FC<NavInterface> = ({
               <StyledTileTitle>{t('totalTrans')}</StyledTileTitle>
             </StyledTileHeader>
             <StyledTileValue>
-              {getTotal([transactions, []])} zł
+              {getTotal([transactions, []])} $
             </StyledTileValue>
             <ResponsiveContainer className={'tile_chart'} width="100%" height="60%">
               <LineChart data={filterDataByPeriod(actualPeriod, transactions)}>
@@ -154,7 +153,7 @@ const Overview: FC<NavInterface> = ({
               <StyledTileTitle>{t('totalInvest')}</StyledTileTitle>
             </StyledTileHeader>
             <StyledTileValue>
-              {getTotal([invests, otherInvests])} zł
+              {getTotal([invests, otherInvests])} $
             </StyledTileValue>
             <ResponsiveContainer className={'tile_chart'} width="100%" height="60%">
               <LineChart width={300} height={100} data={filterDataByPeriod(actualPeriod, [...invests, ...otherInvests])}>

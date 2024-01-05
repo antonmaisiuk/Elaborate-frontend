@@ -107,7 +107,7 @@ export const StyledFormControl = styled(Form.Control)`
   padding: 12px 16px;
   align-items: flex-start;
   gap: 24px;
-  border-radius: 8px 0 0 8px;
+  border-radius: 8px;
   border: 1px solid #D0D5DD;
   color: #1c1f22;
 `
@@ -115,8 +115,14 @@ export const StyledPassInputWrapper = styled.div`
   display: flex;
   height: 48px;
   
-  input{
+  .combined_input{
     border-radius: 8px 0 0 8px;
+    border-right: none;
+  }
+  
+  .modal_units{
+    width: 50%;
+    border-radius:  0 8px 8px 0;
   }
   
 `
@@ -198,7 +204,7 @@ export const StyledLink = styled.a`
 `;
 
 export const StyledError = styled.div`
-  color: #E73D1C;
+  color: #e40303;
   margin: 10px 0;
   font-weight: 600;
 `;

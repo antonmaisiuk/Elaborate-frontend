@@ -11,6 +11,8 @@ export const ru = {
         'total': 'Сумма',
 
         pcs: 'шт.',
+        gram: 'гр.',
+        ozt: 'oz t.',
 
         'prev': 'Назад',
         'next': 'Вперед',

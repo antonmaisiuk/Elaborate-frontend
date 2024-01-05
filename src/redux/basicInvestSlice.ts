@@ -10,7 +10,9 @@ interface BasicInvestState {
   basicInvests: IBasicInvestment[];
   basicInvestsCategories: IBasicInvestmentCat[];
   items: IItem[],
-  loading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
+  itemsLoading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
+  basicCatLoading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
+  basicLoading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
   error: string | null; // Ошибка, если что-то пошло не так
 }
 
@@ -18,22 +20,33 @@ const initialState: BasicInvestState = {
   basicInvests: [],
   basicInvestsCategories: [],
   items: [],
-  loading: 'idle',
+  itemsLoading: 'idle',
+  basicCatLoading: 'idle',
+  basicLoading: 'idle',
   error: null,
 };
 
 const basicInvestSlice = createSlice({
   name: 'basicInvestments',
   initialState,
-  reducers: {},
+  reducers: {
+    setInvest: (state, action: PayloadAction<IBasicInvestment>) => {
+      const index = state.basicInvests.findIndex(
+        (invest) => invest.id === action.payload.id
+      );
+      if (index !== -1){
+        state.basicInvests[index] = {...action.payload};
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       // ========== Basic Investments ==========
       .addCase(fetchBasicInvestsAsync.pending, (state) => {
-        // state.loading = 'pending';
+        state.basicLoading = 'pending';
       })
       .addCase(fetchBasicInvestsAsync.fulfilled, (state, action) => {
-        // state.loading = 'succeeded';
+        state.basicLoading = 'succeeded';
 
         state.basicInvests = _.map(action.payload, (invest) => ({
             id: invest.id,
@@ -49,6 +62,12 @@ const basicInvestSlice = createSlice({
         ));
 
         state.error = null;
+      })
+      .addCase(fetchBasicInvestsAsync.rejected, (state, action) => {
+        state.basicLoading = 'failed';
+        state.error = 'Oops...we have some problems. Please, reload page.';
+
+        // throw Error(state.error);
       })
 
       .addCase(addBasicInvestsAsync.fulfilled, (state, action) => {
@@ -94,10 +113,10 @@ const basicInvestSlice = createSlice({
       // ========== Invest Categories ==========
 
       .addCase(fetchInvestCatsAsync.pending, (state) => {
-        // state.loading = 'pending';
+        state.basicCatLoading = 'pending';
       })
       .addCase(fetchInvestCatsAsync.fulfilled, (state, action) => {
-        state.loading = 'succeeded';
+        state.basicCatLoading = 'succeeded';
         state.basicInvestsCategories = action.payload;
 
         if (state.basicInvests.length) {
@@ -110,7 +129,7 @@ const basicInvestSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchInvestCatsAsync.rejected, (state, action) => {
-        state.loading = 'failed';
+        state.basicCatLoading = 'failed';
         state.error = action.error.message || 'An error occurred.';
       })
       // ==============================
@@ -118,20 +137,20 @@ const basicInvestSlice = createSlice({
 
       // ========== Items ==========
       .addCase(fetchItemsAsync.pending, (state) => {
-        // state.loading = 'pending';
+        state.itemsLoading = 'pending';
       })
       .addCase(fetchItemsAsync.rejected, (state, action) => {
-        state.loading = 'failed';
+        state.itemsLoading = 'failed';
         state.error = action.error.message || 'An error occurred.';
       })
       .addCase(fetchItemsAsync.fulfilled, (state, action) => {
-        // state.loading = 'succeeded';
+        state.itemsLoading = 'succeeded';
         state.items = action.payload;
       })
   },
 });
 
-export const {} = basicInvestSlice.actions;
+export const { setInvest } = basicInvestSlice.actions;
 
 export default basicInvestSlice.reducer;
 

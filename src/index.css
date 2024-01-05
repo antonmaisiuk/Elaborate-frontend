@@ -4,6 +4,11 @@ body, h1, h2, h3, p {
     font-family: 'Inter', sans-serif;
 }
 
+body.dark-mode {
+    background: #10171d !important;
+    /*color: #dfdfdf;*/
+}
+
 #root{
     background-color: #F4F5F7;
 }

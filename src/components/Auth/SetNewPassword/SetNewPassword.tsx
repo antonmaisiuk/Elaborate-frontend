@@ -156,6 +156,7 @@ const SetNewPassword = () => {
 							<StyledFormControl
 								type={showPass ? 'text' : 'password'}
 								name='Password'
+								className='combined_input'
 								placeholder='********'
 								// value={formData.Password}
 								onChange={handleInputChange}
@@ -174,6 +175,7 @@ const SetNewPassword = () => {
 								type={showPass ? 'text' : 'password'}
 								name='ConfirmPassword'
 								placeholder='********'
+								className='combined_input'
 								// value={formData.Password}
 								onChange={handleInputChange}
 								required

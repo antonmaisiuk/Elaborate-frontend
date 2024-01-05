@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import {Container, Nav, Navbar, NavDropdown} from "react-bootstrap";
 import {NavInterface} from "../Navigation/Navigation";
 
 export const StyledHeader = styled.div`
@@ -79,6 +78,7 @@ export const StyledDate = styled.div`
   //width: 70%;
   flex-grow: 6;
   display: flex;
+  justify-content: space-between;
   align-items: center;
   cursor: default;
   padding: 12px 24px;

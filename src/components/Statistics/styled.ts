@@ -7,7 +7,7 @@ export const StyledCharts = styled.div`
   //justify-content: space-between;
 
   display: grid;
-  grid-template-rows: min(55%, 325px) min(40%, 240px);
+  //grid-template-rows: min(55%, 325px) min(40%, 240px);
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-areas: 
           'trans basic other' 

@@ -4,6 +4,7 @@ import {getActualToken} from "../App";
 import i18next from "i18next";
 import _ from "lodash";
 import {fetchOtherInvestAsync} from "./otherInvestSlice";
+import moment from "moment";
 
 export interface IUser {
   username: string,
@@ -28,28 +29,15 @@ export interface ICurrency {
   index: string,
 }
 
-// export enum LangEnum {
-//   eng = 'English',
-//   pl = 'Polish',
-//   ru = 'Russian',
-// }
-//
-export enum ThemeEnum {
-  dark = 'Dark',
-  white = 'White',
-}
-//
-// export enum CurrencyEnum {
-//   usd = 'US $',
-//   pln = '$',
-// }
-
 interface UserSlice {
   userInfo: IUser;
   languages: ILang[],
   currencies: ICurrency[],
+  inflation: { value: any, date: string}[],
+  history: { value: any, date: string}[],
   route: string,
-  loading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
+  userLoading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
+  historyLoading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
   error: string | null; // Ошибка, если что-то пошло не так
 }
 
@@ -65,8 +53,11 @@ const initialState: UserSlice = {
   },
   languages: [],
   currencies: [],
+  inflation: [],
+  history: [],
   route: '',
-  loading: 'idle',
+  userLoading: 'idle',
+  historyLoading: 'idle',
   error: null,
 };
 
@@ -95,10 +86,10 @@ const userSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(changeProfileAsync.pending, (state) => {
-        state.loading = 'pending';
+        // state.loading = 'pending';
       })
       .addCase(changeProfileAsync.fulfilled, (state, action) => {
-        state.userInfo.avatar = action.payload.url;
+        // state.userInfo.avatar = action.payload.url;
 
         const currentLang = _.filter(state.languages, (lang) => state.userInfo.lang === lang.id)[0].index;
         i18next
@@ -121,7 +112,7 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(changeProfileAsync.rejected, (state, action) => {
-        state.loading = 'failed';
+        // state.loading = 'failed';
         state.error = 'Something was wrong. Please try again.';
       })
 
@@ -146,10 +137,23 @@ const userSlice = createSlice({
         document.documentElement.lang = currentLang;
 
         state.error = null;
-        state.loading = 'succeeded';
+        state.userLoading = 'succeeded';
       })
       .addCase(getUserAsync.pending, (state) => {
-        state.loading = 'pending';
+        state.userLoading = 'pending';
+      })
+      .addCase(getUserHistoryAsync.fulfilled, (state, action) => {
+        const [ history, inflation ] = action.payload
+
+        state.history = _.map(history, (item) => ({ value: item.value, date: moment(item.dateOfSave).format('DD.MM.YYYY')}));
+        state.inflation = _.map(inflation, (item) => ({ value: item.value, date: moment(item.date).format('DD.MM.YYYY')}));
+        // console.log('👉 state.history: ', state.history);
+
+        state.error = null;
+        state.historyLoading = 'succeeded';
+      })
+      .addCase(getUserHistoryAsync.pending, (state) => {
+        state.historyLoading = 'pending';
       })
   }
 });
@@ -168,23 +172,24 @@ export const changeProfileAsync = createAsyncThunk(
   'user/changeProfile',
   async (changedUser: IUser, { rejectWithValue }) => {
     try {
-      const data = new FormData();
-      data.append('userDto.Username', changedUser.username);
-      data.append('UserDto.Email', changedUser.email);
-      data.append('userDto.PhoneNumber', changedUser.phoneNumber);
-      data.append('SettingsDto.LanguagesId', changedUser.lang);
-      data.append('SettingsDto.CurrenciesId', changedUser.currency);
-      data.append('SettingsDto.IsDarkScreen', `${changedUser.isDarkScreen}`);
-      data.append('ContentType', 'multipart/form-data');
-      // data.append('photo', changedUser.avatarFile as Blob || null);
-      // data.append('FileName', changedUser.avatarFile?.name as string || 'null');
 
       const response = await axios.put(
         `${process.env.REACT_APP_API_URL}/api/users`,
-        data,
+        {
+          userDto: {
+            username: changedUser.username,
+            email: changedUser.email,
+            phoneNumber: changedUser.phoneNumber
+          },
+          settingsDto: {
+            languagesId: changedUser.lang,
+            currenciesId: changedUser.currency,
+            isDarkScreen: changedUser.isDarkScreen,
+          }
+        },
         {
           headers: {
-            accept: 'multipart/form-data',
+            accept: 'application/json',
             Authorization: `Bearer ${getActualToken()}`
           },
         }
@@ -283,6 +288,35 @@ export const getUserAsync = createAsyncThunk(
       );
 
       return response.data;
+    } catch (error) {
+      throw error;
+    }
+  });
+
+export const getUserHistoryAsync = createAsyncThunk(
+  'user/getUserHistory',
+  async () => {
+    try {
+      const history = await axios.get(
+        `${process.env.REACT_APP_API_URL}/api/user/history`,
+        {
+          headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${getActualToken()}`
+          },
+        }
+      );
+      const inflation = await axios.get(
+        `${process.env.REACT_APP_API_URL}/api/inflation`,
+        {
+          headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${getActualToken()}`
+          },
+        }
+      );
+
+      return [history.data, inflation.data];
     } catch (error) {
       throw error;
     }

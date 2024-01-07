@@ -23,7 +23,7 @@ import {useNavigate} from "react-router-dom";
 import {ColorRing} from "react-loader-spinner";
 import validator from 'validator';
 import { Tooltip } from 'react-tooltip'
-import {Button, Form, InputGroup} from "react-bootstrap";
+// import {Button, Form, InputGroup} from "react-bootstrap";
 import OpenEyeIcon from '../../../assets/OpenEye/OpenEyeIcon';
 import CloseEyeIcon from "../../../assets/CloseEye/CloseEyeIcon";
 
@@ -191,9 +191,10 @@ const Registration = () => {
 
           {errorMsg && <StyledError> {errorMsg} </StyledError>}
           {successMsg && <StyledSuccess> {successMsg} </StyledSuccess>}
-          <StyledButton variant="success" type="submit">
-            {spinnerActive ?
-                <ColorRing
+          <StyledButton className="success" type="submit">
+            {
+              spinnerActive
+              ? <ColorRing
                     visible={spinnerActive}
                     height="40"
                     width="40"

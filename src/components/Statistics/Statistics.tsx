@@ -20,7 +20,7 @@ import {
 	AreaChart,
 	Bar,
 	BarChart,
-	CartesianGrid, Legend,
+	CartesianGrid, Legend, Line, LineChart,
 	PolarAngleAxis,
 	PolarGrid,
 	PolarRadiusAxis,
@@ -88,6 +88,10 @@ const Statistics: FC<NavInterface> = ({
 	const transactions = useSelector((state: RootState) => state.transactions.transactions);
 	const basicInvestments = useSelector((state: RootState) => state.basicInvestments.basicInvests);
 	const otherInvestments = useSelector((state: RootState) => state.otherInvestments.otherInvests);
+
+	const history = useSelector((state: RootState) => state.user.history);
+	// console.log('👉 history: ', history);
+	const inflation = useSelector((state: RootState) => state.user.inflation);
 
 	const [filteredTrans, setFilteredTrans] = useState<ITransaction[]>(transactions);
 	const [filteredBasic, setFilteredBasic] = useState<IBasicInvestment[]>(basicInvestments);
@@ -184,14 +188,14 @@ const Statistics: FC<NavInterface> = ({
 					<StyledTile className={'tile_stats'}>
 						<StyledTileHeader>
 							<StyledTileTitle>
-								{t('overview')}
+								{t('history')}
 							</StyledTileTitle>
 						</StyledTileHeader>
 						<StyledResponsiveContainer>
-							<BarChart
+							<LineChart
 								width={500}
 								height={300}
-								data={getAllData(actualPeriod, transactions, basicInvestments, otherInvestments)}
+								data={filterDataByPeriod(actualPeriod, history)}
 								margin={{
 									top: 20,
 									right: 30,
@@ -200,38 +204,13 @@ const Statistics: FC<NavInterface> = ({
 								}}
 							>
 								<CartesianGrid strokeDasharray="3 3" />
-								<XAxis dataKey="Date" />
+								<XAxis dataKey="date" />
 								<YAxis />
 								<Tooltip />
 								<Legend />
-								<Bar dataKey="Transactions" stackId="a" fill="#25AB52" />
-								<Bar dataKey="Basic investments" stackId="a" fill="#27aeef" />
-								<Bar dataKey="Other investments" stackId="a" fill="#b33dc6" />
-							</BarChart>
+								<Line type="monotone" dataKey="value" stroke="#82ca9d" />
+							</LineChart>
 						</StyledResponsiveContainer>
-						{/*<StyledResponsiveContainer>*/}
-						{/*	<AreaChart*/}
-						{/*		width={500}*/}
-						{/*		height={400}*/}
-						{/*		data={getAllData(actualPeriod, transactions, basicInvestments, otherInvestments)}*/}
-						{/*		stackOffset="none"*/}
-						{/*		margin={{*/}
-						{/*			top: 10,*/}
-						{/*			right: 30,*/}
-						{/*			left: 0,*/}
-						{/*			bottom: 0,*/}
-						{/*		}}*/}
-						{/*	>*/}
-						{/*		<CartesianGrid strokeDasharray="3 3" />*/}
-						{/*		<XAxis dataKey="Date" />*/}
-						{/*		<YAxis type="number" domain={['dataMin', 'dataMax']} />*/}
-						{/*		<Tooltip/>*/}
-						{/*		<Legend/>*/}
-						{/*		<Area type="monotone" dataKey="Transactions" stackId="1" stroke="#25AB52" fill="#25AB52" />*/}
-						{/*		<Area type="monotone" dataKey="Basic investments" stackId="1" stroke="#27aeef" fill="#27aeef" />*/}
-						{/*		<Area type="monotone" dataKey={"Other investments"} stackId="1" stroke="#b33dc6" fill="#b33dc6" />*/}
-						{/*	</AreaChart>*/}
-						{/*</StyledResponsiveContainer>*/}
 					</StyledTile>
 
 				</StyledCharts>

@@ -73,6 +73,7 @@ export const en = {
         totalOther: 'Total other',
       },
       'overview': 'Overview',
+      'history': 'Portfolio history',
       'investOverview': 'Investments overview',
       'hello': 'Hello',
       'totalInvest': 'Total investments',

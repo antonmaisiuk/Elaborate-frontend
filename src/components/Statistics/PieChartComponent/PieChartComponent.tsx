@@ -54,7 +54,7 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({
     []
   );
 
-  console.log('👉 Data: ', data);
+  // console.log('👉 Data: ', data);
 
   return (
     data.length ?

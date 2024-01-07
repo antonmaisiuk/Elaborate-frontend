@@ -40,7 +40,7 @@ export const StyledAuthContent = styled.div`
   justify-content: center;
   gap: 30px;
 
-  .btn{
+  button{
     grid-column: 1 / 3;
   }
   .changePassword{

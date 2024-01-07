@@ -271,7 +271,6 @@ const Settings: FC<NavInterface> = ({
                 name="confirmPass"
                 className='combined_input'
                 placeholder={t('settings.confirmPass')}
-                // value={formData.Email}
                 onChange={handleInputChange}
                 required
               />
@@ -281,8 +280,7 @@ const Settings: FC<NavInterface> = ({
             </StyledPassInputWrapper>
             <Tooltip id="password-tooltip" style={{whiteSpace: 'pre-line'}}/>
           </StyledSettingsFormGroup>
-          {/*</StyledSettingsFormGroup>*/}
-          <StyledButton variant="success" type="submit">
+          <StyledButton className="success" type="submit">
             {!toggleSpinner
               ? t('settings.changePass')
               : <ColorRing
@@ -292,6 +290,7 @@ const Settings: FC<NavInterface> = ({
                 ariaLabel="spinner"
                 wrapperStyle={{}}
                 wrapperClass="blocks-wrapper"
+
                 colors={['#F4F5F7', '#F4F5F7', '#F4F5F7', '#F4F5F7', '#F4F5F7']}
               />
             }
@@ -316,7 +315,7 @@ const Settings: FC<NavInterface> = ({
           {successAvatarMsg && <StyledSuccess> {successAvatarMsg} </StyledSuccess>}
           {/*<StyledButtonGroup>*/}
 
-            {/*<StyledButton variant="danger" onClick={handleDeleteAvatar}>*/}
+            {/*<StyledButton className="danger" onClick={handleDeleteAvatar}>*/}
             {/*  {!toggleAvatarSpinner*/}
             {/*    ? t('settings.deleteAvatar')*/}
             {/*    : <ColorRing*/}
@@ -330,7 +329,7 @@ const Settings: FC<NavInterface> = ({
             {/*    />*/}
             {/*  }*/}
             {/*</StyledButton>*/}
-            {/*<StyledButton variant="success" type="submit">*/}
+            {/*<StyledButton className="success" type="submit">*/}
             {/*  {!toggleAvatarSpinner*/}
             {/*    ? t('settings.saveAvatar')*/}
             {/*    : <ColorRing*/}
@@ -411,7 +410,7 @@ const Settings: FC<NavInterface> = ({
               }
             </StyledFormSelect>
           </StyledSettingsFormGroup>
-          <StyledButton variant="success" type="submit">
+          <StyledButton className="success" type="submit">
             {!toggleSpinner
               ? t('settings.save')
               : <ColorRing

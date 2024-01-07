@@ -1,5 +1,7 @@
 import styled from 'styled-components';
-import {Button, Form, InputGroup} from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
 import GoogleIcon from "../../assets/GoogleIcon/GoogleIcon";
 import {GoogleLogin} from "@react-oauth/google";
 import {device} from "../../devices/devices";
@@ -157,7 +159,7 @@ export const StyledFormSelect = styled(Form.Select)`
   }
 `
 
-export const StyledButton = styled(Button)`
+export const StyledButton = styled.button`
   display: flex;
   width: 100%;
   height: 48px;
@@ -165,7 +167,22 @@ export const StyledButton = styled(Button)`
   justify-content: center;
   align-items: center;
   border-radius: 8px;
-  //background: #25AB52;
+  //border-color: #D0D5DD;
+  color: #fff;
+  box-shadow: none;
+  
+  &.success{
+    background-color: #218838;
+    border: 1px solid #1e7e34;
+  }
+  &.warning{
+    background-color: rgb(223 166 0);
+    border: 1px solid rgb(223 166 0);
+  }
+  &.danger{
+    background-color: rgb(165, 29, 42);
+    border: 1px solid rgb(165, 29, 42);
+  }
 `
 export const StyledGoogleButton = styled(GoogleLogin)`
   //display: flex;

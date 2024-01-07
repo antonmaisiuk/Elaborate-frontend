@@ -73,6 +73,7 @@ export const pl = {
         totalOther: 'Suma pozostałych',
       },
       'overview': 'Przegląd',
+      'history': 'Historia portfela',
       'investOverview': 'Przegląd inwestycji',
       'hello': 'Cześć',
       'totalInvest': 'Suma inwestycji',

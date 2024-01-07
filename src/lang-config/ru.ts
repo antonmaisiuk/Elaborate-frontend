@@ -72,6 +72,7 @@ export const ru = {
         totalOther: 'Сумма остальных',
       },
       'overview': 'Главная',
+      'history': 'История портфеля',
       'investOverview': 'Главная инвестиций',
       'hello': 'Привет',
       'totalInvest': 'Сумма инвестиций',

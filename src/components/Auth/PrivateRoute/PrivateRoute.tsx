@@ -4,7 +4,7 @@ import {Navigate, Outlet, useNavigate} from "react-router-dom";
 import Login from '../Login/Login';
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../../../redux/store";
-import {getUserAsync, setRoute} from "../../../redux/userSlice";
+import {getUserAsync, getUserHistoryAsync, setRoute} from "../../../redux/userSlice";
 import {fetchOtherInvestAsync} from "../../../redux/otherInvestSlice";
 import {
   fetchBasicInvestsAsync,
@@ -22,7 +22,8 @@ const PrivateRoute = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   dispatch(setRoute(window.location.href.split(/\d\//)[1]));
-  const userLoading = useSelector((state: RootState) => state.user.loading);
+  const userLoading = useSelector((state: RootState) => state.user.userLoading);
+  const historyLoading = useSelector((state: RootState) => state.user.historyLoading);
   const otherLoading = useSelector((state: RootState) => state.otherInvestments.loading);
   const basicInvest = useSelector((state: RootState) => state.basicInvestments.basicInvests);
   const basicLoading = useSelector((state: RootState) => state.basicInvestments.basicLoading);
@@ -34,7 +35,8 @@ const PrivateRoute = () => {
 
 
   try {
-    if (userLoading === 'idle') dispatch(getUserAsync());
+    if (userLoading === 'idle') dispatch(getUserAsync())
+    if (historyLoading === 'idle') dispatch(getUserHistoryAsync())
     if (otherLoading === 'idle') dispatch(fetchOtherInvestAsync());
     if (itemsLoading === 'idle') dispatch(fetchItemsAsync()).then(() => {
       if (basicLoading === 'idle') dispatch(fetchBasicInvestsAsync());

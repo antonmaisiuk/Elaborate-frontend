@@ -85,7 +85,7 @@ const ForgotPassword = () => {
           {errorMsg && <StyledError> {errorMsg} </StyledError>}
           {successMsg && <StyledSuccess> {successMsg} </StyledSuccess>}
 
-          <StyledButton variant="success" type="submit">
+          <StyledButton className="success" type="submit">
             Password Reset
           </StyledButton>
         </StyledForm>

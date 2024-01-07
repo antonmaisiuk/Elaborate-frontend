@@ -295,7 +295,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
           />
         </StyledFormGroup>
         {errorMsg && <StyledError> {errorMsg} </StyledError>}
-        <StyledButton variant="success" type="submit">
+        <StyledButton className="success" type="submit">
           {t('modal.save')}
         </StyledButton>
       </StyledForm>
@@ -350,7 +350,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
           />
         </StyledFormGroup>
         {errorMsg && <StyledError> {errorMsg} </StyledError>}
-        <StyledButton variant="success" type="submit">
+        <StyledButton className="success" type="submit">
           {t('modal.save')}
         </StyledButton>
       </StyledForm>
@@ -440,7 +440,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
           </StyledPassInputWrapper>
         </StyledFormGroup>
         {errorMsg && <StyledError> {errorMsg} </StyledError>}
-        <StyledButton variant="success" type="submit">
+        <StyledButton className="success" type="submit">
           {t('modal.save')}
         </StyledButton>
       </StyledForm>
@@ -489,10 +489,10 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         </StyledFormGroup>
         <StyledButtonGroup>
           {errorMsg && <StyledError> {errorMsg} </StyledError>}
-          <StyledButton variant="warning" onClick={() => dispatch(setModalType(ModalType.editBasicInvest))}>
+          <StyledButton className="warning" onClick={() => dispatch(setModalType(ModalType.editBasicInvest))}>
             {t('modal.edit')}
           </StyledButton>
-          <StyledButton variant="danger" onClick={async (e) => await handleDeleteBasicInvest(e)}>
+          <StyledButton className="danger" onClick={async (e) => await handleDeleteBasicInvest(e)}>
             {t('modal.delete')}
           </StyledButton>
         </StyledButtonGroup>
@@ -530,10 +530,10 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         </StyledFormGroup>
         <StyledButtonGroup>
           {errorMsg && <StyledError> {errorMsg} </StyledError>}
-          <StyledButton variant="warning" onClick={() => dispatch(setModalType(ModalType.editOtherInvest))}>
+          <StyledButton className="warning" onClick={() => dispatch(setModalType(ModalType.editOtherInvest))}>
             {t('modal.edit')}
           </StyledButton>
-          <StyledButton variant="danger" onClick={async (e) => await handleDeleteOtherInvest(e)}>
+          <StyledButton className="danger" onClick={async (e) => await handleDeleteOtherInvest(e)}>
             {t('modal.delete')}
           </StyledButton>
         </StyledButtonGroup>
@@ -581,10 +581,10 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         </StyledFormGroup>
         <StyledButtonGroup>
           {errorMsg && <StyledError> {errorMsg} </StyledError>}
-          <StyledButton variant="warning" onClick={() => dispatch(setModalType(ModalType.editTransaction))}>
+          <StyledButton className="warning" onClick={() => dispatch(setModalType(ModalType.editTransaction))}>
             {t('modal.edit')}
           </StyledButton>
-          <StyledButton variant="danger" onClick={async (e) => await handleDeleteTransactions(e)}>
+          <StyledButton className="danger" onClick={async (e) => await handleDeleteTransactions(e)}>
             {t('modal.delete')}
           </StyledButton>
         </StyledButtonGroup>
@@ -662,10 +662,10 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         </StyledFormGroup>
         {errorMsg && <StyledError> {errorMsg} </StyledError>}
         <StyledButtonGroup>
-          <StyledButton variant='success' type='submit'>
+          <StyledButton className='success' type='submit'>
             {t('modal.save')}
           </StyledButton>
-          <StyledButton variant='danger' onClick={() => dispatch(setModalType(ModalType.transactionDetails))}>
+          <StyledButton className='danger' onClick={() => dispatch(setModalType(ModalType.transactionDetails))}>
             {t('modal.cancel')}
           </StyledButton>
         </StyledButtonGroup>
@@ -727,10 +727,10 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         </StyledFormGroup>
         {errorMsg && <StyledError> {errorMsg} </StyledError>}
         <StyledButtonGroup>
-          <StyledButton variant='success' type='submit'>
+          <StyledButton className='success' type='submit'>
             {t('modal.save')}
           </StyledButton>
-          <StyledButton variant='danger' onClick={() => dispatch(setModalType(ModalType.otherInvestDetails))}>
+          <StyledButton className='danger' onClick={() => dispatch(setModalType(ModalType.otherInvestDetails))}>
             {t('modal.cancel')}
           </StyledButton>
         </StyledButtonGroup>
@@ -800,10 +800,10 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         </StyledFormGroup>
         {errorMsg && <StyledError> {errorMsg} </StyledError>}
         <StyledButtonGroup>
-          <StyledButton variant='success' type='submit'>
+          <StyledButton className='success' type='submit'>
             {t('modal.save')}
           </StyledButton>
-          <StyledButton variant='danger' onClick={() => dispatch(setModalType(ModalType.basicInvestDetails))}>
+          <StyledButton className='danger' onClick={() => dispatch(setModalType(ModalType.basicInvestDetails))}>
             {t('modal.cancel')}
           </StyledButton>
         </StyledButtonGroup>

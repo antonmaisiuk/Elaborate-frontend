@@ -28,7 +28,7 @@ const EmailConfirm = () => {
         <StyledAuthDescription>
           Your email address has been confirmed
         </StyledAuthDescription>
-        <StyledButton variant="success" onClick={() => navigate('/login')}>
+        <StyledButton className="success" onClick={() => navigate('/login')}>
           Go to login
         </StyledButton>
       </AuthWrapper>

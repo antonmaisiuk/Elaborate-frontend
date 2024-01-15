@@ -842,14 +842,12 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         return renderTransactionEdit();
       case ModalType.transactionDetails:
         return renderTransactionDetails();
-
       case ModalType.addOtherInvest:
         return renderNewOtherInvestForm();
       case ModalType.otherInvestDetails:
         return renderOtherInvestDetails();
       case ModalType.editOtherInvest:
         return renderOtherInvestEdit();
-
       case ModalType.addBasicInvest:
         return renderNewBasicInvestForm();
       case ModalType.editBasicInvest:
@@ -860,7 +858,6 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         return null;
     }
   }
-
   return (
     <StyledModalContainer
       isActive={isActive}

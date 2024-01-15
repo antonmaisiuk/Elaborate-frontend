@@ -1,4 +1,4 @@
-// PieChartComponent.tsx
+// BuyerPowerChart.tsx
 import React from 'react';
 import {PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer} from 'recharts';
 import {dataMainType, ITransaction} from '../../Table/Table';

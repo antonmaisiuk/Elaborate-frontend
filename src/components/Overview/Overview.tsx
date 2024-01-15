@@ -175,28 +175,33 @@ const Overview: FC<NavInterface> = ({
                 </StyledTileSelector>
               </StyledTileSelectorsWrapper>
             </StyledTileHeader>
-            <StyledResponsiveContainer>
-              <BarChart
-                width={500}
-                height={300}
-                data={getAllData(actualPeriod, transactions, invests, otherInvests)}
-                margin={{
-                  top: 20,
-                  right: 30,
-                  left: 20,
-                  bottom: 5,
-                }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="Date" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="Transactions" stackId="a" fill="#25AB52" />
-                <Bar dataKey="Basic investments" stackId="a" fill="#27aeef" />
-                <Bar dataKey="Other investments" stackId="a" fill="#b33dc6" />
-              </BarChart>
-            </StyledResponsiveContainer>
+            {
+              getAllData(actualPeriod, transactions, invests, otherInvests).length
+                ? <StyledResponsiveContainer>
+                  <BarChart
+                    width={500}
+                    height={300}
+                    data={getAllData(actualPeriod, transactions, invests, otherInvests)}
+                    margin={{
+                      top: 20,
+                      right: 30,
+                      left: 20,
+                      bottom: 5,
+                    }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="Date" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="Transactions" stackId="a" fill="#25AB52" />
+                    <Bar dataKey="Basic investments" stackId="a" fill="#27aeef" />
+                    <Bar dataKey="Other investments" stackId="a" fill="#b33dc6" />
+                  </BarChart>
+                </StyledResponsiveContainer>
+                : 'Sorry, but you don\'t have data for current period('
+            }
+
 
             {/*<TransactionTimeChart transactions={filterDataByPeriod(actualType === StatType.investments ? invests : transactions)} period={actualPeriod} />*/}
           </StyledTile>

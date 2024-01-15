@@ -10,7 +10,7 @@ import Navigation, {NavInterface} from "../Navigation/Navigation";
 import Content from "../Content/Content";
 import Header from "../Header/Header";
 import {StyledSelectorsBlock, StyledTitle} from "../Transactions/style";
-import {setPeriod, setType, StatPeriod, StatType} from "../../redux/statSlice";
+import {setBuyerPeriod, setPeriod, setType, StatPeriod, StatType} from "../../redux/statSlice";
 import _ from "lodash";
 import {fetchBasicInvestsAsync, fetchInvestCatsAsync, fetchItemsAsync} from "../../redux/basicInvestSlice";
 import moment from "moment";
@@ -35,6 +35,7 @@ import {IBasicInvestment, IOtherInvestment} from "../Investments/Overview/Invest
 import { StyledResponsiveContainer } from './TransactionTimeChart/style';
 import {filterDataByPeriod} from "../Overview/Overview";
 import {fetchOtherInvestAsync} from "../../redux/otherInvestSlice";
+import BuyerPowerChart from "./BuyerPowerChart/BuyerPowerChart";
 
 
 export const getAllData = (actualPeriod: StatPeriod, trans: ITransaction[], basic: IBasicInvestment[], other: IOtherInvestment[]) => {
@@ -90,7 +91,7 @@ const Statistics: FC<NavInterface> = ({
 	const otherInvestments = useSelector((state: RootState) => state.otherInvestments.otherInvests);
 
 	const history = useSelector((state: RootState) => state.user.history);
-	// console.log('👉 history: ', history);
+	console.log('👉 history: ', history);
 	const inflation = useSelector((state: RootState) => state.user.inflation);
 
 	const [filteredTrans, setFilteredTrans] = useState<ITransaction[]>(transactions);
@@ -123,6 +124,10 @@ const Statistics: FC<NavInterface> = ({
 
 	const handlePeriodChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		dispatch(setPeriod(event.target.value));
+	};
+	const handleBuyerPowerPeriodChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		console.log('👉 ', event.target.value);
+		dispatch(setBuyerPeriod(event.target.value));
 	};
 
 	useEffect(() => {
@@ -185,7 +190,7 @@ const Statistics: FC<NavInterface> = ({
 						<PieChartComponent items={filteredOther} />
 					</StyledTile>
 
-					<StyledTile className={'tile_stats'}>
+					<StyledTile className={'tile_history'}>
 						<StyledTileHeader>
 							<StyledTileTitle>
 								{t('history')}
@@ -205,12 +210,24 @@ const Statistics: FC<NavInterface> = ({
 							>
 								<CartesianGrid strokeDasharray="3 3" />
 								<XAxis dataKey="date" />
-								<YAxis />
+								<YAxis domain={['dataMin', 'dataMax']} />
 								<Tooltip />
 								<Legend />
 								<Line type="monotone" dataKey="value" stroke="#82ca9d" />
 							</LineChart>
 						</StyledResponsiveContainer>
+					</StyledTile>
+
+					<StyledTile className={'tile_power'}>
+						<StyledTileHeader>
+							<StyledTileTitle>
+								{t('history')}
+							</StyledTileTitle>
+							<StyledSelectorsBlock>
+								<input type="month" defaultValue={'2023-06'} max={'2023-11'} onChange={handleBuyerPowerPeriodChange}/>
+							</StyledSelectorsBlock>
+						</StyledTileHeader>
+						<BuyerPowerChart />
 					</StyledTile>
 
 				</StyledCharts>

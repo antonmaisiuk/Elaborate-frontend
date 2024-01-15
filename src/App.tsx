@@ -30,27 +30,20 @@ export const getActualToken = () => {
   if (token) return token;
 
   redirect("/login");
-  // window.location.reload();
 }
 
 const App = () => {
-
   const [navVisible, toggleNavVisible] = useState<boolean>(false);
-
 
   return (
       <Provider store={store}>
         <Router>
           <Routes>
             <Route path="/login" element={
-              // <GoogleOAuthProvider clientId="106155053534-6d2124m98sto75hhemhjo2fa0339l08n.apps.googleusercontent.com">
                 <Login />
-              // </GoogleOAuthProvider>
             }/>
             <Route path="/register" element={
-              // <GoogleOAuthProvider clientId="106155053534-6d2124m98sto75hhemhjo2fa0339l08n.apps.googleusercontent.com">
                 <Registration/>
-              // </GoogleOAuthProvider>
             }/>
             <Route path="/forgot" element={<ForgotPassword />}/>
             <Route path="/api/Authentication/reset-password" element={<SetNewPassword />}/>
@@ -67,9 +60,7 @@ const App = () => {
               <Route path="/settings" element={<Settings visible={navVisible} toggle={toggleNavVisible}/>}/>
             </Route>
             <Route path="/" element={
-              // <GoogleOAuthProvider clientId="106155053534-6d2124m98sto75hhemhjo2fa0339l08n.apps.googleusercontent.com">
                 <Login />
-              // </GoogleOAuthProvider>
             }/>
           </Routes>
         </Router>

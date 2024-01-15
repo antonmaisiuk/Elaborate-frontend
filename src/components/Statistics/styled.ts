@@ -11,7 +11,8 @@ export const StyledCharts = styled.div`
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-areas: 
           'trans basic other' 
-          'stat stat stat';
+          'history history history'
+          'power power power';
   gap: 20px;
   //overflow-y: scroll;
   //height: 100%;
@@ -29,8 +30,11 @@ export const StyledCharts = styled.div`
     //min-height: 150px;
     grid-area: other;
   }
-  .tile_stats{
-    grid-area: stat;
+  .tile_history{
+    grid-area: history;
+  }
+  .tile_power{
+    grid-area: power;
   }
 
   @media only screen and (max-width: 1024px) {

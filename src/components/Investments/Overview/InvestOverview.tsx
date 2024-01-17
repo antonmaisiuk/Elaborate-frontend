@@ -64,6 +64,8 @@ export interface IOtherInvestment{
   comment: string,
   date: string,
   value: number,
+  originalValue: number,
+  currencyIndex: string,
 }
 
 export interface IBasicInvestmentCat {

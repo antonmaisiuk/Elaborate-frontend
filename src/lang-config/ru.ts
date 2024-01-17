@@ -73,6 +73,7 @@ export const ru = {
       },
       'overview': 'Главная',
       'history': 'История портфеля',
+      'buyingPower': 'Покупательная способность денег',
       'investOverview': 'Главная инвестиций',
       'hello': 'Привет',
       'totalInvest': 'Сумма инвестиций',

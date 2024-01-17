@@ -4,7 +4,7 @@ import {Navigate, Outlet, useNavigate} from "react-router-dom";
 import Login from '../Login/Login';
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../../../redux/store";
-import {getUserAsync, getUserHistoryAsync, setRoute} from "../../../redux/userSlice";
+import {getExchangeRateAsync, getUserAsync, getUserHistoryAsync, setRoute} from "../../../redux/userSlice";
 import {fetchOtherInvestAsync} from "../../../redux/otherInvestSlice";
 import {
   fetchBasicInvestsAsync,
@@ -24,6 +24,7 @@ const PrivateRoute = () => {
   dispatch(setRoute(window.location.href.split(/\d\//)[1]));
   const userLoading = useSelector((state: RootState) => state.user.userLoading);
   const historyLoading = useSelector((state: RootState) => state.user.historyLoading);
+  const exchangeLoading = useSelector((state: RootState) => state.user.exchangeLoading);
   const otherLoading = useSelector((state: RootState) => state.otherInvestments.loading);
   const basicInvest = useSelector((state: RootState) => state.basicInvestments.basicInvests);
   const basicLoading = useSelector((state: RootState) => state.basicInvestments.basicLoading);
@@ -33,10 +34,16 @@ const PrivateRoute = () => {
   const items = useSelector((state: RootState) => state.basicInvestments.items);
   const itemsLoading = useSelector((state: RootState) => state.basicInvestments.itemsLoading);
 
+  const user = useSelector((state: RootState) => state.user);
+  const currencies = useSelector((state: RootState) => state.user.currencies);
 
   try {
     if (userLoading === 'idle') dispatch(getUserAsync())
     if (historyLoading === 'idle') dispatch(getUserHistoryAsync())
+
+    const currencySlug = _.filter(currencies, (curr) => user.userInfo.currency === curr.id)[0].index;
+    if (exchangeLoading === 'idle') dispatch(getExchangeRateAsync(currencySlug))
+
     if (otherLoading === 'idle') dispatch(fetchOtherInvestAsync());
     if (itemsLoading === 'idle') dispatch(fetchItemsAsync()).then(() => {
       if (basicLoading === 'idle') dispatch(fetchBasicInvestsAsync());

@@ -51,7 +51,7 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
   items,
   }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const basicInvestLoading = useSelector((state: RootState) => state.basicInvestments.basicLoading);
+  const currSlug = useSelector((state: RootState) => state.user.userInfo.currSlug);
   const transLoading = useSelector((state: RootState) => state.transactions.transLoading);
 
   const [currentPage, setCurrentPage] = useState(0);
@@ -215,7 +215,7 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
             <td>{(row as ITransaction).name}</td>
             <td>{(row as ITransaction).category}</td>
             <td>{row.date}</td>
-            <td>{row.value} $</td>
+            <td>{row.value} {currSlug}</td>
           </>
         )
 
@@ -226,7 +226,7 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
             <td>{(row as IBasicInvestment).item}</td>
             <td>{row.comment}</td>
             <td>{(row as IBasicInvestment).amount} {tableCategories[0]?.id === process.env.REACT_APP_METALS_ID ? t('table.ozt') : t('table.pcs')}</td>
-            <td>{row.value} $</td>
+            <td>{row.value} {currSlug}</td>
           </>
         )
       case TableType.other:
@@ -235,7 +235,7 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
             <td>{(row as IOtherInvestment).title}</td>
             <td>{row.comment}</td>
             <td>{row.date}</td>
-            <td>{row.value} $</td>
+            <td>{(row as IOtherInvestment).originalValue} {(row as IOtherInvestment).currencyIndex}</td>
           </>
         )
       default:

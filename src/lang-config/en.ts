@@ -31,6 +31,13 @@ export const en = {
         'cancel': 'Cancel',
         'investmentType': 'Investment Type',
       },
+      stat: {
+        'buyingText' : `
+            <p>Za kwotę: <b>{{total}}$</b> kupimy tyle co w <b>{{period}}</b>za kwotę {{lastValue}}$</p>
+            <p>Inflacja skumulowana wyniosła: <b>{{inflSum}} %</b></p>
+            <p>Aby kupić tyle samo towarów należałoby wydać <b>{totalPlusInfl}$</b></p>
+        `
+      },
       settings: {
         settings: 'Settings',
         Profile: 'Profile',
@@ -74,6 +81,7 @@ export const en = {
       },
       'overview': 'Overview',
       'history': 'Portfolio history',
+      'buyingPower': 'Purchasing power',
       'investOverview': 'Investments overview',
       'hello': 'Hello',
       'totalInvest': 'Total investments',

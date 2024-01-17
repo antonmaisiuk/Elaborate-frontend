@@ -159,6 +159,7 @@ export const fetchBasicInvestsAsync = createAsyncThunk(
   async (_,thunkAPI: any) => {
     try {
       const state = thunkAPI.getState();
+      const exchangeRate = state.user.exchangeRate;
       const response = await axios.get(
         `${process.env.REACT_APP_API_URL}/api/user/basicinvestment`,
         {
@@ -171,7 +172,7 @@ export const fetchBasicInvestsAsync = createAsyncThunk(
 
       return Promise.all(response.data.map(async (invest: IBasicInvestment) =>({
         ...invest,
-        value: invest.amount * await getPrice(state.basicInvestments.items.filter((item: IItem) => item.id === invest.itemId)[0].index, invest.categoryId),
+        value: invest.amount * await getPrice(state.basicInvestments.items.filter((item: IItem) => item.id === invest.itemId)[0].index, invest.categoryId, exchangeRate),
       })));
       // return response.data;
     } catch (error) {
@@ -185,6 +186,7 @@ export const addBasicInvestsAsync = createAsyncThunk(
     const state = thunkAPI.getState();
     const items = state.basicInvestments.items as IItem[];
     const categories = state.basicInvestments.basicInvestsCategories as IBasicInvestmentCat[];
+    const exchangeRate = state.exchangeRate;
 
     console.log('👉 new invest: ', invest);
     const response = await axios.post(
@@ -211,7 +213,7 @@ export const addBasicInvestsAsync = createAsyncThunk(
         date: moment().format('DD.MM.YYYY'),
         category: categories.filter((cat) => cat.id === newInvest.categoryId)[0]?.name || 'No category',
         item: items.filter((item) => item.id === newInvest.itemId)[0]?.name || 'No index',
-        value: _.round(newInvest.amount * await getPrice(items.filter((item: IItem) => item.id === newInvest.itemId)[0].index, newInvest.categoryId), 2)
+        value: _.round(newInvest.amount * await getPrice(items.filter((item: IItem) => item.id === newInvest.itemId)[0].index, newInvest.categoryId, exchangeRate), 2)
       };
   }
 );
@@ -220,6 +222,7 @@ export const updateBasicInvestAsync = createAsyncThunk(
   'basicInvestments/updateBasicInvest',
   async (invest: IBasicInvestment, thunkAPI: any) => {
     const state = thunkAPI.getState();
+    const exchangeRate = state.exchangeRate;
 
     console.log('👉 Updated item before req: ', invest);
     await axios.put(
@@ -240,7 +243,7 @@ export const updateBasicInvestAsync = createAsyncThunk(
     );
     return {
       ...invest,
-      value: _.round(invest.amount * await getPrice(state.basicInvestments.items.filter((item: IItem) => item.id === invest.itemId)[0].index, invest.categoryId), 2),
+      value: _.round(invest.amount * await getPrice(state.basicInvestments.items.filter((item: IItem) => item.id === invest.itemId)[0].index, invest.categoryId, exchangeRate), 2),
 
     };
   }
@@ -303,8 +306,9 @@ export const fetchItemsAsync = createAsyncThunk(
     }
   });
 
-export const getPrice = async (index: string, categoryId: string) => {
+export const getPrice = async (index: string, categoryId: string, rate: number) => {
     try {
+      console.log('👉 GET PRICE RATE: ', rate);
       let response;
       switch (categoryId) {
         case process.env.REACT_APP_METALS_ID: // metals
@@ -319,7 +323,7 @@ export const getPrice = async (index: string, categoryId: string) => {
 
           const { rates: { USD: metalsPrice }} = response.data;
 
-          return _.round(metalsPrice, 2) || 0;
+          return _.round(metalsPrice * rate, 2) || 0;
         case process.env.REACT_APP_CRYPTO_ID: // crypto
           setTimeout(() => {}, _.random(1e2,5e2));
 
@@ -335,7 +339,7 @@ export const getPrice = async (index: string, categoryId: string) => {
           );
           const { open: cryptoPrice } = response.data[0];
 
-          return _.round(cryptoPrice, 2) || 0;
+          return _.round(cryptoPrice * rate, 2) || 0;
         case process.env.REACT_APP_STOCKS_ID: // stocks
           setTimeout(() => {}, _.random(1e2,5e2));
 
@@ -352,7 +356,7 @@ export const getPrice = async (index: string, categoryId: string) => {
 
           const {price: stockPrice} = response.data;
 
-          return _.round(stockPrice, 2) || 0;
+          return _.round(stockPrice * rate, 2) || 0;
         default:
           return 0;
       }

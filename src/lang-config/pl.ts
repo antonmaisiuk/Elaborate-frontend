@@ -74,6 +74,7 @@ export const pl = {
       },
       'overview': 'Przegląd',
       'history': 'Historia portfela',
+      'buyingPower': 'Siła nabywcza pieniądza',
       'investOverview': 'Przegląd inwestycji',
       'hello': 'Cześć',
       'totalInvest': 'Suma inwestycji',

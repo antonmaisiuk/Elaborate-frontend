@@ -36,6 +36,7 @@ import { StyledResponsiveContainer } from './TransactionTimeChart/style';
 import {filterDataByPeriod} from "../Overview/Overview";
 import {fetchOtherInvestAsync} from "../../redux/otherInvestSlice";
 import BuyerPowerChart from "./BuyerPowerChart/BuyerPowerChart";
+import {StyledFormControl} from "../Auth/styled";
 
 
 export const getAllData = (actualPeriod: StatPeriod, trans: ITransaction[], basic: IBasicInvestment[], other: IOtherInvestment[]) => {
@@ -91,7 +92,7 @@ const Statistics: FC<NavInterface> = ({
 	const otherInvestments = useSelector((state: RootState) => state.otherInvestments.otherInvests);
 
 	const history = useSelector((state: RootState) => state.user.history);
-	console.log('👉 history: ', history);
+	// console.log('👉 history: ', history);
 	const inflation = useSelector((state: RootState) => state.user.inflation);
 
 	const [filteredTrans, setFilteredTrans] = useState<ITransaction[]>(transactions);
@@ -210,7 +211,7 @@ const Statistics: FC<NavInterface> = ({
 							>
 								<CartesianGrid strokeDasharray="3 3" />
 								<XAxis dataKey="date" />
-								<YAxis domain={['dataMin', 'dataMax']} />
+								<YAxis domain={['auto', 'auto']} />
 								<Tooltip />
 								<Legend />
 								<Line type="monotone" dataKey="value" stroke="#82ca9d" />
@@ -221,10 +222,15 @@ const Statistics: FC<NavInterface> = ({
 					<StyledTile className={'tile_power'}>
 						<StyledTileHeader>
 							<StyledTileTitle>
-								{t('history')}
+								{t('buyingPower')}
 							</StyledTileTitle>
 							<StyledSelectorsBlock>
-								<input type="month" defaultValue={'2023-06'} max={'2023-11'} onChange={handleBuyerPowerPeriodChange}/>
+								<StyledFormControl
+									type="month"
+									defaultValue={'2023-06'}
+									max={'2023-11'}
+									onChange={handleBuyerPowerPeriodChange}
+								/>
 							</StyledSelectorsBlock>
 						</StyledTileHeader>
 						<BuyerPowerChart />

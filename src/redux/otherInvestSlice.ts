@@ -7,6 +7,7 @@ import {
   IOtherInvestment
 } from "../components/Investments/Overview/InvestOverview";
 import {RootState} from "./store";
+import {getCustomExchangeRate, getExchangeRateAsync} from "./userSlice";
 
 interface OtherInvestsState {
   otherInvests: IOtherInvestment[];
@@ -36,14 +37,15 @@ const otherInvestSlice = createSlice({
       .addCase(fetchOtherInvestAsync.fulfilled, (state, action) => {
         state.loading = 'succeeded';
 
-        state.otherInvests = _.map(action.payload, (invest) => ({
-            id: invest.id,
-            title: invest.title,
-            comment: invest.comment,
-            date: moment(invest.dateOfCreated).format('DD.MM.YYYY'),
-            value: invest.value,
-          } as IOtherInvestment
-        ));
+        state.otherInvests = action.payload;
+        // state.otherInvests = _.map(action.payload, (invest) => ({
+        //     id: invest.id,
+        //     title: invest.title,
+        //     comment: invest.comment,
+        //     date: moment(invest.dateOfCreated).format('DD.MM.YYYY'),
+        //     value: invest.value,
+        //   } as IOtherInvestment
+        // ));
 
         state.error = null;
         state.loading = 'succeeded';
@@ -96,7 +98,16 @@ export const fetchOtherInvestAsync = createAsyncThunk(
         }
       );
 
-      return response.data;
+      return await Promise.all(response.data.map(async (invest: any) => ({
+          id: invest.id,
+          title: invest.title,
+          comment: invest.comment,
+          date: moment(invest.dateOfCreated).format('DD.MM.YYYY'),
+          currencyIndex: invest.currencyIndex,
+          originalValue: invest.value,
+          value: invest.value * (await getCustomExchangeRate(invest.currencyIndex, state.user.userInfo.currSlug)),
+        } as IOtherInvestment
+      )));
     } catch (error) {
       throw error;
     }
@@ -104,8 +115,9 @@ export const fetchOtherInvestAsync = createAsyncThunk(
 
 export const addOtherInvestAsync = createAsyncThunk(
   'otherInvestments/addOtherInvests',
-  async (invest: IOtherInvestment) => {
+  async (invest: IOtherInvestment, thunkAPI: any) => {
 
+    const state = thunkAPI.getState();
     console.log('👉 new invest: ', invest);
     const response = await axios.post(
       `${process.env.REACT_APP_API_URL}/api/user/otherinvestment`,
@@ -113,8 +125,8 @@ export const addOtherInvestAsync = createAsyncThunk(
         dateOfCreated: moment().toISOString(),
         comment: invest.comment,
         title: invest.title,
-        value: invest.value,
-        currencyIndex: null,
+        value: invest.originalValue,
+        currencyIndex: invest.currencyIndex,
       }),
       {
         headers: {
@@ -128,6 +140,8 @@ export const addOtherInvestAsync = createAsyncThunk(
 
     return {
       ...newInvest,
+      originalValue: newInvest.value,
+      value: newInvest.value * ( await getCustomExchangeRate(newInvest.currencyIndex, state.user.userInfo.currSlug)),
       date: moment().format('DD.MM.YYYY'),
     };
   }
@@ -145,7 +159,7 @@ export const updateOtherInvestAsync = createAsyncThunk(
         comment: invest.comment,
         title: invest.title,
         value: invest.value,
-        currencyIndex: null,
+        currencyIndex: invest.currencyIndex,
       }),
       {
         headers: {
@@ -155,7 +169,10 @@ export const updateOtherInvestAsync = createAsyncThunk(
         },
       }
     );
-    return {...invest};
+    return {
+      ...invest,
+      value: invest.originalValue * ( await getCustomExchangeRate(invest.currencyIndex, state.user.userInfo.currSlug)),
+    };
   }
 );
 

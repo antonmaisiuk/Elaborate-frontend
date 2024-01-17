@@ -63,8 +63,10 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
     comment: '',
     date: new Date().toISOString(),
     value: 0,
+    originalValue: 0,
     amount: 0,
     unit: 'ozt',
+    currencyIndex: 'USD',
   });
   const [errorMsg, setErrorMsg] = useState('');
   const [currentItems, setCurrentItems] = useState<IItem[]>(items.filter((item) => item.categoryInvestmentId === (newItem as IBasicInvestment | ITransaction).categoryId));
@@ -339,15 +341,35 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
         </StyledFormGroup>
         <StyledFormGroup controlId="value">
           <StyledFormLabel>{t('table.total')}</StyledFormLabel>
-          <StyledFormControl
-            type="number"
-            name="value"
-            placeholder='12.2'
-            value={newItem.value}
-            onChange={handleInputChange}
-            step={0.01}
-            required
-          />
+          <StyledPassInputWrapper>
+            <StyledFormControl
+              className={'combined_input'}
+              type="number"
+              name="originalValue"
+              placeholder='12.2'
+              value={(newItem as IOtherInvestment).originalValue}
+              onChange={handleInputChange}
+              step={0.01}
+              required
+            />
+            <StyledFormSelect
+                type="text"
+                className='modal_units'
+                name="currencyIndex"
+                placeholder='Index'
+                onChange={handleSelectChange}
+                required
+              >
+                <option value={'USD'}>USD</option>
+                <option value={'PLN'}>PLN</option>
+                {/*<option value={'pcs'}>{t('table.pcs')}</option>*/}
+                {
+                  // modalItems.map((item) => (
+                  // <option value={item.id}>унц.</option>
+                  // ))
+                }
+              </StyledFormSelect>
+          </StyledPassInputWrapper>
         </StyledFormGroup>
         {errorMsg && <StyledError> {errorMsg} </StyledError>}
         <StyledButton className="success" type="submit">

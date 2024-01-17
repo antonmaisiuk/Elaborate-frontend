@@ -43,7 +43,8 @@ export const StyledCharts = styled.div`
     grid-template-areas:
         'trans basic'
         'other other'
-        'stat stat';
+        'history history'
+        'power power';
   }
 
   @media only screen and (max-width: 440px) {
@@ -111,3 +112,6 @@ export const StyledNoData = styled.div`
 
   color: #545d60;
 `;
+
+export const StyledP = styled.pre`
+`

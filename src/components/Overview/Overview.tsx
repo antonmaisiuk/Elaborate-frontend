@@ -41,6 +41,7 @@ import {fetchOtherInvestAsync} from "../../redux/otherInvestSlice";
 import {StyledResponsiveContainer} from "../Statistics/TransactionTimeChart/style";
 import {getAllData} from "../Statistics/Statistics";
 import basicInvestments from "../Investments/BasicInvestments/BasicInvestments";
+import {getCustomExchangeRate} from "../../redux/userSlice";
 
 export const filterDataByPeriod = (actualPeriod: StatPeriod, data: any[]) => {
   const now = moment();
@@ -139,7 +140,7 @@ const Overview: FC<NavInterface> = ({
               <StyledTileTitle>{t('totalTrans')}</StyledTileTitle>
             </StyledTileHeader>
             <StyledTileValue>
-              {getTotal([transactions, []])} $
+              {getTotal([transactions, []])} {userInfo.currSlug}
             </StyledTileValue>
             <ResponsiveContainer className={'tile_chart'} width="100%" height="60%">
               <LineChart data={filterDataByPeriod(actualPeriod, transactions)}>
@@ -153,7 +154,7 @@ const Overview: FC<NavInterface> = ({
               <StyledTileTitle>{t('totalInvest')}</StyledTileTitle>
             </StyledTileHeader>
             <StyledTileValue>
-              {getTotal([invests, otherInvests])} $
+              {getTotal([invests, otherInvests])} {userInfo.currSlug}
             </StyledTileValue>
             <ResponsiveContainer className={'tile_chart'} width="100%" height="60%">
               <LineChart width={300} height={100} data={filterDataByPeriod(actualPeriod, [...invests, ...otherInvests])}>

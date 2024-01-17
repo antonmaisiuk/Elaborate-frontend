@@ -204,6 +204,7 @@ const Settings: FC<NavInterface> = ({
       setTimeout(() => {
         setSuccessMsg('')
       }, 3e3);
+      window.location.reload();
     }
 
 
@@ -399,33 +400,33 @@ const Settings: FC<NavInterface> = ({
               }
             </StyledFormSelect>
           </StyledSettingsFormGroup>
-          <StyledSettingsFormGroup controlId="theme">
-            <StyledFormLabel>{t('settings.theme')}:</StyledFormLabel>
-            <StyledFormSelect onChange={(e) => dispatch(setIsDark(Boolean(e.target.value)))}>
-              {
-                <>
-                  <option selected={isDark} value={1}>Dark</option>
-                  <option selected={!isDark} value={0}>Light</option>
-                </>
-              }
-            </StyledFormSelect>
-          </StyledSettingsFormGroup>
-          <StyledButton className="success" type="submit">
-            {!toggleSpinner
-              ? t('settings.save')
-              : <ColorRing
-                visible={true}
-                height="40"
-                width="40"
-                ariaLabel="spinner"
-                wrapperStyle={{}}
-                wrapperClass="blocks-wrapper"
-                colors={['#F4F5F7', '#F4F5F7', '#F4F5F7', '#F4F5F7', '#F4F5F7']}
-              />
-            }
-          </StyledButton>
-        </StyledProfileForm>
+          {/*<StyledSettingsFormGroup controlId="theme">*/}
+          {/*  <StyledFormLabel>{t('settings.theme')}:</StyledFormLabel>*/}
+          {/*  <StyledFormSelect onChange={(e) => dispatch(setIsDark(Boolean(e.target.value)))}>*/}
+          {/*    {*/}
+          {/*      <>*/}
+          {/*        <option selected={isDark} value={1}>Dark</option>*/}
+          {/*        <option selected={!isDark} value={0}>Light</option>*/}
+          {/*      </>*/}
+          {/*    }*/}
+          {/*  </StyledFormSelect>*/}
+          {/*</StyledSettingsFormGroup>*/}
 
+        </StyledProfileForm>
+        <StyledButton className="success settings_save" type="submit">
+          {!toggleSpinner
+            ? t('settings.save')
+            : <ColorRing
+              visible={true}
+              height="40"
+              width="40"
+              ariaLabel="spinner"
+              wrapperStyle={{}}
+              wrapperClass="blocks-wrapper"
+              colors={['#F4F5F7', '#F4F5F7', '#F4F5F7', '#F4F5F7', '#F4F5F7']}
+            />
+          }
+        </StyledButton>
         {/*</StyledSettingsFormGroup>*/}
 
         {errorMsg && <StyledError> {errorMsg} </StyledError>}

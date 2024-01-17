@@ -30,6 +30,12 @@ export const StyledProfileContent = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  
+  .settings_save{
+    width: 40%;
+    min-width: 200px;
+    max-width: 350px;
+  }
 `;
 export const StyledAuthContent = styled.div`
   width: 100%;
@@ -178,13 +184,19 @@ export const StyledAvatarForm = styled(Form)`
 `
 
 export const StyledProfileForm = styled(Form)`
-  width: 100%;
-  height: 100%;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
   justify-content: center;
+  align-items: center;
+  
+  //width: 100%;
+  //height: 100%;
+  //display: grid;
+  //grid-template-columns: repeat(3, 1fr);
+  //justify-content: center;
   flex-wrap: wrap;
   gap: 30px;
+  
+  margin-bottom: 30px;
   
   
   .changePassword{

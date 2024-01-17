@@ -5,6 +5,7 @@ import i18next from "i18next";
 import _ from "lodash";
 import {fetchOtherInvestAsync} from "./otherInvestSlice";
 import moment from "moment";
+import {IOtherInvestment} from "../components/Investments/Overview/InvestOverview";
 
 export interface IUser {
   username: string,
@@ -12,6 +13,7 @@ export interface IUser {
   phoneNumber: string,
   lang: string,
   currency: string,
+  currSlug: string,
   isDarkScreen: boolean,
   avatar: string,
   avatarFile?: File,
@@ -33,10 +35,12 @@ interface UserSlice {
   userInfo: IUser;
   languages: ILang[],
   currencies: ICurrency[],
+  exchangeRate: number,
   inflation: { value: any, date: string}[],
   history: { value: any, date: string}[],
   route: string,
   userLoading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
+  exchangeLoading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
   historyLoading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
   error: string | null; // Ошибка, если что-то пошло не так
 }
@@ -48,14 +52,17 @@ const initialState: UserSlice = {
     phoneNumber: '',
     lang: '',
     currency: '',
+    currSlug: '',
     isDarkScreen: false,
     avatar: '',
   },
   languages: [],
   currencies: [],
+  exchangeRate: 1,
   inflation: [],
   history: [],
   route: '',
+  exchangeLoading: 'idle',
   userLoading: 'idle',
   historyLoading: 'idle',
   error: null,
@@ -124,6 +131,9 @@ const userSlice = createSlice({
         };
         state.userInfo.lang = userSettings?.languagesId;
         state.userInfo.currency = userSettings?.currenciesId;
+
+        state.userInfo.currSlug = _.filter(currenciesList, (curr) => state.userInfo.currency === curr.id)[0].index;
+
         state.userInfo.isDarkScreen = userSettings?.isDarkScreen;
         state.languages = languagesList;
         state.currencies = currenciesList;
@@ -154,6 +164,15 @@ const userSlice = createSlice({
       })
       .addCase(getUserHistoryAsync.pending, (state) => {
         state.historyLoading = 'pending';
+      })
+      .addCase(getExchangeRateAsync.fulfilled, (state, action) => {
+        console.log('👉 New exchange rate: ', action.payload);
+        state.exchangeRate = action.payload;
+
+        state.exchangeLoading = 'succeeded';
+      })
+      .addCase(getExchangeRateAsync.pending, (state) => {
+        state.exchangeLoading = 'pending';
       })
   }
 });
@@ -265,8 +284,6 @@ export const changePasswordAsync = createAsyncThunk(
         }
       );
 
-      console.log('👉 ',);
-
       return response.data;
     } catch (error) {
       throw error;
@@ -292,6 +309,39 @@ export const getUserAsync = createAsyncThunk(
       throw error;
     }
   });
+
+export const getExchangeRateAsync = createAsyncThunk(
+  'user/getExchangeRate',
+  async (slug: string, thunkAPI: any) => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_EXCHANGE_API}&amount=1&from=USD&to=${slug}`,
+        {
+          headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${getActualToken()}`
+          },
+        }
+      );
+
+      return response.data.value;
+    } catch (error) {
+      throw error;
+    }
+  });
+
+export const getCustomExchangeRate = async (from: string, to: string) => {
+  const response = await axios.get(
+    `${process.env.REACT_APP_EXCHANGE_API}&amount=1&from=${from}&to=${to}`,
+    {
+      headers: {
+        accept: 'application/json',
+      },
+    }
+  );
+
+  return response.data.value;
+}
 
 export const getUserHistoryAsync = createAsyncThunk(
   'user/getUserHistory',

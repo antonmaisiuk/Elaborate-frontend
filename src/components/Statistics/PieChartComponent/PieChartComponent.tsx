@@ -36,7 +36,7 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({
   const data = items.reduce(
     (acc: { name: string; value: number }[], item: dataMainType | IOtherInvestment) => {
       let isOtherInvest = !_.has(item, 'category');
-      console.log('👉 isOtherInvest: ', isOtherInvest);
+      // console.log('👉 isOtherInvest: ', isOtherInvest);
 
       const existingCategory = acc.find(
         (i) => !isOtherInvest ? i.name === (item as ITransaction | IBasicInvestment).category : i.name === (item as IOtherInvestment).title
@@ -44,7 +44,7 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({
       if (existingCategory) {
         existingCategory.value += item.value;
       } else {
-        console.log('👉 acc: ', acc);
+        // console.log('👉 acc: ', acc);
         !isOtherInvest
           ? acc.push({name: (item as ITransaction | IBasicInvestment).category, value: item.value})
           : acc.push({name: (item as IOtherInvestment).title, value: item.value});

@@ -56,9 +56,6 @@ export const StyledNavLogo = styled.div<NavInterface>`
     .nav-logo-small{
       display: flex;
     }
-    //.mobile-nav{
-    //  display: flex;
-    //}
     align-items: center;
   }
 
@@ -75,7 +72,6 @@ export const StyledNavLogo = styled.div<NavInterface>`
 `;
 
 export const StyledDate = styled.div`
-  //width: 70%;
   flex-grow: 6;
   display: flex;
   justify-content: space-between;

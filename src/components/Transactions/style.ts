@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import {Container, Form, Nav, Navbar, NavDropdown} from "react-bootstrap";
 
 export const StyledTitle = styled.h2`
   color: #878787;
@@ -11,8 +10,7 @@ export const StyledTitle = styled.h2`
   cursor: default;
   
   margin: 0;
-  padding: 0;
-  //margin: 40px 0 15px 0;  
+  padding: 0; 
 `;
 
 export const StyledSelectorsBlock = styled.div`

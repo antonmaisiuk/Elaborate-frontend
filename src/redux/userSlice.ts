@@ -3,9 +3,7 @@ import axios from 'axios';
 import {getActualToken} from "../App";
 import i18next from "i18next";
 import _ from "lodash";
-import {fetchOtherInvestAsync} from "./otherInvestSlice";
 import moment from "moment";
-import {IOtherInvestment} from "../components/Investments/Overview/InvestOverview";
 
 export interface IUser {
   username: string,
@@ -17,7 +15,6 @@ export interface IUser {
   isDarkScreen: boolean,
   avatar: string,
   avatarFile?: File,
-  // role: string,
 }
 
 export interface ILang {
@@ -39,10 +36,10 @@ interface UserSlice {
   inflation: { value: any, date: string}[],
   history: { value: any, date: string}[],
   route: string,
-  userLoading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
-  exchangeLoading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
-  historyLoading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
-  error: string | null; // Ошибка, если что-то пошло не так
+  userLoading: 'idle' | 'pending' | 'succeeded' | 'failed';
+  exchangeLoading: 'idle' | 'pending' | 'succeeded' | 'failed';
+  historyLoading: 'idle' | 'pending' | 'succeeded' | 'failed';
+  error: string | null;
 }
 
 const initialState: UserSlice = {
@@ -93,11 +90,8 @@ const userSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(changeProfileAsync.pending, (state) => {
-        // state.loading = 'pending';
       })
       .addCase(changeProfileAsync.fulfilled, (state, action) => {
-        // state.userInfo.avatar = action.payload.url;
-
         const currentLang = _.filter(state.languages, (lang) => state.userInfo.lang === lang.id)[0].index;
         i18next
           .changeLanguage(currentLang)
@@ -119,7 +113,6 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(changeProfileAsync.rejected, (state, action) => {
-        // state.loading = 'failed';
         state.error = 'Something was wrong. Please try again.';
       })
 
@@ -142,7 +135,7 @@ const userSlice = createSlice({
         i18next
           .changeLanguage(currentLang)
           .then((t) => {
-            t('key'); // -> same as i18next.t
+            t('key');
           });
         document.documentElement.lang = currentLang;
 
@@ -157,7 +150,6 @@ const userSlice = createSlice({
 
         state.history = _.map(history, (item) => ({ value: item.value, date: moment(item.dateOfSave).format('DD.MM.YYYY')}));
         state.inflation = _.map(inflation, (item) => ({ value: item.value, date: moment(item.date).format('DD.MM.YYYY')}));
-        // console.log('👉 state.history: ', state.history);
 
         state.error = null;
         state.historyLoading = 'succeeded';
@@ -166,7 +158,6 @@ const userSlice = createSlice({
         state.historyLoading = 'pending';
       })
       .addCase(getExchangeRateAsync.fulfilled, (state, action) => {
-        console.log('👉 New exchange rate: ', action.payload);
         state.exchangeRate = action.payload;
 
         state.exchangeLoading = 'succeeded';
@@ -180,7 +171,6 @@ const userSlice = createSlice({
 export const {
   setLang,
   setCurrency,
-  setIsDark,
   setUser,
   setRoute,
 } = userSlice.actions;

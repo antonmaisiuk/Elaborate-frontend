@@ -2,32 +2,21 @@ import styled from 'styled-components';
 import {Form} from "react-bootstrap";
 
 export const StyledCharts = styled.div`
-  //display: flex;
-  //flex-direction: column;
-  //justify-content: space-between;
-
   display: grid;
-  //grid-template-rows: min(55%, 325px) min(40%, 240px);
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-areas: 
           'trans basic other' 
           'history history history'
           'power power power';
   gap: 20px;
-  //overflow-y: scroll;
-  //height: 100%;
-  //margin-top: 30px;
 
   .tile_trans{
-    //min-height: 150px;
     grid-area: trans;
   }
   .tile_basic{
-    //min-height: 150px;
     grid-area: basic;
   }
   .tile_other{
-    //min-height: 150px;
     grid-area: other;
   }
   .tile_history{
@@ -54,30 +43,6 @@ export const StyledCharts = styled.div`
   }
 `;
 
-export const StyledChart = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
-  
-  //.leftPie{
-  //  grid-area: leftPie;
-  //}
-  //.rightPie{
-  //  grid-area: rightPie;
-  //}
-  //.area{
-  //  grid-area: area;
-  //}
-  
-  //width: 100%;
-  //height: 100%;
-
-  background: #fff;
-  border-radius: 16px;
-  
-  padding: 28px;
-`;
-
 export const StyledSelector = styled(Form.Select)`
   display: flex;
   height: 48px;
@@ -97,10 +62,6 @@ export const StyledSelector = styled(Form.Select)`
   }
 `;
 
-export const StyledChartTitle = styled.h3`
-
-`;
-
 export const StyledNoData = styled.div`
   display: flex;
   justify-content: center;
@@ -112,6 +73,3 @@ export const StyledNoData = styled.div`
 
   color: #545d60;
 `;
-
-export const StyledP = styled.pre`
-`

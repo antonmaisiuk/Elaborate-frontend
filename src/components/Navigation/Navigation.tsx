@@ -1,4 +1,4 @@
-import React, {Dispatch, FC, HTMLAttributes, useState} from 'react';
+import React, {Dispatch, FC, HTMLAttributes} from 'react';
 import {
   StyledDivider,
   StyledNavbar,
@@ -119,7 +119,6 @@ const Navigation: FC<HTMLAttributes<HTMLDivElement> & NavInterface> = ({toggle, 
           navigate('/settings')
         }}>
           <StyledUserPhoto avatar={userInfo.avatar}>
-            {/*<img src={userInfo.avatar} alt="avatar"/>*/}
           </StyledUserPhoto>
           <StyledUsername>
             <h4>{userInfo.username}</h4>

@@ -4,16 +4,15 @@ import {getActualToken} from "../App";
 import moment from "moment/moment";
 import _ from "lodash";
 import {IBasicInvestment, IBasicInvestmentCat, IItem} from "../components/Investments/Overview/InvestOverview";
-import {RootState} from "./store";
 
 interface BasicInvestState {
   basicInvests: IBasicInvestment[];
   basicInvestsCategories: IBasicInvestmentCat[];
   items: IItem[],
-  itemsLoading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
-  basicCatLoading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
-  basicLoading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
-  error: string | null; // Ошибка, если что-то пошло не так
+  itemsLoading: 'idle' | 'pending' | 'succeeded' | 'failed';
+  basicCatLoading: 'idle' | 'pending' | 'succeeded' | 'failed';
+  basicLoading: 'idle' | 'pending' | 'succeeded' | 'failed';
+  error: string | null;
 }
 
 const initialState: BasicInvestState = {
@@ -66,12 +65,9 @@ const basicInvestSlice = createSlice({
       .addCase(fetchBasicInvestsAsync.rejected, (state, action) => {
         state.basicLoading = 'failed';
         state.error = 'Oops...we have some problems. Please, reload page.';
-
-        // throw Error(state.error);
       })
 
       .addCase(addBasicInvestsAsync.fulfilled, (state, action) => {
-        // state.loading = 'succeeded';
         const newInvest = action.payload;
 
         const index = state.basicInvests.findIndex(
@@ -86,11 +82,9 @@ const basicInvestSlice = createSlice({
         state.error = null;
       })
       .addCase(updateBasicInvestAsync.fulfilled, (state, action) => {
-        // state.loading = 'succeeded';
         const index = state.basicInvests.findIndex(
           (invest) => invest.id === action.payload.id
         );
-        console.log('👉 Updated item: ', action.payload);
         if (index !== -1) {
           state.basicInvests[index] = {
             ...action.payload,
@@ -102,7 +96,6 @@ const basicInvestSlice = createSlice({
         state.error = null;
       })
       .addCase(deleteBasicInvestAsync.fulfilled, (state, action) => {
-        // state.loading = 'succeeded';
         state.basicInvests = state.basicInvests.filter(
           (invest) => invest.id !== action.payload
         );
@@ -150,8 +143,6 @@ const basicInvestSlice = createSlice({
   },
 });
 
-export const { setInvest } = basicInvestSlice.actions;
-
 export default basicInvestSlice.reducer;
 
 export const fetchBasicInvestsAsync = createAsyncThunk(
@@ -174,7 +165,6 @@ export const fetchBasicInvestsAsync = createAsyncThunk(
         ...invest,
         value: invest.amount * await getPrice(state.basicInvestments.items.filter((item: IItem) => item.id === invest.itemId)[0].index, invest.categoryId, exchangeRate),
       })));
-      // return response.data;
     } catch (error) {
       throw error;
     }
@@ -188,7 +178,6 @@ export const addBasicInvestsAsync = createAsyncThunk(
     const categories = state.basicInvestments.basicInvestsCategories as IBasicInvestmentCat[];
     const exchangeRate = state.exchangeRate;
 
-    console.log('👉 new invest: ', invest);
     const response = await axios.post(
       `${process.env.REACT_APP_API_URL}/api/user/basicinvestment`,
       JSON.stringify({
@@ -224,7 +213,6 @@ export const updateBasicInvestAsync = createAsyncThunk(
     const state = thunkAPI.getState();
     const exchangeRate = state.exchangeRate;
 
-    console.log('👉 Updated item before req: ', invest);
     await axios.put(
       `${process.env.REACT_APP_API_URL}/api/user/basicinvestment/${invest.id}`,
       JSON.stringify({
@@ -308,7 +296,6 @@ export const fetchItemsAsync = createAsyncThunk(
 
 export const getPrice = async (index: string, categoryId: string, rate: number) => {
     try {
-      console.log('👉 GET PRICE RATE: ', rate);
       let response;
       switch (categoryId) {
         case process.env.REACT_APP_METALS_ID: // metals
@@ -362,7 +349,6 @@ export const getPrice = async (index: string, categoryId: string, rate: number) 
       }
 
     } catch (error) {
-      console.log('👉 Error: ', error);
       throw error;
     }
   };

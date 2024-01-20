@@ -4,7 +4,6 @@ import {
   StyledFilterForm,
   StyledFilterHeader,
   StyledFilterSearch,
-  StyledFilterUl,
   StyledNewButton
 } from "./style";
 import SearchIcon from "../../assets/SearchIcon/SearchIcon";

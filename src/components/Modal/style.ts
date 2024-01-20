@@ -66,11 +66,9 @@ export const StyledDetailsWrapper = styled.div`
 export const StyledItem = styled.span`
   display: flex;
   width: 100%;
-  //height: 48px;
   padding: 12px 16px;
   align-items: flex-start;
   gap: 24px;
-  //border-radius: 8px;
   border-bottom: 1px solid #D0D5DD;
   color: #1c1f22;
 `

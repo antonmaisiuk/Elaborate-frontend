@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import {Container, Nav, Navbar, NavDropdown} from "react-bootstrap";
 
 export const StyledTitle = styled.h2`
   color: #878787;

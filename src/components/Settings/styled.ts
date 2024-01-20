@@ -4,22 +4,15 @@ import {Form} from "react-bootstrap";
 export const StyledSettings = styled.div`
   display: flex;
   padding: 0 28px 28px 28px;
-  //height: 80%;
   flex-direction: column;
   align-items: start;
   align-self: stretch;
-  //overflow-y: scroll;
-
-  //.
 
   border-radius: 16px;
   background: #fff;
   box-shadow: 0 20px 25px 0 rgba(76, 103, 100, 0.10);
   margin-top: 15px;
 
-`;
-export const StyledSettingsHeader = styled.h2`
-  
 `;
 
 export const StyledProfileContent = styled.div`
@@ -54,17 +47,6 @@ export const StyledAuthContent = styled.div`
     gap: 25px;
   }
 `;
-export const StyledPrefContent = styled.div`
-  width: 100%;
-  height: 100%;
-  padding: 20px 0;
-  
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
-  align-items: start;
-  gap: 15px;
-`;
 
 export const StyledSettingsMenu = styled.ul`
   width: 100%;
@@ -81,7 +63,6 @@ export const StyledSettingsMenu = styled.ul`
   padding: 12px 0;
   margin: 0;
   list-style: none;
-  //border-bottom: 1px solid #E8E8E8;
 
   li {
     cursor: pointer;
@@ -91,14 +72,9 @@ export const StyledSettingsMenu = styled.ul`
   .active, li:hover {
     transition: .1s;
     border-bottom: 5px solid #25AB52;
-    //color: #25AB52;
   }
 `
 export const StyledAuthForm = styled(Form)`
-  //display: flex;
-  //flex-direction: column;
-  //flex-wrap: wrap;
-
   display: grid;
   grid-template-columns: auto auto;
   align-content: center;
@@ -142,7 +118,6 @@ export const StyledAvatarForm = styled(Form)`
     align-items: center;
 
     border-radius: 100%;
-    //cursor: pointer;
   }
 
   .profile_avatar img {
@@ -187,12 +162,7 @@ export const StyledProfileForm = styled(Form)`
   display: flex;
   justify-content: center;
   align-items: center;
-  
-  //width: 100%;
-  //height: 100%;
-  //display: grid;
-  //grid-template-columns: repeat(3, 1fr);
-  //justify-content: center;
+
   flex-wrap: wrap;
   gap: 30px;
   
@@ -226,7 +196,6 @@ export const StyledProfileControl = styled(Form.Control)`
   color: #1c1f22;
 `
 export const StyledSettingsFormGroup = styled(Form.Group)`  
-  //margin-bottom: 2% ;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
@@ -235,8 +204,3 @@ export const StyledSettingsFormGroup = styled(Form.Group)`
     width: 100%;
   }
 `
-export const StyledPrefWrapper = styled.div`
-  display: flex;
-  gap: 15px;
-`
-// export const StyledSettings = styled.div``

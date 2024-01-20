@@ -7,13 +7,11 @@ import {
 	StyledAuthLogo,
 	StyledButton,
 	StyledError,
-	StyledFogotPassword,
 	StyledForm,
 	StyledFormControl,
 	StyledFormGroup,
 	StyledFormLabel,
-	StyledGoogleButton,
-	StyledGoogleIcon, StyledInputGroup,
+	StyledInputGroup,
 	StyledLink,
 	StyledOption, StyledPassInputWrapper,
 	StyledSuccess, StyledTooltip,
@@ -158,7 +156,6 @@ const SetNewPassword = () => {
 								name='Password'
 								className='combined_input'
 								placeholder='********'
-								// value={formData.Password}
 								onChange={handleInputChange}
 								required
 							/>
@@ -176,7 +173,6 @@ const SetNewPassword = () => {
 								name='ConfirmPassword'
 								placeholder='********'
 								className='combined_input'
-								// value={formData.Password}
 								onChange={handleInputChange}
 								required
 							/>

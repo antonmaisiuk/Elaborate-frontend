@@ -9,8 +9,8 @@ interface ModalState {
   modalData: dataMainType | IOtherInvestment;
   modalCatData: catMainType[];
   modalItems: IItem[],
-  loading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
-  error: string | null; // Ошибка, если что-то пошло не так
+  loading: 'idle' | 'pending' | 'succeeded' | 'failed';
+  error: string | null;
 }
 
 const initialState: ModalState = {

@@ -7,8 +7,6 @@ export const StyledInvestsOverview = styled.div`
         'stocks crypto metals other'
         'stat stat stat stat';
   gap: 20px;
-  //height: 100%;
-  //overflow-y: scroll;
   margin-top: 30px;
 
   .tile_stocks{
@@ -44,10 +42,6 @@ export const StyledInvestsOverview = styled.div`
     display: flex;
     flex-direction: column;
     grid-template-rows: none;
-    //grid-template-areas: 
-    //      'trans'
-    //      'invest'
-    //      'stat';
   }
 
   @media only screen and (max-width: 320px) {

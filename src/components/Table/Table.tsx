@@ -21,7 +21,6 @@ export interface ITransaction {
   value: number,
 }
 
-// export interface ITransactionCat {
 export interface ITransactionCat {
   id: string,
   name?: string,
@@ -48,18 +47,12 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
   tableType,
   tableData,
   tableCategories,
-  items,
   }) => {
   const dispatch = useDispatch<AppDispatch>();
   const currSlug = useSelector((state: RootState) => state.user.userInfo.currSlug);
-  const transLoading = useSelector((state: RootState) => state.transactions.transLoading);
 
-  const [currentPage, setCurrentPage] = useState(0);
-  // const [itemsPerPage, setItemsPerPage] = useState(10);
   const itemsPerPage = 15;
-  // const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const [isLoaded, setIsLoaded] = useState(false);
   const [sortedData, setSortedData] = useState<dataMainType[] | IOtherInvestment[]>(tableData);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [sortColumn, setSortColumn] = useState<string | null>(null);
@@ -79,27 +72,8 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
 
   const { t } = useTranslation();
 
-  // const calculatePageSize = () => {
-  //   // @ts-ignore
-  //   const containerHeight = containerRef.current.clientHeight - 60;
-  //   const rowHeight = 60;
-  //   const itemsPerPage = Math.floor(containerHeight / rowHeight);
-  //   setItemsPerPage(itemsPerPage);
-  // };
-
-  // useEffect(() => {
-  //   calculatePageSize();
-  //
-  // }, []);
-
   useEffect(() => {
     setSortedData(tableData);
-
-    // calculatePageSize();
-
-
-    // if (tableType === TableType.transactions && transLoading === 'succeeded') setIsLoaded(true)
-    // if (tableType === TableType.investments && basicInvestLoading === 'succeeded') setIsLoaded(true)
   }, [tableData, tableType]);
 
   useEffect(() => {
@@ -158,20 +132,6 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
     setSortColumn(column);
   };
 
-  // const search = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { value } = event.target;
-  //   if (value){
-  //     const searchResult = tableData.filter((item) => {
-  //       const {id, categoryId, ...obj } = item;
-  //
-  //       return _.values(obj).some((val) => new RegExp(value, 'i').test(String(val)))
-  //     });
-  //     setSortedData(searchResult)
-  //   } else {
-  //     setSortedData(tableData);
-  //   }
-  // }
-
   const getHeadersByTableType = () => {
     switch (tableType) {
       case TableType.transactions:
@@ -222,7 +182,6 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
       case TableType.investments:
         return (
           <>
-            {/*<td>{row.category}</td>*/}
             <td>{(row as IBasicInvestment).item}</td>
             <td>{row.comment}</td>
             <td>{(row as IBasicInvestment).amount} {tableCategories[0]?.id === process.env.REACT_APP_METALS_ID ? t('table.ozt') : t('table.pcs')}</td>
@@ -245,10 +204,7 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
 
   return (
     <>
-      {/*<FilterHeader tableCategories={tableCategories} searchFunc={search} tableType={tableType}/>*/}
       <StyledTableWrapper>
-        {/*{isLoaded ?*/}
-        {/*  <>*/}
             <StyledTable>
               <thead>
                 <tr>
@@ -263,23 +219,6 @@ const Table: FC<TableInterface & HTMLAttributes<HTMLDivElement>> = ({
                 ))}
               </tbody>
             </StyledTable>
-          {/*</>*/}
-          {/*:*/}
-          {/*<>*/}
-          {/*  <StyledLoading>*/}
-          {/*    <ColorRing*/}
-          {/*      visible={true}*/}
-          {/*      height="80"*/}
-          {/*      width="80"*/}
-          {/*      ariaLabel="spinner"*/}
-          {/*      wrapperStyle={{}}*/}
-          {/*      wrapperClass="blocks-wrapper"*/}
-          {/*      colors={['#25AB52', '#25AB52', '#25AB52', '#25AB52', '#25AB52']}*/}
-          {/*    />*/}
-          {/*  </StyledLoading>*/}
-          {/*</>*/}
-        {/*}*/}
-
 
       </StyledTableWrapper>
       <StyledPagination>

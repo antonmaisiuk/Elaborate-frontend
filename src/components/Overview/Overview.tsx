@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {FC, useEffect} from 'react';
 import Layout from "../Layout/Layout";
 import Navigation, {NavInterface} from "../Navigation/Navigation";
 import Content from "../Content/Content";
@@ -8,40 +8,29 @@ import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../../redux/store";
 import {
   StyledOverview,
-  StyledTile, StyledTileContent,
+  StyledTile,
   StyledTileHeader,
   StyledTileSelector, StyledTileSelectorsWrapper,
   StyledTileTitle,
   StyledTileValue
 } from "./styled";
 import {dataMainType} from "../Table/Table";
-import {StyledSelector} from "../Statistics/styled";
 import _ from "lodash";
-import {setPeriod, setType, StatPeriod, StatType} from "../../redux/statSlice";
+import {setPeriod, setType, StatPeriod} from "../../redux/statSlice";
 import moment from "moment/moment";
-import TransactionTimeChart from "../Statistics/TransactionTimeChart/TransactionTimeChart";
-import {fetchTransactionsAsync, fetchTransCatsAsync} from "../../redux/transactionSlice";
-import {fetchBasicInvestsAsync, fetchInvestCatsAsync, fetchItemsAsync} from "../../redux/basicInvestSlice";
-import PieChartComponent from "../Statistics/PieChartComponent/PieChartComponent";
 import {
-  Area,
-  AreaChart, Bar, BarChart,
+  Bar, BarChart,
   CartesianGrid, Legend,
   Line,
-  LineChart, PolarGrid, PolarRadiusAxis, Radar,
-  RadarChart,
+  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis
 } from "recharts";
 import {useTranslation} from "react-i18next";
-import {IOtherInvestment} from "../Investments/Overview/InvestOverview";
-import {fetchOtherInvestAsync} from "../../redux/otherInvestSlice";
 import {StyledResponsiveContainer} from "../Statistics/TransactionTimeChart/style";
 import {getAllData} from "../Statistics/Statistics";
-import basicInvestments from "../Investments/BasicInvestments/BasicInvestments";
-import {getCustomExchangeRate} from "../../redux/userSlice";
 
 export const filterDataByPeriod = (actualPeriod: StatPeriod, data: any[]) => {
   const now = moment();
@@ -85,20 +74,10 @@ const Overview: FC<NavInterface> = ({
   const otherInvests = useSelector((state: RootState) => state.otherInvestments.otherInvests);
 
   const actualPeriod = useSelector((state: RootState) => state.stats.period);
-  const actualType = useSelector((state: RootState) => state.stats.type);
-
-  const transLoadingStatus = useSelector((state: RootState) => state.transactions.transLoading);
-  const basicLoadingStatus = useSelector((state: RootState) => state.basicInvestments.basicLoading);
-
 
   const handlePeriodChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     dispatch(setPeriod(event.target.value));
   };
-
-  const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    dispatch(setType(event.target.value));
-  };
-
 
   const getTotal = (data: [any[], any[]]) => {
 
@@ -108,24 +87,6 @@ const Overview: FC<NavInterface> = ({
       return accumulator + currentValue.value
     }, 0), 2);
   }
-
-  useEffect(() => {
-    // if (transLoadingStatus !== 'succeeded') {
-    //   dispatch(fetchTransactionsAsync()).then(() =>
-    //     dispatch(fetchTransCatsAsync())
-    //   );
-    // }
-    //
-    // if (basicLoadingStatus !== 'succeeded') {
-    //   dispatch(fetchOtherInvestAsync());
-    //   dispatch(fetchItemsAsync()).then(() => {
-    //     dispatch(fetchBasicInvestsAsync()).then(() => {
-    //       dispatch(fetchInvestCatsAsync())
-    //     })
-    //   });
-    // }
-
-  }, [transactions, invests, otherInvests]);
 
   return (
     <Layout>
@@ -202,9 +163,6 @@ const Overview: FC<NavInterface> = ({
                 </StyledResponsiveContainer>
                 : 'Sorry, but you don\'t have data for current period('
             }
-
-
-            {/*<TransactionTimeChart transactions={filterDataByPeriod(actualType === StatType.investments ? invests : transactions)} period={actualPeriod} />*/}
           </StyledTile>
 
         </StyledOverview>

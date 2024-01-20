@@ -7,31 +7,20 @@ import {StyledTitle} from "./style";
 import Table, {TableType} from "../Table/Table";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../../redux/store";
-import {fetchTransactionsAsync, fetchTransCatsAsync} from "../../redux/transactionSlice";
 import {useTranslation} from "react-i18next";
 import {StyledTileHeader} from "../Overview/styled";
 import FilterHeader from "../FilterHeader/FilterHeader";
 import _ from "lodash";
-
-
 const Transactions: FC<NavInterface> = ({
                                           visible,
                                           toggle,
                                         }) => {
-  const dispatch = useDispatch<AppDispatch>();
   const transactions = useSelector((state: RootState) => state.transactions.transactions);
   const transCategories = useSelector((state: RootState) => state.transactions.transCategories);
-  const loadingStatus = useSelector((state: RootState) => state.transactions.transLoading);
 
   const [data, setData] = useState(transactions);
 
   const { t } = useTranslation();
-
-  useEffect(() => {
-    if (loadingStatus !== 'succeeded'){
-      // dispatch(fetchTransactionsAsync()).then(() => dispatch(fetchTransCatsAsync()));
-    }
-  }, []);
 
   const search = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;

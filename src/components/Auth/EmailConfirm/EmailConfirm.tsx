@@ -1,15 +1,9 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import React from 'react';
 import {
   AuthContainer,
   AuthWrapper, StyledAuthDescription,
-  StyledAuthHeader, StyledAuthLogo, StyledButton, StyledError, StyledFogotPassword,
-  StyledForm,
-  StyledFormControl,
-  StyledFormGroup,
-  StyledFormLabel, StyledGoogleButton, StyledGoogleIcon, StyledLink, StyledOption
+  StyledAuthHeader, StyledAuthLogo, StyledButton
 } from "../styled";
-import {CredentialResponse} from "@react-oauth/google";
 import {useNavigate} from "react-router-dom";
 
 const EmailConfirm = () => {

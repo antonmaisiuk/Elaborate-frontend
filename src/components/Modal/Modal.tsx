@@ -49,9 +49,6 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const modalItems = useSelector((state: RootState) => state.modal.modalItems);
 
   const items = useSelector((state: RootState) => state.basicInvestments.items);
-  const loading = useSelector((state: RootState) => state.basicInvestments.basicLoading);
-
-  // const currentItems = items.filter((item) => item.categoryInvestmentId === newItem.categoryId);
 
   const updatedItem = {...modalData};
   const [newItem, setNewItem] = useState<dataMainType | IOtherInvestment>({
@@ -69,9 +66,6 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
     currencyIndex: 'USD',
   });
   const [errorMsg, setErrorMsg] = useState('');
-  const [currentItems, setCurrentItems] = useState<IItem[]>(items.filter((item) => item.categoryInvestmentId === (newItem as IBasicInvestment | ITransaction).categoryId));
-
-
 
   const formatDate = (date: string) => {
     if (date && !/T/.test(date)) {
@@ -100,7 +94,6 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const {value, name} = event.target;
-    console.log('👉 name: ', name, ' value: ', value);
     setNewItem((prevData) => ({
       ...prevData,
       [name]: value,
@@ -162,7 +155,6 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
       if (!(newItem as IBasicInvestment).unit) (newItem as IBasicInvestment).unit = 'ozt';
       if ((newItem as IBasicInvestment).unit === 'gram') (newItem as IBasicInvestment).amount = _.round((newItem as IBasicInvestment).amount / 31.104, 3)
     }
-    console.log('👉 [modal] New item: ', newItem);
     dispatch(addBasicInvestsAsync(newItem as IBasicInvestment));
 
     dispatch(toggleActive(false));
@@ -280,7 +272,6 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
             placeholder='More info'
             value={newItem.comment}
             onChange={handleInputChange}
-            // value={formData[0].comment}
 
           />
         </StyledFormGroup>
@@ -362,13 +353,7 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
               >
                 <option value={'USD'}>USD</option>
                 <option value={'PLN'}>PLN</option>
-                {/*<option value={'pcs'}>{t('table.pcs')}</option>*/}
-                {
-                  // modalItems.map((item) => (
-                  // <option value={item.id}>унц.</option>
-                  // ))
-                }
-              </StyledFormSelect>
+            </StyledFormSelect>
           </StyledPassInputWrapper>
         </StyledFormGroup>
         {errorMsg && <StyledError> {errorMsg} </StyledError>}
@@ -450,12 +435,6 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
               >
                 <option value={'ozt'}>{t('table.ozt')}</option>
                 <option value={'gram'}>{t('table.gram')}</option>
-                {/*<option value={'pcs'}>{t('table.pcs')}</option>*/}
-                {
-                  // modalItems.map((item) => (
-                  // <option value={item.id}>унц.</option>
-                  // ))
-                }
               </StyledFormSelect>
               : ''
             }
@@ -847,14 +826,6 @@ const Modal: FC<HTMLAttributes<HTMLDivElement>> = () => {
 
     return () => window.removeEventListener('keydown', close)
   });
-
-  // useEffect(() => {
-  //   console.log('👉 Items: ', items);
-  //   console.log('👉 Filtered items: ', items.filter((item) => item.categoryInvestmentId === (newItem as ITransaction | IBasicInvestment).categoryId));
-  //   console.log('👉 NewItem: ', newItem);
-  //   setCurrentItems(items.filter((item) => item.categoryInvestmentId === (newItem as ITransaction | IBasicInvestment).categoryId));
-  //   console.log('👉 New items: ', currentItems);
-  // }, [modalCatData]);
 
   const renderByType = () => {
     switch (modalType) {

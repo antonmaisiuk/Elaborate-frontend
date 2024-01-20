@@ -1,12 +1,10 @@
-import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {SettingsType} from "../components/Settings/Settings";
-import axios from 'axios';
-import {getActualToken} from "../App";
 
 interface SettingsState {
   type: SettingsType;
-  loading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
-  error: string | null; // Ошибка, если что-то пошло не так
+  loading: 'idle' | 'pending' | 'succeeded' | 'failed';
+  error: string | null;
 }
 
 const initialState: SettingsState = {
@@ -14,8 +12,6 @@ const initialState: SettingsState = {
   loading: 'idle',
   error: null,
 };
-
-
 
 const settingsSlice = createSlice({
   name: 'settings',
@@ -25,14 +21,6 @@ const settingsSlice = createSlice({
       state.type = SettingsType[action.payload as keyof typeof SettingsType];
     },
   },
-  // extraReducers: (builder) => {
-  //   builder
-  //     .addCase(changeProfileAsync.fulfilled, (state, action) => {
-  //       state.user = action.payload;
-  //
-  //       state.error = null;
-  //     })
-  // }
 });
 
 export const {

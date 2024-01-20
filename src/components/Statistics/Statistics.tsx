@@ -1,32 +1,18 @@
 import React, {FC, useEffect, useState} from 'react';
 import PieChartComponent from './PieChartComponent/PieChartComponent';
-import TransactionTimeChart from './TransactionTimeChart/TransactionTimeChart';
-import {fetchTransactionsAsync, fetchTransCatsAsync,} from '../../redux/transactionSlice';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../../redux/store';
-import {dataMainType, ITransaction} from '../Table/Table';
+import {ITransaction} from '../Table/Table';
 import Layout from "../Layout/Layout";
 import Navigation, {NavInterface} from "../Navigation/Navigation";
 import Content from "../Content/Content";
 import Header from "../Header/Header";
 import {StyledSelectorsBlock, StyledTitle} from "../Transactions/style";
-import {setBuyerPeriod, setPeriod, setType, StatPeriod, StatType} from "../../redux/statSlice";
+import {setBuyerPeriod, setPeriod, StatPeriod} from "../../redux/statSlice";
 import _ from "lodash";
-import {fetchBasicInvestsAsync, fetchInvestCatsAsync, fetchItemsAsync} from "../../redux/basicInvestSlice";
-import moment from "moment";
-import {StyledChart, StyledCharts, StyledChartTitle, StyledSelector} from "./styled";
+import {StyledCharts, StyledSelector} from "./styled";
 import {
-	Area,
-	AreaChart,
-	Bar,
-	BarChart,
 	CartesianGrid, Legend, Line, LineChart,
-	PolarAngleAxis,
-	PolarGrid,
-	PolarRadiusAxis,
-	Radar,
-	RadarChart,
-	ResponsiveContainer,
 	Tooltip, XAxis, YAxis
 } from "recharts";
 import {useTranslation} from "react-i18next";
@@ -34,7 +20,6 @@ import {StyledTile, StyledTileHeader, StyledTileTitle} from "../Overview/styled"
 import {IBasicInvestment, IOtherInvestment} from "../Investments/Overview/InvestOverview";
 import { StyledResponsiveContainer } from './TransactionTimeChart/style';
 import {filterDataByPeriod} from "../Overview/Overview";
-import {fetchOtherInvestAsync} from "../../redux/otherInvestSlice";
 import BuyerPowerChart from "./BuyerPowerChart/BuyerPowerChart";
 import {StyledFormControl} from "../Auth/styled";
 
@@ -59,12 +44,10 @@ export const getAllData = (actualPeriod: StatPeriod, trans: ITransaction[], basi
 	const result = _.map(_.groupBy(filtred, 'date'), (item) => item.reduce((accumulator, currentValue) => {
 		const { type, value, date } = currentValue;
 
-		// If the type is not in the accumulator, create a new entry
 		if (!accumulator[type]) {
 			accumulator[type] = 0;
 		}
 
-		// Add the current value to the accumulator
 		accumulator[type] += value;
 		accumulator['Date'] = date;
 
@@ -82,7 +65,6 @@ const Statistics: FC<NavInterface> = ({
 	const dispatch = useDispatch<AppDispatch>();
 	const { t } = useTranslation();
 
-	// const actualType = useSelector((state: RootState) => state.stats.type);
 	const actualPeriod = useSelector((state: RootState) => state.stats.period);
 	const transLoadingStatus = useSelector((state: RootState) => state.transactions.transLoading);
 	const basicLoadingStatus = useSelector((state: RootState) => state.basicInvestments.basicLoading);
@@ -92,8 +74,6 @@ const Statistics: FC<NavInterface> = ({
 	const otherInvestments = useSelector((state: RootState) => state.otherInvestments.otherInvests);
 
 	const history = useSelector((state: RootState) => state.user.history);
-	// console.log('👉 history: ', history);
-	const inflation = useSelector((state: RootState) => state.user.inflation);
 
 	const [filteredTrans, setFilteredTrans] = useState<ITransaction[]>(transactions);
 	const [filteredBasic, setFilteredBasic] = useState<IBasicInvestment[]>(basicInvestments);
@@ -101,33 +81,17 @@ const Statistics: FC<NavInterface> = ({
 
 
 	useEffect(() => {
-		// if (transLoadingStatus !== 'succeeded') {
-		// 	dispatch(fetchTransactionsAsync()).then(() =>
-		// 		dispatch(fetchTransCatsAsync())
-		// 	);
-		// }
-		//
-		// if (basicLoadingStatus !== 'succeeded') {
-		// 	dispatch(fetchOtherInvestAsync());
-		// 	dispatch(fetchItemsAsync()).then(() => {
-		// 		dispatch(fetchBasicInvestsAsync()).then(() => {
-		// 			dispatch(fetchInvestCatsAsync())
-		// 		})
-		// 	});
-		// }
-
 		if (transLoadingStatus && basicLoadingStatus) {
 			setFilteredTrans(filterDataByPeriod(actualPeriod, transactions));
 			setFilteredBasic(filterDataByPeriod(actualPeriod, basicInvestments));
-			setFilteredOther(filterDataByPeriod(actualPeriod, otherInvestments));		}
-
+			setFilteredOther(filterDataByPeriod(actualPeriod, otherInvestments));
+		}
 	}, [transactions, basicInvestments, otherInvestments]);
 
 	const handlePeriodChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		dispatch(setPeriod(event.target.value));
 	};
 	const handleBuyerPowerPeriodChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		console.log('👉 ', event.target.value);
 		dispatch(setBuyerPeriod(event.target.value));
 	};
 
@@ -147,12 +111,6 @@ const Statistics: FC<NavInterface> = ({
 					<StyledTitle>{t('statistics')}</StyledTitle>
 
 					<StyledSelectorsBlock>
-						{/*<StyledSelector onChange={handleTypeChange}>*/}
-						{/*	{*/}
-						{/*		_.keys(StatType).map((type, i) =>*/}
-						{/*			(<option selected={actualType === _.values(StatType)[i]} value={type}>{_.values(StatType)[i]}</option>))*/}
-						{/*	}*/}
-						{/*</StyledSelector>*/}
 						<StyledSelector onChange={handlePeriodChange}>
 							{
 								_.keys(StatPeriod).map((period, i) =>

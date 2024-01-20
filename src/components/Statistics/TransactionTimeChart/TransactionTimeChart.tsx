@@ -1,16 +1,11 @@
-// TransactionTimeChart.tsx
 import React from 'react';
 import {
-  LineChart,
-  Line,
   XAxis,
-  YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
-  ResponsiveContainer, AreaChart, Area,
+  AreaChart, Area,
 } from 'recharts';
-import {dataMainType, ITransaction} from '../../Table/Table';
+import {dataMainType} from '../../Table/Table';
 import {StatPeriod} from "../../../redux/statSlice";
 import {StyledNoData} from "../styled";
 import {StyledResponsiveContainer} from "./style"; // Assuming you have this exported from another file
@@ -25,20 +20,17 @@ interface TransactionTimeChartProps {
   period: StatPeriod;
 }
 
-// Inside the TransactionTimeChart component
 const TransactionTimeChart: React.FC<TransactionTimeChartProps> = ({
                                                                      transactions,
                                                                    }) => {
   const summarizeTransactions = (
     transactions: dataMainType[]
   ): ChartData[] => {
-    // Aggregate transactions by date
     const summary = new Map<string, number>();
 
     transactions.forEach((transaction) => {
-      if (!transaction.date) return; // Skip if date is undefined or null
+      if (!transaction.date) return;
 
-      // Convert "DD.MM.YYYY" to "YYYY-MM-DD" for proper date parsing
       const parts = transaction.date.split('.');
       const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
 
@@ -46,19 +38,16 @@ const TransactionTimeChart: React.FC<TransactionTimeChartProps> = ({
       summary.set(formattedDate, value + transaction.value);
     });
 
-    // Convert the map to an array and sort by the converted date
     const dataArray = Array.from(summary, ([date, totalValue]) => ({
       date,
       totalValue,
     })).sort((a, b) => {
-      // Convert to Date object and get time in milliseconds for comparison
       return new Date(a.date).getTime() - new Date(b.date).getTime();
     });
 
     return dataArray;
   };
 
-  // Assuming the parent component provides filtered data based on the period
   const chartData = summarizeTransactions(transactions);
 
   return (
@@ -67,7 +56,6 @@ const TransactionTimeChart: React.FC<TransactionTimeChartProps> = ({
       <StyledResponsiveContainer>
 
         <AreaChart
-          // height={'80%'}
           data={chartData}
           margin={{
             top: 5,
@@ -78,9 +66,7 @@ const TransactionTimeChart: React.FC<TransactionTimeChartProps> = ({
         >
           <CartesianGrid strokeDasharray='3 3'/>
           <XAxis dataKey='date'/>
-          {/*<YAxis/>*/}
           <Tooltip/>
-          {/*<Legend/>*/}
           <Area
             type='monotone'
             dataKey='totalValue'

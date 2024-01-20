@@ -1,4 +1,4 @@
-import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import axios from "axios";
 import {getActualToken} from "../App";
 import {ITransaction, ITransactionCat} from "../components/Table/Table";
@@ -10,9 +10,9 @@ interface TransactionState {
   transactions: ITransaction[];
   transCategories: ITransactionCat[];
   selectedTransaction: ITransaction | null;
-  transLoading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
-  catsLoading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
-  error: string | null; // Ошибка, если что-то пошло не так
+  transLoading: 'idle' | 'pending' | 'succeeded' | 'failed';
+  catsLoading: 'idle' | 'pending' | 'succeeded' | 'failed';
+  error: string | null;
 }
 
 const initialState: TransactionState = {
@@ -50,13 +50,11 @@ const transactionSlice = createSlice({
       })
 
       .addCase(addTransactionAsync.fulfilled, (state, action) => {
-        // state.loading = 'succeeded';
         action.payload.category = state.transCategories.filter((cat) => cat.id === action.payload.categoryTransactionId)[0].name || 'No category';
         state.transactions.push(action.payload);
         state.error = null;
       })
       .addCase(updateTransactionAsync.fulfilled, (state, action) => {
-        // state.loading = 'succeeded';
         const index = state.transactions.findIndex(
           (transaction) => transaction.id === action.payload.id
         );
@@ -70,7 +68,6 @@ const transactionSlice = createSlice({
         state.error = null;
       })
       .addCase(deleteTransactionAsync.fulfilled, (state, action) => {
-        // state.loading = 'succeeded';
         state.transactions = state.transactions.filter(
           (transaction) => transaction.id !== action.payload
         );
@@ -101,12 +98,7 @@ const transactionSlice = createSlice({
   },
 });
 
-export const {
-  // addTransaction,
-  // selectTransaction,
-  // updateTransaction,
-  // deleteTransaction,
-} = transactionSlice.actions;
+export const {} = transactionSlice.actions;
 
 export default transactionSlice.reducer;
 
@@ -156,7 +148,6 @@ export const addTransactionAsync = createAsyncThunk(
 export const updateTransactionAsync = createAsyncThunk(
   'transactions/updateTransaction',
   async (transaction: ITransaction) => {
-    console.log('👉 Updated transaction: ', transaction);
     const response = await axios.put(
       `${process.env.REACT_APP_API_URL}/api/user/transaction/${transaction.id}`,
       JSON.stringify({

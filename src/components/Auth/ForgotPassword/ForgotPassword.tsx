@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
 import {
   AuthContainer,
   AuthWrapper, StyledAuthDescription,
-  StyledAuthHeader, StyledAuthLogo, StyledButton, StyledError, StyledFogotPassword,
+  StyledAuthHeader, StyledAuthLogo, StyledButton, StyledError,
   StyledForm,
   StyledFormControl,
   StyledFormGroup,
-  StyledFormLabel, StyledGoogleButton, StyledGoogleIcon, StyledLink, StyledOption, StyledSuccess
+  StyledFormLabel, StyledLink, StyledOption, StyledSuccess
 } from "../styled";
-import {CredentialResponse} from "@react-oauth/google";
 import {useNavigate} from "react-router-dom";
 
 const ForgotPassword = () => {
@@ -20,10 +18,6 @@ const ForgotPassword = () => {
   });
 
   const navigate = useNavigate();
-
-  const responseMessage = (response: CredentialResponse) => {
-    console.log(response);
-  };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -48,9 +42,6 @@ const ForgotPassword = () => {
       setSuccessMsg(obj.message);
 
       setTimeout(() => navigate('/login'), 5e3)
-      // navigate('/login');
-      // setRedirect(true);
-      // window.location.reload();
     } else {
       setSuccessMsg('');
       setErrorMsg(obj.message);

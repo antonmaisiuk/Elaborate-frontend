@@ -6,7 +6,6 @@ body, h1, h2, h3, p {
 
 body.dark-mode {
     background: #10171d !important;
-    /*color: #dfdfdf;*/
 }
 
 #root{

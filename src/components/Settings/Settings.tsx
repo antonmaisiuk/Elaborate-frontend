@@ -7,22 +7,18 @@ import Content from "../Content/Content";
 import Header from "../Header/Header";
 import {StyledTitle} from "../Transactions/style";
 import {
-  StyledAuthContent, StyledAuthForm,
-  StyledPrefContent,
-  StyledPrefWrapper, StyledProfileContent,
+  StyledAuthContent, StyledAuthForm, StyledProfileContent,
   StyledProfileControl,
   StyledProfileForm,
   StyledSettingsFormGroup,
   StyledSettings,
-  StyledSettingsMenu, StyledSettingsHeader, StyledAvatarForm
+  StyledSettingsMenu, StyledAvatarForm
 } from "./styled";
 import _ from "lodash";
 import {setType} from "../../redux/settingsSlice";
 import {
   StyledButton,
   StyledError,
-  StyledFormControl,
-  StyledFormGroup,
   StyledFormLabel,
   StyledFormSelect, StyledInputGroup, StyledPassInputWrapper, StyledSuccess, StyledTooltip
 } from "../Auth/styled";
@@ -30,9 +26,9 @@ import {
   changeAvatarAsync,
   changePasswordAsync,
   changeProfileAsync, deleteAvatarAsync,
-  getUserAsync, ILang,
+  getUserAsync,
   IUser,
-  setCurrency, setIsDark,
+  setCurrency,
   setLang
 } from "../../redux/userSlice";
 import {ColorRing} from "react-loader-spinner";
@@ -42,13 +38,10 @@ import CloseEyeIcon from "../../assets/CloseEye/CloseEyeIcon";
 import validator from "validator";
 import {useNavigate} from "react-router-dom";
 import {useTranslation} from "react-i18next";
-import {StyledButtonGroup} from "../Modal/style";
-import {RxDashboard} from "react-icons/rx";
 import {TiDeleteOutline} from "react-icons/ti";
 
 export enum SettingsType {
   profile = 'Profile',
-  // preferences = 'Preferences',
   auth = 'Auth',
 }
 
@@ -61,10 +54,8 @@ const Settings: FC<NavInterface> = ({
 
   const currentType = useSelector((state: RootState) => state.settings.type);
   const user = useSelector((state: RootState) => state.user.userInfo);
-  const userError = useSelector((state: RootState) => state.user.error);
   const currentLang = useSelector((state: RootState) => state.user.userInfo.lang);
   const currentCurr = useSelector((state: RootState) => state.user.userInfo.currency);
-  const isDark = useSelector((state: RootState) => state.user.userInfo.isDarkScreen);
   const languages = useSelector((state: RootState) => state.user.languages);
   const currencies = useSelector((state: RootState) => state.user.currencies);
 
@@ -92,18 +83,6 @@ const Settings: FC<NavInterface> = ({
   }, [user]);
 
   const navigate = useNavigate();
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const {files} = event.target;
-
-    if (files && files.length) {
-      setChangedUser((prevData) => ({
-        ...prevData,
-        avatar: URL.createObjectURL(files[0]),
-        avatarFile: files[0],
-      }));
-    }
-  }
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const {name, value} = event.target;
@@ -188,8 +167,6 @@ const Settings: FC<NavInterface> = ({
 
     setToggleSpinner(true);
 
-    console.log('👉 changedUser: ', changedUser);
-
     const {payload} = await dispatch(changeProfileAsync(changedUser as IUser));
     setToggleSpinner(false);
 
@@ -220,17 +197,12 @@ const Settings: FC<NavInterface> = ({
     await dispatch(changePasswordAsync(changePass));
     setToggleSpinner(false);
 
-    // if (payload){
-    //   setErrorMsg(payload.error);
-    //   setTimeout(() => {setErrorMsg('')}, 3e3);
-    // } else {
-    // dispatch(getUserAsync());
     setSuccessMsg(t('settings.successPass'));
     setTimeout(() => {
       document.cookie = "token= ; expires = Thu, 01 Jan 1970 00:00:00 GMT";
       navigate('/login');
     }, 5e3);
-    // }
+
 
     resetForm();
   }
@@ -239,7 +211,6 @@ const Settings: FC<NavInterface> = ({
     return (
       <StyledAuthContent>
         <StyledAuthForm onSubmit={handlePasswordChange}>
-          {/*<StyledSettingsFormGroup className={'pass_wrap'}>*/}
           <StyledSettingsFormGroup className={'pass'} controlId="pass">
             <StyledFormLabel>{t('settings.newPass')}</StyledFormLabel>
             <StyledPassInputWrapper>
@@ -314,37 +285,6 @@ const Settings: FC<NavInterface> = ({
           </StyledSettingsFormGroup>
           {errorAvatarMsg && <StyledError> {errorAvatarMsg} </StyledError>}
           {successAvatarMsg && <StyledSuccess> {successAvatarMsg} </StyledSuccess>}
-          {/*<StyledButtonGroup>*/}
-
-            {/*<StyledButton className="danger" onClick={handleDeleteAvatar}>*/}
-            {/*  {!toggleAvatarSpinner*/}
-            {/*    ? t('settings.deleteAvatar')*/}
-            {/*    : <ColorRing*/}
-            {/*      visible={true}*/}
-            {/*      height="40"*/}
-            {/*      width="40"*/}
-            {/*      ariaLabel="spinner"*/}
-            {/*      wrapperStyle={{}}*/}
-            {/*      wrapperClass="blocks-wrapper"*/}
-            {/*      colors={['#F4F5F7', '#F4F5F7', '#F4F5F7', '#F4F5F7', '#F4F5F7']}*/}
-            {/*    />*/}
-            {/*  }*/}
-            {/*</StyledButton>*/}
-            {/*<StyledButton className="success" type="submit">*/}
-            {/*  {!toggleAvatarSpinner*/}
-            {/*    ? t('settings.saveAvatar')*/}
-            {/*    : <ColorRing*/}
-            {/*      visible={true}*/}
-            {/*      height="40"*/}
-            {/*      width="40"*/}
-            {/*      ariaLabel="spinner"*/}
-            {/*      wrapperStyle={{}}*/}
-            {/*      wrapperClass="blocks-wrapper"*/}
-            {/*      colors={['#F4F5F7', '#F4F5F7', '#F4F5F7', '#F4F5F7', '#F4F5F7']}*/}
-            {/*    />*/}
-            {/*  }*/}
-            {/*</StyledButton>*/}
-          {/*</StyledButtonGroup>*/}
         </StyledAvatarForm>
 
         <StyledProfileForm onSubmit={handleProfileChange}>
@@ -355,7 +295,6 @@ const Settings: FC<NavInterface> = ({
               name="username"
               placeholder='Anton'
               defaultValue={changedUser.username}
-              // value={formData.Email}
               onChange={handleInputChange}
               required
             />
@@ -400,38 +339,25 @@ const Settings: FC<NavInterface> = ({
               }
             </StyledFormSelect>
           </StyledSettingsFormGroup>
-          {/*<StyledSettingsFormGroup controlId="theme">*/}
-          {/*  <StyledFormLabel>{t('settings.theme')}:</StyledFormLabel>*/}
-          {/*  <StyledFormSelect onChange={(e) => dispatch(setIsDark(Boolean(e.target.value)))}>*/}
-          {/*    {*/}
-          {/*      <>*/}
-          {/*        <option selected={isDark} value={1}>Dark</option>*/}
-          {/*        <option selected={!isDark} value={0}>Light</option>*/}
-          {/*      </>*/}
-          {/*    }*/}
-          {/*  </StyledFormSelect>*/}
-          {/*</StyledSettingsFormGroup>*/}
 
+          <StyledButton className="success settings_save" type="submit">
+            {!toggleSpinner
+              ? t('settings.save')
+              : <ColorRing
+                visible={true}
+                height="40"
+                width="40"
+                ariaLabel="spinner"
+                wrapperStyle={{}}
+                wrapperClass="blocks-wrapper"
+                colors={['#F4F5F7', '#F4F5F7', '#F4F5F7', '#F4F5F7', '#F4F5F7']}
+              />
+            }
+          </StyledButton>
         </StyledProfileForm>
-        <StyledButton className="success settings_save" type="submit">
-          {!toggleSpinner
-            ? t('settings.save')
-            : <ColorRing
-              visible={true}
-              height="40"
-              width="40"
-              ariaLabel="spinner"
-              wrapperStyle={{}}
-              wrapperClass="blocks-wrapper"
-              colors={['#F4F5F7', '#F4F5F7', '#F4F5F7', '#F4F5F7', '#F4F5F7']}
-            />
-          }
-        </StyledButton>
-        {/*</StyledSettingsFormGroup>*/}
 
         {errorMsg && <StyledError> {errorMsg} </StyledError>}
         {successMsg && <StyledSuccess> {successMsg} </StyledSuccess>}
-        {/*</StyledProfileForm>*/}
       </StyledProfileContent>
     );
   }

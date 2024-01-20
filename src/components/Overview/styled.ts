@@ -9,8 +9,7 @@ export const StyledOverview = styled.div`
           'trans invest' 
           'stat stat';
   gap: 20px;
-  height: 100%;
-  //overflow-y: scroll;  
+  height: 100%; 
   margin-top: 30px;
 
   .tile_trans{
@@ -69,11 +68,6 @@ export const StyledTile = styled.div`
     width: 100%;
   }
 `;
-export const StyledTileContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`
 
 export const StyledTileHeader = styled.div`
   display: flex;
@@ -139,4 +133,3 @@ export const StyledTileSelectorsWrapper = styled.div`
     gap: 5px;
   }
 `
-// export const StyledSettings = styled.div``

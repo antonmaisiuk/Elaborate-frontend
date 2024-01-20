@@ -1,6 +1,5 @@
 import styled from 'styled-components';
-import {Button, Container, Form, Nav, Navbar, NavDropdown} from "react-bootstrap";
-import React from "react";
+import {Form} from "react-bootstrap";
 
 export const StyledFilterHeader = styled.div`
   display: flex;
@@ -12,32 +11,6 @@ export const StyledFilterHeader = styled.div`
     justify-content: center;
   }
 `
-
-export const StyledFilterUl = styled.ul`
-  display: flex;
-  flex-direction: row;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  
-  li{
-    color: #525256;
-    font-family: Inter, sans-serif;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 24px;
-    text-transform: capitalize;
-    
-    cursor: pointer;
-    margin-right: 20px;
-    padding: 8px;
-  }
-  li:hover{
-    color: #25AB52;
-    border-bottom: 2px solid #25AB52;  
-  }
-`;
 
 export const StyledFilterButtons = styled.div`
   display: flex;
@@ -66,15 +39,6 @@ export const StyledFilterSearch = styled(Form.Control)`
   font-style: normal;
   font-weight: 400;
   line-height: 24px;
-
-  //@media only screen and (max-width: 440px) {
-  //  display: none;
-  //  
-  //  :active{
-  //    position: absolute;
-  //    display: block;
-  //  }
-  //}
 `
 export const StyledNewButton = styled.button`
   display: flex;
@@ -89,20 +53,11 @@ export const StyledNewButton = styled.button`
   color: #fff;
   text-align: center;
 
-  font-family: Inter,sans-serif;
+  font-family: Inter, sans-serif;
   font-size: 16px;
   font-style: normal;
   font-weight: 700;
   line-height: 24px; /* 150% */
   text-transform: capitalize;
-`
-
-export const StyledFilterButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: transparent;
-  border: none;
-  height: 24px;
 `
 

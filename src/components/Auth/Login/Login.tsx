@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
 import {
   AuthContainer,
   AuthWrapper,
-  StyledAuthHeader,
   StyledAuthLogo,
   StyledButton,
   StyledError,
@@ -13,7 +11,6 @@ import {
   StyledFormGroup,
   StyledFormLabel,
   StyledGoogleButton,
-  StyledGoogleIcon,
   StyledInputGroup,
   StyledLink,
   StyledOption,
@@ -23,8 +20,6 @@ import {
 import {CredentialResponse} from "@react-oauth/google";
 import {NavigateFunction, useNavigate} from "react-router-dom";
 import {ColorRing} from "react-loader-spinner";
-import {fetchTransactionsAsync, fetchTransCatsAsync} from "../../../redux/transactionSlice";
-import {fetchBasicInvestsAsync, fetchInvestCatsAsync, fetchItemsAsync} from "../../../redux/basicInvestSlice";
 import {useDispatch} from "react-redux";
 import {AppDispatch} from "../../../redux/store";
 import {setUser} from "../../../redux/userSlice";
@@ -32,13 +27,6 @@ import OpenEyeIcon from "../../../assets/OpenEye/OpenEyeIcon";
 import CloseEyeIcon from "../../../assets/CloseEye/CloseEyeIcon";
 import {jwtDecode} from "jwt-decode";
 import {fetchRegister} from "../Registration/Registration";
-
-
-export interface ILoginUser {
-  email: string,
-  password: string,
-  code: number,
-}
 
 export const fetchLogin = async (data: any) => {
   return fetch(`${process.env.REACT_APP_API_URL}/api/Authentication/login`,
@@ -72,23 +60,12 @@ const successLoginRes = async (
       role: 'user',
     }))
 
-    // await dispatch(fetchTransactionsAsync()).then(() =>
-    //   dispatch(fetchTransCatsAsync())
-    // );
-    //
-    // await dispatch(fetchItemsAsync()).then(() => {
-    //   dispatch(fetchBasicInvestsAsync()).then(() => {
-    //     dispatch(fetchInvestCatsAsync())
-    //   })
-    // });
-
     setSpinnerActive(false);
     setSuccessMsg('Successfully logged')
 
 
     setTimeout(() => {
       navigate('/overview');
-      // window.location.reload();
     }, 2e2);
   }
 }
@@ -97,7 +74,7 @@ const Login = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [showPass, setShowPass] = useState(false);
-  const [is2FA, setIs2FA] = useState(false);
+  const [is2FA, setIs2FA] = useState(true);
   const [spinnerActive, setSpinnerActive] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -116,30 +93,24 @@ const Login = () => {
     if (credential){
       // @ts-ignore
       const { email, name, sub } = jwtDecode(credential);
-      console.log('👉 decode: ', email, name, sub);
       const googleUser = {
         email,
         password: `${email}/${sub}/aA1.`,
         code: null,
       };
 
-      console.log('👉 New user data: ', formData);
-
       const loginResponse = await fetchLogin(googleUser);
       const loginResponseText = await loginResponse.text();
 
       if (loginResponse.ok) {
-        console.log('👉 Old google user!');
         await successLoginRes(loginResponse, loginResponseText, dispatch, setIs2FA, setSpinnerActive, setSuccessMsg, navigate);
 
       } else if(loginResponseText === 'This account does not exist!') {
-        console.log('👉 New google user!');
         const registerResponse = await fetchRegister({
           username: name.replaceAll(' ', '-'),
           email: email,
           phoneNumber: null,
           password: `${email}/${sub}/aA1.`,
-          // role: 'user'
         });
 
         if (registerResponse.ok) {
@@ -200,8 +171,6 @@ const Login = () => {
 
   const handle2FA = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log('👉 2FA: ', formData);
-    // console.log('👉 Email: ', formData);
     const response = await fetch(`${process.env.REACT_APP_API_URL}/api/Authentication/login-2FA?code=${formData.code}&email=${formData.email}`,
       {
         method: 'Post',
@@ -217,7 +186,6 @@ const Login = () => {
     } else {
       const errorMsg = JSON.parse(await response.text());
       setErrorMsg(errorMsg.message);
-      console.log(errorMsg.message);
     }
   };
 
@@ -244,7 +212,6 @@ const Login = () => {
           <StyledAuthLogo>
             Elaborate
           </StyledAuthLogo>
-          {/*<StyledForm onSubmit={ (e: React.FormEvent<HTMLFormElement>) => {is2FA ? handle2FA : handleLogin(e, formData, setErrorMsg, setIs2FA )}}>*/}
           <StyledForm onSubmit={ is2FA ? handle2FA : handleLogin}>
             {is2FA ?
               <StyledFormGroup controlId="code">
@@ -253,7 +220,6 @@ const Login = () => {
                   type="number"
                   name="code"
                   placeholder='123456'
-                  // value={formData.Email}
                   onChange={handleInputChange}
                   required
                 />
@@ -265,7 +231,6 @@ const Login = () => {
                   type="email"
                   name="email"
                   placeholder='antonmaisiuk@gmail.com'
-                  // value={formData.Email}
                   onChange={handleInputChange}
                   required/>
                 </StyledFormGroup><StyledFormGroup controlId="password">
@@ -311,9 +276,6 @@ const Login = () => {
           </StyledOption>
         </AuthWrapper>
       </AuthContainer>
-
-
-
   );
 };
 

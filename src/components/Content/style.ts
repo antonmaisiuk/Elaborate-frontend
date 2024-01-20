@@ -13,6 +13,5 @@ export const StyledContent = styled.div`
 
   @media only screen and (max-width: 440px) {
     padding: 20px 10px 32px 10px;
-
   }
 `;

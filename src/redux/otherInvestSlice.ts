@@ -1,18 +1,16 @@
-import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import axios from "axios";
 import {getActualToken} from "../App";
 import moment from "moment/moment";
-import _ from "lodash";
 import {
   IOtherInvestment
 } from "../components/Investments/Overview/InvestOverview";
-import {RootState} from "./store";
-import {getCustomExchangeRate, getExchangeRateAsync} from "./userSlice";
+import {getCustomExchangeRate} from "./userSlice";
 
 interface OtherInvestsState {
   otherInvests: IOtherInvestment[];
-  loading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Состояние загрузки
-  error: string | null; // Ошибка, если что-то пошло не так
+  loading: 'idle' | 'pending' | 'succeeded' | 'failed';
+  error: string | null;
 }
 
 const initialState: OtherInvestsState = {
@@ -20,10 +18,6 @@ const initialState: OtherInvestsState = {
   loading: 'idle',
   error: null,
 };
-
-
-
-
 
 const otherInvestSlice = createSlice({
   name: 'otherInvestments',
@@ -38,26 +32,16 @@ const otherInvestSlice = createSlice({
         state.loading = 'succeeded';
 
         state.otherInvests = action.payload;
-        // state.otherInvests = _.map(action.payload, (invest) => ({
-        //     id: invest.id,
-        //     title: invest.title,
-        //     comment: invest.comment,
-        //     date: moment(invest.dateOfCreated).format('DD.MM.YYYY'),
-        //     value: invest.value,
-        //   } as IOtherInvestment
-        // ));
 
         state.error = null;
         state.loading = 'succeeded';
       })
 
       .addCase(addOtherInvestAsync.fulfilled, (state, action) => {
-        // state.loading = 'succeeded';
         state.otherInvests.push(action.payload);
         state.error = null;
       })
       .addCase(updateOtherInvestAsync.fulfilled, (state, action) => {
-        // state.loading = 'succeeded';
         const index = state.otherInvests.findIndex(
           (invest) => invest.id === action.payload.id
         );
@@ -70,7 +54,6 @@ const otherInvestSlice = createSlice({
         state.error = null;
       })
       .addCase(deleteOtherInvestAsync.fulfilled, (state, action) => {
-        // state.loading = 'succeeded';
         state.otherInvests = state.otherInvests.filter(
           (invest) => invest.id !== action.payload
         );
@@ -118,7 +101,6 @@ export const addOtherInvestAsync = createAsyncThunk(
   async (invest: IOtherInvestment, thunkAPI: any) => {
 
     const state = thunkAPI.getState();
-    console.log('👉 new invest: ', invest);
     const response = await axios.post(
       `${process.env.REACT_APP_API_URL}/api/user/otherinvestment`,
       JSON.stringify({
@@ -152,7 +134,6 @@ export const updateOtherInvestAsync = createAsyncThunk(
   async (invest: IOtherInvestment, thunkAPI: any) => {
     const state = thunkAPI.getState();
 
-    console.log('👉 Updated item before req: ', invest);
     await axios.put(
       `${process.env.REACT_APP_API_URL}/api/user/otherinvestment/${invest.id}`,
       JSON.stringify({

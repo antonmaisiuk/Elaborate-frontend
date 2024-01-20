@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import {Container, Nav, Navbar, NavDropdown} from "react-bootstrap";
+import {NavDropdown} from "react-bootstrap";
 import {NavInterface} from "./Navigation";
 
 export const StyledNavigation = styled.div<NavInterface>`
@@ -73,23 +73,6 @@ export const StyledNavFooter = styled.div`
     align-items: center;
   }
 `
-
-export const StyledNavLogo = styled.div`
-  cursor: pointer;
-
-  h2{
-    margin: 0;
-    
-    text-align: center;
-    font-family: Poppins, sans-serif;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 800;
-    line-height: 32px; /* 133.333% */
-    letter-spacing: 1.92px;
-    color: #fff;
-  }
-`;
 
 export const StyledNavbar = styled.div`
   display: flex;
@@ -174,39 +157,6 @@ export const StyledNavContainer = styled.div`
   }
 `
 
-export const StyledLogoutWrapper = styled.button`
-  display: flex;
-  padding: 12px 16px;
-  align-items: center;
-
-  border: none;
-  width: 100%;
-
-  margin-bottom: 45px;
-
-  border-radius: 4px;
-  opacity: 0.75;
-  background: rgba(255, 255, 255, 0.08);
-
-  ::hover {
-    background: rgba(0, 0, 0, 0.27);
-  }
-
-  color: #fff;
-  font-family: 'Inter', sans-serif;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 24px;
-
-  span {
-    margin-left: 12px;
-
-    @media only screen and (max-width: 768px){
-      display: none;
-    }
-  }
-`
 export const StyledUserPhoto = styled.div<{ avatar: string }>`
     width: 48px;
     height: 48px;
@@ -231,8 +181,6 @@ export const StyledUserInfo = styled.button`
   
 `
 export const StyledUsername = styled.div`
-  //display: flex;
-  //flex-direction: column;
   align-items: center;
   margin-left: 12px;
   text-align: left;

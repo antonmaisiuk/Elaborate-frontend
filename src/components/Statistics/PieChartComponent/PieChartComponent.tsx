@@ -1,11 +1,10 @@
-// BuyerPowerChart.tsx
 import React from 'react';
-import {PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer} from 'recharts';
+import {PieChart, Pie, Cell, Tooltip, Legend} from 'recharts';
 import {dataMainType, ITransaction} from '../../Table/Table';
 import {StyledNoData} from "../styled";
 import _ from "lodash";
 import {IBasicInvestment, IOtherInvestment} from "../../Investments/Overview/InvestOverview";
-import {StyledPieResponsiveContainer, StyledResponsiveContainer} from "../TransactionTimeChart/style"; // Assuming you have this exported from another file
+import {StyledPieResponsiveContainer} from "../TransactionTimeChart/style";
 
 interface PieChartComponentProps {
   items: dataMainType[];
@@ -32,11 +31,9 @@ const COLORS = [
 const PieChartComponent: React.FC<PieChartComponentProps> = ({
                                                                items,
                                                              }) => {
-  // Prepare the data for recharts
   const data = items.reduce(
     (acc: { name: string; value: number }[], item: dataMainType | IOtherInvestment) => {
       let isOtherInvest = !_.has(item, 'category');
-      // console.log('👉 isOtherInvest: ', isOtherInvest);
 
       const existingCategory = acc.find(
         (i) => !isOtherInvest ? i.name === (item as ITransaction | IBasicInvestment).category : i.name === (item as IOtherInvestment).title
@@ -44,7 +41,6 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({
       if (existingCategory) {
         existingCategory.value += item.value;
       } else {
-        // console.log('👉 acc: ', acc);
         !isOtherInvest
           ? acc.push({name: (item as ITransaction | IBasicInvestment).category, value: item.value})
           : acc.push({name: (item as IOtherInvestment).title, value: item.value});
@@ -53,8 +49,6 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({
     },
     []
   );
-
-  // console.log('👉 Data: ', data);
 
   return (
     data.length ?
@@ -70,9 +64,6 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({
             legendType={'square'}
             outerRadius={90}
             fill="#8884d8"
-            // label={({name, percent}: { name: string; percent: number }) =>
-            //   `${name} ${(percent * 100).toFixed(0)}%`
-            // }
           >
             {data.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]}/>

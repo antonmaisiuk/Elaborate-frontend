@@ -1,13 +1,11 @@
 import styled from 'styled-components';
-import {Container, Nav, Navbar, NavDropdown, Table} from "react-bootstrap";
-import ReactPaginate from 'react-paginate';
-import {ColorRing} from "react-loader-spinner";
+import {Table} from "react-bootstrap";
+
 
 export const StyledTableWrapper = styled.div`
   display: flex;
   padding: 0 28px 28px 28px;
   max-height: 80%;
-  //max-width: 100%;
   flex-direction: column;
   flex: 1;
   overflow-y: scroll;
@@ -33,8 +31,6 @@ export const StyledTable = styled(Table)`
   font-style: normal;
   line-height: 24px; /* 150% */
   margin: 0;
-
-  //overflow-y: scroll;
   
   thead th{
     border-top: none;
@@ -100,13 +96,4 @@ export const StyledPagination = styled.div`
   @media only screen and (max-width: 440px) {
     font-size: 3vw;
   }
-`;
-
-export const StyledLoading = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  
-  width: 100%;
-  height: 100%;
 `;

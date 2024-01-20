@@ -7,13 +7,11 @@ import {StyledTitle} from "./style";
 import Table, {TableType} from "../../Table/Table";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../../../redux/store";
-import {fetchBasicInvestsAsync, fetchInvestCatsAsync, fetchItemsAsync} from "../../../redux/basicInvestSlice";
 import {BasicInvestmentType, IBasicInvestment, IOtherInvestment} from "../Overview/InvestOverview";
 import {useTranslation} from "react-i18next";
 import {StyledTileHeader} from "../../Overview/styled";
 import FilterHeader from "../../FilterHeader/FilterHeader";
 import _ from "lodash";
-import {fetchOtherInvestAsync} from "../../../redux/otherInvestSlice";
 import {StyledError} from "../../Auth/styled";
 
 export interface BasicInvestmentsInterface {
@@ -25,7 +23,6 @@ const BasicInvestments: FC<BasicInvestmentsInterface & HTMLAttributes<HTMLDivEle
   toggle,
   basicInvestType
 }) => {
-  const dispatch = useDispatch<AppDispatch>();
   const basicInvestments = useSelector((state: RootState) => state.basicInvestments.basicInvests);
   const otherInvestments = useSelector((state: RootState) => state.otherInvestments.otherInvests);
   const investCategories = useSelector((state: RootState) => state.basicInvestments.basicInvestsCategories);
@@ -47,7 +44,6 @@ const BasicInvestments: FC<BasicInvestmentsInterface & HTMLAttributes<HTMLDivEle
         break;
       case BasicInvestmentType.metals:
         setTitle(t('recentMetals'));
-        console.log('👉 cat: ', investCategories);
         setData(basicInvestments.filter((invest) => invest.categoryId === process.env.REACT_APP_METALS_ID));
         setCategories(investCategories.filter((item) => item.id === process.env.REACT_APP_METALS_ID));
         break;
@@ -65,15 +61,6 @@ const BasicInvestments: FC<BasicInvestmentsInterface & HTMLAttributes<HTMLDivEle
   }
 
   useEffect(() => {
-    // if (loadingStatus !== 'succeeded'){
-    //   dispatch(fetchOtherInvestAsync());
-    //   dispatch(fetchItemsAsync()).then(() => {
-    //     dispatch(fetchBasicInvestsAsync()).then(() => {
-    //       dispatch(fetchInvestCatsAsync())
-    //     })
-    //   });
-    // }
-
     if (loadingStatus === 'succeeded') {
       filterByType();
     } else {

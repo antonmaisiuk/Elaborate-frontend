@@ -15,15 +15,13 @@ import {
   StyledLink,
   StyledOption,
   StyledTooltip,
-  StyledFogotPassword,
   StyledPassInputWrapper, StyledInputGroup
 } from "../styled";
-import {CredentialResponse, GoogleLogin} from "@react-oauth/google";
+import {CredentialResponse} from "@react-oauth/google";
 import {useNavigate} from "react-router-dom";
 import {ColorRing} from "react-loader-spinner";
 import validator from 'validator';
 import { Tooltip } from 'react-tooltip'
-// import {Button, Form, InputGroup} from "react-bootstrap";
 import OpenEyeIcon from '../../../assets/OpenEye/OpenEyeIcon';
 import CloseEyeIcon from "../../../assets/CloseEye/CloseEyeIcon";
 

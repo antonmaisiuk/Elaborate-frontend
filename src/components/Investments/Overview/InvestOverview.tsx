@@ -88,6 +88,8 @@ const InvestOverview: FC<NavInterface> = ({
   const {t} = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
 
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
+
   const invests = useSelector((state: RootState) => state.basicInvestments.basicInvests);
   const stocks = _.filter(invests, (invest: IBasicInvestment) => invest.categoryId === process.env.REACT_APP_STOCKS_ID);
   const metals = _.filter(invests, (invest: IBasicInvestment) => invest.categoryId === process.env.REACT_APP_METALS_ID);
@@ -96,16 +98,9 @@ const InvestOverview: FC<NavInterface> = ({
   const otherInvests = useSelector((state: RootState) => state.otherInvestments.otherInvests);
 
   const actualPeriod = useSelector((state: RootState) => state.stats.period);
-  const actualType = useSelector((state: RootState) => state.stats.type);
-
-  const basicLoadingStatus = useSelector((state: RootState) => state.basicInvestments.basicLoading);
 
   const handlePeriodChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     dispatch(setPeriod(event.target.value));
-  };
-
-  const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    dispatch(setType(event.target.value));
   };
 
   const filterItems = (data: any[]) => {
@@ -145,18 +140,6 @@ const InvestOverview: FC<NavInterface> = ({
     }, 0), 2);
   }
 
-  useEffect(() => {
-    // if (basicLoadingStatus !== 'succeeded') {
-    //   dispatch(fetchOtherInvestAsync());
-    //   dispatch(fetchItemsAsync()).then(() => {
-    //     dispatch(fetchBasicInvestsAsync()).then(() => {
-    //       dispatch(fetchInvestCatsAsync())
-    //     })
-    //   });
-    // }
-
-  }, [invests, otherInvests]);
-
   return (
     <Layout>
       <Header toggle={toggle} visible={visible}/>
@@ -170,7 +153,7 @@ const InvestOverview: FC<NavInterface> = ({
               <StyledTileTitle>{t('invests.totalStocks')}</StyledTileTitle>
             </StyledTileHeader>
             <StyledTileValue>
-              {getTotal(stocks)} $
+              {getTotal(stocks)} {userInfo.currSlug}
             </StyledTileValue>
             <ResponsiveContainer className={'tile_chart'} width="100%" height="60%">
               <LineChart data={filterItems(stocks)}>
@@ -184,7 +167,7 @@ const InvestOverview: FC<NavInterface> = ({
               <StyledTileTitle>{t('invests.totalCrypto')}</StyledTileTitle>
             </StyledTileHeader>
             <StyledTileValue>
-              {getTotal(crypto)} $
+              {getTotal(crypto)} {userInfo.currSlug}
             </StyledTileValue>
             <ResponsiveContainer className={'tile_chart'} width="100%" height="60%">
               <LineChart data={filterItems(crypto)}>
@@ -198,7 +181,7 @@ const InvestOverview: FC<NavInterface> = ({
               <StyledTileTitle>{t('invests.totalMetals')}</StyledTileTitle>
             </StyledTileHeader>
             <StyledTileValue>
-              {getTotal(metals)} $
+              {getTotal(metals)} {userInfo.currSlug}
             </StyledTileValue>
             <ResponsiveContainer className={'tile_chart'} width="100%" height="60%">
               <LineChart width={300} height={100} data={filterItems(metals)}>
@@ -212,7 +195,7 @@ const InvestOverview: FC<NavInterface> = ({
               <StyledTileTitle>{t('invests.totalOther')}</StyledTileTitle>
             </StyledTileHeader>
             <StyledTileValue>
-              {getTotal(otherInvests)} $
+              {getTotal(otherInvests)} {userInfo.currSlug}
             </StyledTileValue>
             <ResponsiveContainer className={'tile_chart'} width="100%" height="60%">
               <LineChart width={300} height={100} data={filterItems(otherInvests)}>
@@ -225,13 +208,6 @@ const InvestOverview: FC<NavInterface> = ({
             <StyledTileHeader className={'tile_stats-header'}>
               <StyledTileTitle>{t('statistics')}</StyledTileTitle>
               <StyledTileSelectorsWrapper>
-                {/*<StyledTileSelector onChange={handleTypeChange}>*/}
-                {/*  {*/}
-                {/*    _.keys(StatType).map((type, i) =>*/}
-                {/*      (<option selected={actualType === _.values(StatType)[i]}*/}
-                {/*               value={type}>{_.values(StatType)[i]}</option>))*/}
-                {/*  }*/}
-                {/*</StyledTileSelector>*/}
                 <StyledTileSelector onChange={handlePeriodChange}>
                   {
                     _.keys(StatPeriod).map((period, i) =>
@@ -258,7 +234,6 @@ const InvestOverview: FC<NavInterface> = ({
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                {/*<Bar dataKey="Transactions" stackId="a" fill="#25AB52" />*/}
                 <Bar dataKey="Basic investments" stackId="a" fill="#27aeef" />
                 <Bar dataKey="Other investments" stackId="a" fill="#b33dc6" />
               </BarChart>

@@ -1,34 +1,22 @@
-// BuyerPowerChart.tsx
 import React, {useEffect, useState} from 'react';
 import {
-  PieChart,
-  Pie,
-  Cell,
   Tooltip,
   Legend,
-  ResponsiveContainer,
   BarChart,
   CartesianGrid,
   XAxis,
   YAxis,
   Bar,
-  Line
 } from 'recharts';
-import {TooltipProps} from 'recharts';
-import {dataMainType, ITransaction} from '../../Table/Table';
-// import {StyledBuyingPowerChart, StyledNoData, StyledP} from "../styled";
 import _ from "lodash";
 import {IBasicInvestment, IOtherInvestment} from "../../Investments/Overview/InvestOverview";
 import {
   StyledBarResponsiveContainer,
-  StyledPieResponsiveContainer,
-  StyledResponsiveContainer
 } from "../TransactionTimeChart/style";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../redux/store";
 import moment from "moment";
-import {NameType, ValueType} from "recharts/types/component/DefaultTooltipContent";
-import {Trans, useTranslation} from "react-i18next";
+import {useTranslation} from "react-i18next";
 import {getCustomExchangeRate} from "../../../redux/userSlice"; // Assuming you have this exported from another file
 
 interface CustomTooltipType {
@@ -42,26 +30,20 @@ const getTotalInvestValue = (invests: (IBasicInvestment | IOtherInvestment)[], r
 }, 0), 2);
 
 const getBuyingPowerData = (totalInvestValue: number, actualBuyerPeriod: string, inflation: { value: any, date: string}[]) => {
-  // const totalInvestValue = getTotalInvestValue(invest)
   const now = moment().startOf('M').subtract(1, 'M');
   let start = moment(actualBuyerPeriod);
-  // console.log('👉 totalInvestValue: ', totalInvestValue);
-  // console.log('👉 now: ', now.format('YYYY-MM'));
 
   const data: CustomTooltipType[] = [];
-  // console.log('👉 current before: ', start.format('YYYY-MM'));
   let x0 = totalInvestValue;
   while (!start.isSame(now)) {
-    // console.log('---------\n');
     const currentInfl = _.head(_.filter(inflation, ({ date }) =>  date === moment(start).format('DD.MM.YYYY')));
-    // console.log('👉 currentInfl: ', currentInfl);
+
     if (!currentInfl) {
       start = moment(start).add(1, 'M');
     } else {
       const { value: infValue, date: infDate} = currentInfl;
 
       const power = _.round((x0 * ((100 - infValue) / 100)) + x0, 2);
-      // console.log('👉 power: ', power);
       data.push({
         value: power,
         inf: (100 - infValue),
@@ -70,7 +52,6 @@ const getBuyingPowerData = (totalInvestValue: number, actualBuyerPeriod: string,
 
       x0 = power;
       start = moment(start).add(1, 'M');
-      console.log('---------\n');
     }
   }
 

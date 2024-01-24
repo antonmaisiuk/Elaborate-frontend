@@ -74,7 +74,7 @@ const Login = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [showPass, setShowPass] = useState(false);
-  const [is2FA, setIs2FA] = useState(true);
+  const [is2FA, setIs2FA] = useState(false);
   const [spinnerActive, setSpinnerActive] = useState(false);
   const [formData, setFormData] = useState({
     email: '',

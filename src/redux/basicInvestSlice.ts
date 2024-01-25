@@ -176,7 +176,7 @@ export const addBasicInvestsAsync = createAsyncThunk(
     const state = thunkAPI.getState();
     const items = state.basicInvestments.items as IItem[];
     const categories = state.basicInvestments.basicInvestsCategories as IBasicInvestmentCat[];
-    const exchangeRate = state.exchangeRate;
+    const exchangeRate = state.user.exchangeRate;
 
     const response = await axios.post(
       `${process.env.REACT_APP_API_URL}/api/user/basicinvestment`,
@@ -211,7 +211,7 @@ export const updateBasicInvestAsync = createAsyncThunk(
   'basicInvestments/updateBasicInvest',
   async (invest: IBasicInvestment, thunkAPI: any) => {
     const state = thunkAPI.getState();
-    const exchangeRate = state.exchangeRate;
+    const exchangeRate = state.user.exchangeRate;
 
     await axios.put(
       `${process.env.REACT_APP_API_URL}/api/user/basicinvestment/${invest.id}`,
@@ -229,6 +229,7 @@ export const updateBasicInvestAsync = createAsyncThunk(
         },
       }
     );
+
     return {
       ...invest,
       value: _.round(invest.amount * await getPrice(state.basicInvestments.items.filter((item: IItem) => item.id === invest.itemId)[0].index, invest.categoryId, exchangeRate), 2),

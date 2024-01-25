@@ -153,7 +153,7 @@ const Overview: FC<NavInterface> = ({
                   >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="Date" />
-                    <YAxis />
+                    <YAxis domain={['auto', 'auto']}/>
                     <Tooltip />
                     <Legend />
                     <Bar dataKey="Transactions" stackId="a" fill="#25AB52" />

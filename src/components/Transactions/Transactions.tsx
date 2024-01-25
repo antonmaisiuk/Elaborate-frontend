@@ -15,7 +15,9 @@ const Transactions: FC<NavInterface> = ({
                                           visible,
                                           toggle,
                                         }) => {
+  const loadingStatus = useSelector((state: RootState) => state.transactions.transLoading);
   const transactions = useSelector((state: RootState) => state.transactions.transactions);
+
   const transCategories = useSelector((state: RootState) => state.transactions.transCategories);
 
   const [data, setData] = useState(transactions);
@@ -35,6 +37,14 @@ const Transactions: FC<NavInterface> = ({
       setData(transactions);
     }
   }
+
+  useEffect(() => {
+    if (loadingStatus === 'succeeded') {
+      setData(transactions)
+    } else {
+
+    }
+  }, [transactions]);
 
   return (
     <Layout>

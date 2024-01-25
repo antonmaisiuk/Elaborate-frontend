@@ -172,7 +172,7 @@ const Statistics: FC<NavInterface> = ({
 								<YAxis domain={['auto', 'auto']} />
 								<Tooltip />
 								<Legend />
-								<Line type="monotone" dataKey="value" stroke="#82ca9d" />
+								<Line type="monotone" strokeWidth={3} dataKey="value" stroke="#82ca9d" />
 							</LineChart>
 						</StyledResponsiveContainer>
 					</StyledTile>

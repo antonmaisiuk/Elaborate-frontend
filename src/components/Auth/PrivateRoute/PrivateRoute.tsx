@@ -37,16 +37,18 @@ const PrivateRoute = () => {
     if (historyLoading === 'idle') dispatch(getUserHistoryAsync())
 
     const currencySlug = _.filter(currencies, (curr) => user.userInfo.currency === curr.id)[0].index;
-    if (exchangeLoading === 'idle') dispatch(getExchangeRateAsync(currencySlug))
+    if (exchangeLoading === 'idle') dispatch(getExchangeRateAsync(currencySlug)).then(() => {
+      if (otherLoading === 'idle') dispatch(fetchOtherInvestAsync());
+      if (itemsLoading === 'idle') dispatch(fetchItemsAsync()).then(() => {
+        if (basicLoading === 'idle') dispatch(fetchBasicInvestsAsync());
+        if (basicCatLoading === 'idle') dispatch(fetchInvestCatsAsync());
+      });
+      if (transLoading === 'idle') dispatch(fetchTransactionsAsync()).then(() => {
+        if (transCatLoading === 'idle') dispatch(fetchTransCatsAsync());
+      });
+    })
 
-    if (otherLoading === 'idle') dispatch(fetchOtherInvestAsync());
-    if (itemsLoading === 'idle') dispatch(fetchItemsAsync()).then(() => {
-      if (basicLoading === 'idle') dispatch(fetchBasicInvestsAsync());
-      if (basicCatLoading === 'idle') dispatch(fetchInvestCatsAsync());
-    });
-    if (transLoading === 'idle') dispatch(fetchTransactionsAsync()).then(() => {
-      if (transCatLoading === 'idle') dispatch(fetchTransCatsAsync());
-    });
+
 
   } catch (e){
   }

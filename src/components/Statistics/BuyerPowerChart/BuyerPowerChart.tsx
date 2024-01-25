@@ -80,8 +80,13 @@ const BuyerPowerChart = () => {
   const { t } = useTranslation();
 
   useEffect(() => {
+
     async function getRate() {
-      setRate(await getCustomExchangeRate(currentCurrencySlug, 'PLN'))
+      try {
+        setRate(await getCustomExchangeRate(currentCurrencySlug, 'PLN'))
+      } catch (err){
+
+      }
     }
     getRate();
 

@@ -38,13 +38,15 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({
       const existingCategory = acc.find(
         (i) => !isOtherInvest ? i.name === (item as ITransaction | IBasicInvestment).category : i.name === (item as IOtherInvestment).title
       );
+
       if (existingCategory) {
-        existingCategory.value += item.value;
+        existingCategory.value += _.round(item.value, 2);
       } else {
         !isOtherInvest
-          ? acc.push({name: (item as ITransaction | IBasicInvestment).category, value: item.value})
-          : acc.push({name: (item as IOtherInvestment).title, value: item.value});
+          ? acc.push({name: (item as ITransaction | IBasicInvestment).category, value: _.round(item.value, 2)})
+          : acc.push({name: (item as IOtherInvestment).title, value: _.round(item.value, 2)});
       }
+
       return acc;
     },
     []
@@ -60,7 +62,6 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({
           <Pie
             dataKey="value"
             data={data}
-            label={false}
             legendType={'square'}
             outerRadius={90}
             fill="#8884d8"

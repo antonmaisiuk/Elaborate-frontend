@@ -51,7 +51,7 @@ const basicInvestSlice = createSlice({
             id: invest.id,
             item: state.items ? state.items.filter((item) => item.id === invest.itemId)[0].name : 'No index',
             itemId: invest.itemId,
-            category: '',
+            category: state.basicInvestsCategories.filter((cat) => cat.id === invest.categoryId)[0].name || 'No category',
             categoryId: invest.categoryId,
             comment: invest.comment,
             date: moment(invest.dateOfCreated).format('DD.MM.YYYY'),

@@ -356,7 +356,7 @@ export const getUserHistoryAsync = createAsyncThunk(
         }
       );
 
-      return [history.data, inflation.data];
+      return [_.sortBy(history.data, 'dateOfSave'), inflation.data];
     } catch (error) {
       throw error;
     }
